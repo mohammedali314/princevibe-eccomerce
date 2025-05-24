@@ -6,7 +6,7 @@
   left: 0;
   width: 100%;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.95);
+  background: black;
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -25,7 +25,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 80px;
+    height: 90px;
   }
 
   .navbar-logo {
@@ -34,24 +34,148 @@
     gap: 8px;
     cursor: pointer;
     transition: transform 0.3s ease;
+    position: relative;
+    z-index: 10;
 
-    &:hover {
-      transform: scale(1.05);
+    // Floating animation container
+    &::before {
+      content: '';
+      position: absolute;
+      top: -20px;
+      left: -20px;
+      right: -20px;
+      bottom: -20px;
+      background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      opacity: 0;
+      animation: logoGlow 4s ease-in-out infinite;
+      z-index: -1;
     }
 
-    .logo-text {
-      font-size: 1.75rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -0.5px;
-    }
-
-    .logo-sparkle {
+    // Sparkle particles
+    &::after {
+      content: '✨';
+      position: absolute;
+      top: -10px;
+      right: -10px;
       font-size: 1.2rem;
-      animation: sparkle 2s ease-in-out infinite;
+      opacity: 0;
+      animation: sparkleFloat 3s ease-in-out infinite;
+      z-index: 5;
+    }
+
+    // &:hover {
+    //   transform: perspective(1000px) rotateY(15deg) rotateX(5deg) scale(1.05);
+      
+    //   .logo-image {
+    //     filter: drop-shadow(0 10px 30px rgba(102, 126, 234, 0.4)) 
+    //             drop-shadow(0 0 20px rgba(118, 75, 162, 0.3));
+    //     transform: translateY(-5px);
+    //   }
+
+    //   &::before {
+    //     opacity: 1;
+    //     transform: scale(1.2);
+    //   }
+
+    //   &::after {
+    //     opacity: 1;
+    //     animation: sparkleHover 0.6s ease-in-out;
+    //   }
+
+    //   .logo-shimmer {
+    //     transform: translateX(300px);
+    //     opacity: 1;
+    //   }
+
+    //   .logo-particles {
+    //     .particle {
+    //       opacity: 1;
+    //       transform: scale(1);
+    //     }
+    //   }
+    // }
+
+    .logo-image {
+      height: 250px;
+      width: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+      animation: logoFloat 6s ease-in-out infinite;
+      position: relative;
+      z-index: 2;
+    }
+
+    // Shimmer effect overlay
+    .logo-shimmer {
+      position: absolute;
+      top: 0;
+      left: -50px;
+      width: 50px;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        transparent 100%
+      );
+      transform: translateX(-100px);
+      transition: all 0.8s ease-out;
+      opacity: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    // Floating particles around logo
+    .logo-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+
+      .particle {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: white;
+        border-radius: 50%;
+        opacity: 0;
+        transform: scale(0);
+        transition: all 0.3s ease;
+
+        &.particle-1 {
+          top: 20%;
+          left: 15px;
+          animation: particleFloat1 4s ease-in-out infinite;
+          animation-delay: 0s;
+        }
+
+        &.particle-2 {
+          top: 60%;
+          right: -15px;
+          animation: particleFloat2 5s ease-in-out infinite;
+          animation-delay: 1s;
+        }
+
+        &.particle-3 {
+          bottom: 20%;
+          left: 50%;
+          animation: particleFloat3 6s ease-in-out infinite;
+          animation-delay: 2s;
+        }
+
+        &.particle-4 {
+          top: 10%;
+          right: 20%;
+          animation: particleFloat4 4.5s ease-in-out infinite;
+          animation-delay: 0.5s;
+        }
+      }
     }
   }
 
@@ -63,7 +187,7 @@
     .nav-link {
       position: relative;
       text-decoration: none;
-      color: #374151;
+      color: #fff;
       font-weight: 500;
       font-size: 1rem;
       padding: 8px 0;
@@ -121,7 +245,7 @@
       align-items: center;
       justify-content: center;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      color: #374151;
+      color: #fff;
 
       svg {
         width: 22px;
@@ -275,6 +399,135 @@
   }
 }
 
+// Logo Animation Keyframes
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-12px) rotate(-1deg);
+  }
+}
+
+@keyframes logoGlow {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes sparkleFloat {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  25% {
+    opacity: 0.7;
+    transform: translateY(-5px) rotate(90deg) scale(1.2);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-10px) rotate(180deg) scale(0.8);
+  }
+  75% {
+    opacity: 0.7;
+    transform: translateY(-5px) rotate(270deg) scale(1.1);
+  }
+}
+
+@keyframes sparkleHover {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5) rotate(180deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 1;
+  }
+}
+
+@keyframes particleFloat1 {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translateY(0) translateX(0) scale(1);
+  }
+  25% {
+    opacity: 0.8;
+    transform: translateY(-15px) translateX(5px) scale(1.2);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-8px) translateX(-3px) scale(0.8);
+  }
+  75% {
+    opacity: 0.6;
+    transform: translateY(-20px) translateX(8px) scale(1.1);
+  }
+}
+
+@keyframes particleFloat2 {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  33% {
+    opacity: 0.9;
+    transform: translateY(-12px) translateX(-8px) rotate(120deg);
+  }
+  66% {
+    opacity: 0.7;
+    transform: translateY(-6px) translateX(4px) rotate(240deg);
+  }
+}
+
+@keyframes particleFloat3 {
+  0%, 100% {
+    opacity: 0.2;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-25px) scale(1.3);
+  }
+}
+
+@keyframes particleFloat4 {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+  }
+  20% {
+    opacity: 0.8;
+    transform: translateY(-8px) translateX(-5px) rotate(72deg) scale(1.1);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-16px) translateX(3px) rotate(144deg) scale(0.9);
+  }
+  60% {
+    opacity: 0.9;
+    transform: translateY(-12px) translateX(7px) rotate(216deg) scale(1.2);
+  }
+  80% {
+    opacity: 0.7;
+    transform: translateY(-4px) translateX(-2px) rotate(288deg) scale(1);
+  }
+}
+
 // Responsive Design
 @media (max-width: 1024px) {
   .navbar {
@@ -308,13 +561,13 @@
 @media (max-width: 768px) {
   .navbar {
     .navbar-container {
-      height: 70px;
+      height: 80px;
       padding: 0 16px;
     }
 
     .navbar-logo {
-      .logo-text {
-        font-size: 1.5rem;
+      .logo-image {
+        height: 70px;
       }
     }
 
@@ -352,13 +605,13 @@
 @media (max-width: 480px) {
   .navbar {
     .navbar-container {
-      height: 65px;
+      height: 75px;
       padding: 0 12px;
     }
 
     .navbar-logo {
-      .logo-text {
-        font-size: 1.3rem;
+      .logo-image {
+        height: 60px;
       }
 
       .logo-sparkle {
