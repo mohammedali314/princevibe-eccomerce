@@ -26,13 +26,33 @@ const Navbar = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const handleSmoothScroll = (e, targetId) => {
+    e.preventDefault();
+    const target = document.getElementById(targetId);
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
         {/* Logo */}
         <div className="navbar-logo">
-          <img src="/logo.png" alt="PrinceVibe" className="logo-image" />
-          <div className="logo-shimmer"></div>
+          <img 
+            src="/logo.png" 
+            alt="PrinceVibe" 
+            className="logo-image"
+            onError={(e) => {
+              // Fallback to text logo if image fails
+              e.target.style.display = 'none';
+              e.target.parentElement.innerHTML += '<span style="color: white; font-weight: bold; font-size: 1.5rem;">PrinceVibe</span>';
+            }}
+          />
+          {/* <div className="logo-shimmer"></div> */}
           <div className="logo-particles">
             <div className="particle particle-1"></div>
             <div className="particle particle-2"></div>
@@ -43,22 +63,26 @@ const Navbar = () => {
 
         {/* Navigation Links */}
         <div className="navbar-menu">
-          <a href="#home" className="nav-link active">
-            <span>Home</span>
-            <div className="nav-indicator"></div>
-          </a>
-          <a href="#products" className="nav-link">
-            <span>All Products</span>
-            <div className="nav-indicator"></div>
-          </a>
-          <a href="#about" className="nav-link">
-            <span>About Us</span>
-            <div className="nav-indicator"></div>
-          </a>
-          <a href="#tracking" className="nav-link">
-            <span>Order Tracking</span>
-            <div className="nav-indicator"></div>
-          </a>
+          <div className="nav-link">
+            <a href="#hero" onClick={(e) => handleSmoothScroll(e, 'hero')}>
+              <span>Home</span>
+            </a>
+          </div>
+          <div className="nav-link">
+            <a href="#products" onClick={(e) => handleSmoothScroll(e, 'products')}>
+              <span>All Products</span>
+            </a>
+          </div>
+          <div className="nav-link">
+            <a href="#about" onClick={(e) => handleSmoothScroll(e, 'about')}>
+              <span>About Us</span>
+            </a>
+          </div>
+          <div className="nav-link">
+            <a href="#tracking" onClick={(e) => handleSmoothScroll(e, 'tracking')}>
+              <span>Order Tracking</span>
+            </a>
+          </div>
         </div>
 
         {/* Action Icons */}
@@ -92,14 +116,14 @@ const Navbar = () => {
       {/* Mobile Menu */}
       <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-menu-content">
-          <a href="#home" className="mobile-nav-link">Home</a>
-          <a href="#products" className="mobile-nav-link">All Products</a>
-          <a href="#about" className="mobile-nav-link">About Us</a>
-          <a href="#tracking" className="mobile-nav-link">Order Tracking</a>
+          <a href="#hero" onClick={(e) => handleSmoothScroll(e, 'hero')} className="mobile-nav-link">Home</a>
+          <a href="#products" onClick={(e) => handleSmoothScroll(e, 'products')} className="mobile-nav-link">All Products</a>
+          <a href="#about" onClick={(e) => handleSmoothScroll(e, 'about')} className="mobile-nav-link">About Us</a>
+          <a href="#tracking" onClick={(e) => handleSmoothScroll(e, 'tracking')} className="mobile-nav-link">Order Tracking</a>
         </div>
       </div>
     </nav>
   );
 };
 
-export default Navbar; 
+export default Navbar;
