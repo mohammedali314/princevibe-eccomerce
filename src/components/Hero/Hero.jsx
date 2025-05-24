@@ -25,7 +25,7 @@ const Hero = () => {
     },
     {
       id: 2,
-      video: "/videos/bannervid.mp4",
+      image: "/photos/Banner3.jpg",
       badge: "INNOVATION",
       title: "Smart Collection",
       subtitle: "The Future of Luxury Watches",
@@ -55,7 +55,7 @@ const Hero = () => {
   // Manage video playback based on current slide
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
-      if (video) {
+      if (video && slides[index].video) {
         if (index === currentSlide) {
           video.play().catch(console.error);
         } else {
@@ -63,7 +63,7 @@ const Hero = () => {
         }
       }
     });
-  }, [currentSlide]);
+  }, [currentSlide, slides]);
 
   const goToSlide = (index) => {
     setCurrentSlide(index);
@@ -77,24 +77,32 @@ const Hero = () => {
             key={slide.id}
             className={`hero-slide ${index === currentSlide ? 'active' : ''}`}
           >
-            <video
-              className="hero-video"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              ref={(el) => (videoRefs.current[index] = el)}
-              onLoadedData={() => {
-                // Video is ready to play
-                if (index === currentSlide && videoRefs.current[index]) {
-                  videoRefs.current[index].play().catch(console.error);
-                }
-              }}
-            >
-              <source src={slide.video} type={slide.video.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
-              Your browser does not support the video tag.
-            </video>
+            {slide.video ? (
+              <video
+                className="hero-video"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                ref={(el) => (videoRefs.current[index] = el)}
+                onLoadedData={() => {
+                  // Video is ready to play
+                  if (index === currentSlide && videoRefs.current[index]) {
+                    videoRefs.current[index].play().catch(console.error);
+                  }
+                }}
+              >
+                <source src={slide.video} type={slide.video.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <img
+                className="hero-image"
+                src={slide.image}
+                alt={slide.title}
+              />
+            )}
             <div className="slide-overlay"></div>
             
             <div className="hero-content">
