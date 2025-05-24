@@ -64,6 +64,7 @@ src/assets/*.avi
 src/assets/*.mkv
 !src/assets/icons/
 !src/assets/logo/
+!src/assets/logo.png
 
 # Build outputs
 build/

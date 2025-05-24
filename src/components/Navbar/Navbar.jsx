@@ -7,7 +7,6 @@ import {
   Bars3Icon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
-import Logo from '../../assets/logo.png';
 import './Navbar.scss';
 
 const Navbar = () => {
@@ -32,7 +31,7 @@ const Navbar = () => {
       <div className="navbar-container">
         {/* Logo */}
         <div className="navbar-logo">
-          <img src={Logo} alt="PrinceVibe" className="logo-image" />
+          <img src="/logo.png" alt="PrinceVibe" className="logo-image" />
           <div className="logo-shimmer"></div>
           <div className="logo-particles">
             <div className="particle particle-1"></div>
