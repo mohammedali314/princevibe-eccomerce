@@ -6,9 +6,6 @@ import {
   StarIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon } from '@heroicons/react/24/solid';
-import BannerVideo from '../../assets/banner.MP4';
-import BannerVid from '../../assets/bannervid.mp4';
-import Banner3 from '../../assets/banner3.webm';
 import './Hero.scss';
 
 const Hero = () => {
@@ -19,7 +16,7 @@ const Hero = () => {
   const slides = [
     {
       id: 1,
-      video: BannerVideo,
+      video: "/videos/banner.MP4",
       badge: "CRAFTED",
       title: "Luxury Timepieces",
       subtitle: "Where Excellence Meets Innovation",
@@ -28,7 +25,7 @@ const Hero = () => {
     },
     {
       id: 2,
-      video: BannerVid,
+      video: "/videos/bannervid.mp4",
       badge: "INNOVATION",
       title: "Smart Collection",
       subtitle: "The Future of Luxury Watches",
@@ -37,7 +34,7 @@ const Hero = () => {
     },
     {
       id: 3,
-      video: Banner3,
+      video: "/videos/banner3.webm",
       badge: "EXCLUSIVE",
       title: "Signature Series",
       subtitle: "Handcrafted Perfection",
@@ -95,7 +92,7 @@ const Hero = () => {
                 }
               }}
             >
-              <source src={slide.video} type="video/mp4" />
+              <source src={slide.video} type={slide.video.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
               Your browser does not support the video tag.
             </video>
             <div className="slide-overlay"></div>
