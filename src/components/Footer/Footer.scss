@@ -111,11 +111,12 @@
           padding: 8px 0;
           transition: all 0.3s ease;
           border-radius: 8px;
-          margin-bottom: 16px;
+          margin-bottom: 20px;
 
           &:hover {
             background: rgba(255, 255, 255, 0.05);
-            padding: 8px 12px;
+            padding: 8px 16px;
+            margin: 0 -8px;
           }
 
           .section-title {
@@ -125,6 +126,7 @@
             margin: 0;
             position: relative;
             text-align: left;
+            white-space: nowrap;
 
             &::after {
               content: '';
@@ -139,29 +141,7 @@
           }
 
           .dropdown-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            transition: transform 0.3s ease;
-            flex-shrink: 0;
-            margin-left: 8px;
-            position: relative;
-            z-index: 10;
-
-            svg {
-              width: 20px;
-              height: 20px;
-              color: #94a3b8;
-              transition: color 0.3s ease;
-              display: block;
-              position: relative;
-            }
-
-            &:hover svg {
-              color: #fff;
-            }
+            display: none;
           }
         }
 
@@ -880,6 +860,10 @@
             .dropdown-icon {
               display: none;
             }
+          }
+
+          &[aria-expanded="true"] .section-header .dropdown-icon svg {
+            transform: rotate(180deg);
           }
 
           .section-content {
