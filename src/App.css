@@ -32,6 +32,8 @@ body {
   width: 100%;
   position: relative;
   display: block; /* Ensure proper block layout for scrolling */
+  text-align: center;
+  overflow-x: hidden;
 }
 
 /* Remove default link and button styles */
@@ -74,4 +76,18 @@ img {
 /* Ensure proper scrolling behavior */
 body {
   overflow-y: auto;
+}
+
+.app-content {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.app-content.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app-content.visible {
+  opacity: 1;
+  pointer-events: auto;
 }

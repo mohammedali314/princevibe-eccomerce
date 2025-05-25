@@ -22,7 +22,7 @@ import {
 } from './SocialIcons';
 import './Footer.scss';
 
-const Footer = () => {
+const Footer = ({ onLogoClick }) => {
   const [email, setEmail] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('en');
 
@@ -31,6 +31,12 @@ const Footer = () => {
     // Handle newsletter subscription
     console.log('Newsletter subscription:', email);
     setEmail('');
+  };
+
+  const handleLogoClick = () => {
+    if (onLogoClick) {
+      onLogoClick();
+    }
   };
 
   const currentYear = new Date().getFullYear();
@@ -122,7 +128,7 @@ const Footer = () => {
           <div className="footer-grid">
             {/* Brand Section */}
             <div className="footer-brand">
-              <div className="brand-logo">
+              <div className="brand-logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
                 <img 
                   src="/logo.png" 
                   alt="PrinceVibe" 

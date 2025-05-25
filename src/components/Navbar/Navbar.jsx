@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import './Navbar.scss';
 
-const Navbar = () => {
+const Navbar = ({ onLogoClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -37,11 +37,17 @@ const Navbar = () => {
     }
   };
 
+  const handleLogoClick = () => {
+    if (onLogoClick) {
+      onLogoClick();
+    }
+  };
+
   return (
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
         {/* Logo */}
-        <div className="navbar-logo">
+        <div className="navbar-logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
           <img 
             src="/logo.png" 
             alt="PrinceVibe" 
