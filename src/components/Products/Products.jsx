@@ -254,7 +254,7 @@ const Products = () => {
               Curated Collection
             </span>
             <h2 className="section-title">
-              Trending <span className="title-accent">Timepieces</span>
+              Trending <span className="title-accent">Products</span>
             </h2>
             <p className="section-subtitle">
               Discover our handpicked selection of the world's finest watches, 
