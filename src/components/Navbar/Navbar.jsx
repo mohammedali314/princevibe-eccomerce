@@ -85,8 +85,8 @@ const Navbar = ({ onLogoClick }) => {
             </a>
           </div>
           <div className="nav-link">
-            <a href="#tracking" onClick={(e) => handleSmoothScroll(e, 'tracking')}>
-              <span>Order Tracking</span>
+            <a href="#contact" onClick={(e) => handleSmoothScroll(e, 'contact')}>
+              <span>Contact Us</span>
             </a>
           </div>
         </div>
@@ -125,7 +125,7 @@ const Navbar = ({ onLogoClick }) => {
           <a href="#hero" onClick={(e) => handleSmoothScroll(e, 'hero')} className="mobile-nav-link">Home</a>
           <a href="#products" onClick={(e) => handleSmoothScroll(e, 'products')} className="mobile-nav-link">All Products</a>
           <a href="#about" onClick={(e) => handleSmoothScroll(e, 'about')} className="mobile-nav-link">About Us</a>
-          <a href="#tracking" onClick={(e) => handleSmoothScroll(e, 'tracking')} className="mobile-nav-link">Order Tracking</a>
+          <a href="#contact" onClick={(e) => handleSmoothScroll(e, 'contact')} className="mobile-nav-link">Contact Us</a>
         </div>
       </div>
     </nav>

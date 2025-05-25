@@ -92,7 +92,6 @@ const Footer = ({ onLogoClick }) => {
       title: "Support",
       links: [
         { name: "Help Center", href: "#help" },
-        { name: "Order Tracking", href: "#tracking" },
         { name: "FAQ", href: "#faq" },
         { name: "Live Chat", href: "#chat" },
         { name: "Video Guides", href: "#guides" },
