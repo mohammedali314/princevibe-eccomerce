@@ -100,11 +100,14 @@
       }
 
       .footer-section {
+        text-align: center;
+        overflow: visible;
+
         .section-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          cursor: pointer;
+          cursor: default;
           padding: 8px 0;
           transition: all 0.3s ease;
           border-radius: 8px;
@@ -121,6 +124,7 @@
             color: #fff;
             margin: 0;
             position: relative;
+            text-align: left;
 
             &::after {
               content: '';
@@ -138,15 +142,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             transition: transform 0.3s ease;
+            flex-shrink: 0;
+            margin-left: 8px;
+            position: relative;
+            z-index: 10;
 
             svg {
-              width: 18px;
-              height: 18px;
+              width: 20px;
+              height: 20px;
               color: #94a3b8;
               transition: color 0.3s ease;
+              display: block;
+              position: relative;
             }
 
             &:hover svg {
@@ -156,12 +166,12 @@
         }
 
         .section-content {
-          max-height: 0;
-          overflow: hidden;
-          transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          max-height: none;
+          overflow: visible;
+          transition: none;
 
           &.open {
-            max-height: 300px;
+            max-height: none;
           }
         }
 
@@ -172,8 +182,8 @@
 
           li {
             margin-bottom: 12px;
-            opacity: 0;
-            transform: translateY(-10px);
+            opacity: 1;
+            transform: translateY(0);
             transition: all 0.3s ease;
 
             a {
@@ -209,18 +219,6 @@
                   width: 12px;
                 }
               }
-            }
-          }
-        }
-
-        // Animate list items when dropdown opens
-        .section-content.open .section-links li {
-          opacity: 1;
-          transform: translateY(0);
-          
-          @for $i from 1 through 10 {
-            &:nth-child(#{$i}) {
-              transition-delay: #{$i * 0.05}s;
             }
           }
         }
@@ -861,6 +859,8 @@
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             margin-bottom: 16px;
+            cursor: pointer;
+            overflow: visible;
 
             &:hover {
               background: rgba(255, 255, 255, 0.08);
@@ -869,6 +869,7 @@
             .section-title {
               text-align: left;
               font-size: 1.1rem;
+              flex: 1;
 
               &::after {
                 left: 0;
@@ -877,32 +878,48 @@
             }
 
             .dropdown-icon {
-              width: 28px;
-              height: 28px;
+              display: none;
+            }
+          }
 
-              svg {
-                width: 20px;
-                height: 20px;
+          .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+            &.open {
+              max-height: 400px;
+            }
+          }
+
+          .section-links li {
+            opacity: 0;
+            transform: translateY(-10px);
+
+            a {
+              padding: 10px 16px;
+              text-align: center;
+              margin: 4px 0;
+              border-radius: 8px;
+
+              &:hover {
+                padding-left: 16px;
+                background: rgba(255, 255, 255, 0.08);
+
+                &::before {
+                  display: none;
+                }
               }
             }
           }
 
-          .section-content.open {
-            max-height: 400px;
-          }
-
-          .section-links li a {
-            padding: 10px 16px;
-            text-align: center;
-            margin: 4px 0;
-            border-radius: 8px;
-
-            &:hover {
-              padding-left: 16px;
-              background: rgba(255, 255, 255, 0.08);
-
-              &::before {
-                display: none; // Hide the left arrow on mobile
+          .section-content.open .section-links li {
+            opacity: 1;
+            transform: translateY(0);
+            
+            @for $i from 1 through 10 {
+              &:nth-child(#{$i}) {
+                transition-delay: #{$i * 0.05}s;
               }
             }
           }

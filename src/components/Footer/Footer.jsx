@@ -16,7 +16,6 @@ import {
 } from '@heroicons/react/24/outline';
 import {
   FacebookIcon,
-  TwitterIcon,
   InstagramIcon,
   YouTubeIcon,
   LinkedInIcon,
@@ -105,7 +104,6 @@ const Footer = ({ onLogoClick }) => {
   const socialLinks = [
     { name: "Facebook", icon: FacebookIcon, href: "https://facebook.com/princevibe", followers: "2.3M" },
     { name: "Instagram", icon: InstagramIcon, href: "https://instagram.com/princevibe", followers: "1.8M" },
-    { name: "Twitter", icon: TwitterIcon, href: "https://twitter.com/princevibe", followers: "892K" },
     { name: "YouTube", icon: YouTubeIcon, href: "https://youtube.com/princevibe", followers: "654K" },
     { name: "LinkedIn", icon: LinkedInIcon, href: "https://linkedin.com/company/princevibe", followers: "234K" },
     { name: "TikTok", icon: TikTokIcon, href: "https://tiktok.com/@princevibe", followers: "445K" }
