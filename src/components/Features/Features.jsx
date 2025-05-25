@@ -176,7 +176,7 @@ const Features = () => {
         </div>
 
         {/* Trust Indicators */}
-        <div className="trust-section">
+        {/* <div className="trust-section">
           <div className="trust-content">
             <div className="trust-text">
               <h3>Trusted by Watch Enthusiasts Worldwide</h3>
@@ -199,7 +199,7 @@ const Features = () => {
               />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );
