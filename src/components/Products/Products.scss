@@ -211,6 +211,12 @@
       position: relative;
       overflow: hidden;
 
+      .product-image-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+      }
+
       .product-image {
         position: relative;
         height: 280px;
@@ -402,6 +408,19 @@
 
     .card-content {
       padding: 1.5rem;
+
+      .product-info-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+
+        &:hover {
+          .product-name {
+            color: #667eea;
+          }
+        }
+      }
     }
 
     .product-info {

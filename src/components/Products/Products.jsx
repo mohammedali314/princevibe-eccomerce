@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   HeartIcon,
   ShoppingBagIcon,
@@ -289,55 +290,63 @@ const Products = () => {
               style={{ '--delay': `${index * 0.1}s` }}
             >
               <div className="card-header">
-                <div className="product-image">
-                  <img src={product.image} alt={product.name} loading="lazy" onError={handleImageError} />
-                  <div className="image-overlay">
-                    <button className="quick-view-btn">
-                      <EyeIcon />
-                      <span>Quick View</span>
-                    </button>
+                <Link to={`/product/${product.id}`} className="product-image-link">
+                  <div className="product-image">
+                    <img src={product.image} alt={product.name} loading="lazy" onError={handleImageError} />
+                    <div className="image-overlay">
+                      <button className="quick-view-btn">
+                        <EyeIcon />
+                        <span>View Details</span>
+                      </button>
+                    </div>
+                    {product.badge && (
+                      <div className={`product-badge ${getBadgeStyle(product.badge)}`}>
+                        {product.badge}
+                      </div>
+                    )}
+                    {product.isNew && (
+                      <div className="new-indicator">
+                        <SparklesIcon />
+                      </div>
+                    )}
                   </div>
-                  {product.badge && (
-                    <div className={`product-badge ${getBadgeStyle(product.badge)}`}>
-                      {product.badge}
-                    </div>
-                  )}
-                  {product.isNew && (
-                    <div className="new-indicator">
-                      <SparklesIcon />
-                    </div>
-                  )}
-                </div>
+                </Link>
                 <button 
                   className={`wishlist-btn ${wishlist.has(product.id) ? 'active' : ''}`}
-                  onClick={() => toggleWishlist(product.id)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleWishlist(product.id);
+                  }}
                 >
                   {wishlist.has(product.id) ? <HeartSolid /> : <HeartIcon />}
                 </button>
               </div>
 
               <div className="card-content">
-                <div className="product-info">
-                  <h3 className="product-name">{product.name}</h3>
-                  <div className="product-rating">
-                    <div className="stars">
-                      {[...Array(5)].map((_, i) => (
-                        <StarIcon 
-                          key={i} 
-                          className={i < Math.floor(product.rating) ? 'filled' : 'empty'} 
-                        />
+                <Link to={`/product/${product.id}`} className="product-info-link">
+                  <div className="product-info">
+                    <h3 className="product-name">{product.name}</h3>
+                    <div className="product-rating">
+                      <div className="stars">
+                        {[...Array(5)].map((_, i) => (
+                          <StarIcon 
+                            key={i} 
+                            className={i < Math.floor(product.rating) ? 'filled' : 'empty'} 
+                          />
+                        ))}
+                      </div>
+                      <span className="rating-text">
+                        {product.rating} ({product.reviews} reviews)
+                      </span>
+                    </div>
+                    <div className="product-features">
+                      {product.features.slice(0, 2).map((feature, i) => (
+                        <span key={i} className="feature-tag">{feature}</span>
                       ))}
                     </div>
-                    <span className="rating-text">
-                      {product.rating} ({product.reviews} reviews)
-                    </span>
                   </div>
-                  <div className="product-features">
-                    {product.features.slice(0, 2).map((feature, i) => (
-                      <span key={i} className="feature-tag">{feature}</span>
-                    ))}
-                  </div>
-                </div>
+                </Link>
 
                 <div className="product-pricing">
                   <div className="price-section">
@@ -346,7 +355,14 @@ const Products = () => {
                       <span className="original-price">{formatPrice(product.originalPrice)}</span>
                     )}
                   </div>
-                  <button className="add-to-cart-btn">
+                  <button 
+                    className="add-to-cart-btn"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log(`Added ${product.name} to cart`);
+                    }}
+                  >
                     <ShoppingBagIcon />
                     <span>Add to Cart</span>
                   </button>
