@@ -77,18 +77,6 @@
       z-index: -1;
     }
 
-    // Sparkle particles
-    &::after {
-      content: '✨';
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      font-size: 1.2rem;
-      opacity: 0;
-      animation: sparkleFloat 3s ease-in-out infinite;
-      z-index: 5;
-    }
-
     // &:hover {
     //   transform: perspective(1000px) rotateY(15deg) rotateX(5deg) scale(1.05);
       

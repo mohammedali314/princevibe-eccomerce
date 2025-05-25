@@ -4,6 +4,7 @@ import Hero from './components/Hero/Hero';
 import Categories from './components/Categories/Categories';
 import Products from './components/Products/Products';
 import Features from './components/Features/Features';
+import Footer from './components/Footer/Footer';
 import './App.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
       <Categories />
       <Products />
       <Features />
+      <Footer />
     </div>
   );
 }
