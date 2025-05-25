@@ -42,7 +42,7 @@ const Hero = () => {
       title: "Signature Series",
       subtitle: "Handcrafted Perfection",
       tagline: "Limited Edition • Artisan Crafted • Collector's Choice",
-      cta: "Discover More"
+      cta: "New Arrivals"
     },
     {
       id: 4,
@@ -52,7 +52,7 @@ const Hero = () => {
       title: "Master Collection",
       subtitle: "Timeless Elegance Redefined",
       tagline: "Heritage Craftsmanship • Precious  • Exceptional Quality",
-      cta: "Shop Now"
+      cta: "Luxury Collection"
     }
   ];
 
