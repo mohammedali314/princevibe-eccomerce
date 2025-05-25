@@ -430,19 +430,65 @@
 
     .category-card {
       .card-image {
-        height: 220px;
+        height: 180px;
       }
 
       .card-content {
-        padding: 20px;
+        padding: 16px;
+
+        .category-info {
+          margin-bottom: 16px;
+
+          .category-name {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+          }
+
+          .category-description {
+            font-size: 0.9rem;
+            line-height: 1.5;
+          }
+        }
 
         .category-details {
           flex-direction: column;
-          gap: 12px;
+          gap: 8px;
+          margin-bottom: 16px;
+          padding: 12px;
 
           .detail-item {
             text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .detail-label, .detail-value {
+              font-size: 0.85rem;
+            }
           }
+        }
+
+        .category-features {
+          margin-bottom: 20px;
+
+          .features-title {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+          }
+
+          .features-list {
+            gap: 6px;
+
+            .feature-tag {
+              font-size: 0.75rem;
+              padding: 4px 8px;
+            }
+          }
+        }
+
+        .view-category-btn {
+          padding: 12px 24px;
+          font-size: 0.9rem;
         }
       }
     }
@@ -464,16 +510,51 @@
 
     .category-card {
       .card-image {
-        height: 200px;
+        height: 160px;
       }
 
       .card-content {
-        padding: 16px;
+        padding: 14px;
 
         .category-info {
+          margin-bottom: 14px;
+
           .category-name {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
           }
+
+          .category-description {
+            font-size: 0.85rem;
+          }
+        }
+
+        .category-details {
+          margin-bottom: 14px;
+          padding: 10px;
+
+          .detail-item {
+            .detail-label, .detail-value {
+              font-size: 0.8rem;
+            }
+          }
+        }
+
+        .category-features {
+          margin-bottom: 16px;
+
+          .features-title {
+            font-size: 0.85rem;
+          }
+
+          .feature-tag {
+            font-size: 0.7rem;
+            padding: 3px 6px;
+          }
+        }
+
+        .view-category-btn {
+          padding: 10px 20px;
+          font-size: 0.85rem;
         }
       }
     }

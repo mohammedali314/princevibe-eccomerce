@@ -10,7 +10,9 @@ import {
   ClockIcon,
   GlobeAltIcon,
   DevicePhoneMobileIcon,
-  ComputerDesktopIcon
+  ComputerDesktopIcon,
+  ChevronDownIcon,
+  ChevronUpIcon
 } from '@heroicons/react/24/outline';
 import {
   FacebookIcon,
@@ -25,6 +27,11 @@ import './Footer.scss';
 const Footer = ({ onLogoClick }) => {
   const [email, setEmail] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [openDropdowns, setOpenDropdowns] = useState({
+    products: false,
+    services: false,
+    support: false
+  });
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
@@ -37,6 +44,13 @@ const Footer = ({ onLogoClick }) => {
     if (onLogoClick) {
       onLogoClick();
     }
+  };
+
+  const toggleDropdown = (section) => {
+    setOpenDropdowns(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
   };
 
   const currentYear = new Date().getFullYear();
@@ -101,8 +115,8 @@ const Footer = ({ onLogoClick }) => {
     { name: "Visa", image: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" },
     { name: "Mastercard", image: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" },
     { name: "Google Pay", image: "https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" },
-    { name: "JazzCash", image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCA4MCAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzAwNzNhNyIvPgo8dGV4dCB4PSI0MCIgeT0iMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMyIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCI+SmF6ekNhc2g8L3RleHQ+Cjwvc3ZnPg==" },
-    { name: "EasyPaisa", image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCA4MCAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzAwYjA0ZiIvPgo8dGV4dCB4PSI0MCIgeT0iMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCI+RWFzeVBhaXNhPC90ZXh0Pgo8L3N2Zz4=" }
+    { name: "JazzCash", image: "/photos/jazzcash.png" },
+    { name: "EasyPaisa", image: "/photos/easypaisa.png" }
   ];
 
   const certifications = [
@@ -159,46 +173,68 @@ const Footer = ({ onLogoClick }) => {
                   <span>123 Luxury Ave, New York, NY 10001</span>
                 </div>
               </div>
-
-              {/* Social Media */}
-              <div className="social-section">
-                <h4>Follow Us</h4>
-                <div className="social-links">
-                  {socialLinks.map((social) => {
-                    const IconComponent = social.icon;
-                    return (
-                      <a 
-                        key={social.name} 
-                        href={social.href} 
-                        className="social-link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title={`${social.name} - ${social.followers} followers`}
-                      >
-                        <IconComponent />
-                        <span className="social-tooltip">
-                          {social.name} - {social.followers}
-                        </span>
-                      </a>
-                    );
-                  })}
-                </div>
-              </div>
             </div>
 
-            {/* Footer Links */}
-            {Object.values(footerSections).map((section) => (
+            {/* Footer Links with Dropdowns */}
+            {Object.entries(footerSections).map(([key, section]) => (
               <div key={section.title} className="footer-section">
-                <h4 className="section-title">{section.title}</h4>
-                <ul className="section-links">
-                  {section.links.map((link) => (
-                    <li key={link.name}>
-                      <a href={link.href}>{link.name}</a>
-                    </li>
-                  ))}
-                </ul>
+                <div 
+                  className="section-header"
+                  onClick={() => toggleDropdown(key)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleDropdown(key);
+                    }
+                  }}
+                >
+                  <h4 className="section-title">{section.title}</h4>
+                  <div className="dropdown-icon">
+                    {openDropdowns[key] ? (
+                      <ChevronUpIcon />
+                    ) : (
+                      <ChevronDownIcon />
+                    )}
+                  </div>
+                </div>
+                <div className={`section-content ${openDropdowns[key] ? 'open' : ''}`}>
+                  <ul className="section-links">
+                    {section.links.map((link) => (
+                      <li key={link.name}>
+                        <a href={link.href}>{link.name}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             ))}
+          </div>
+
+          {/* Centered Social Media Section */}
+          <div className="footer-social-center">
+            <h4>Follow Us</h4>
+            <div className="social-links">
+              {socialLinks.map((social) => {
+                const IconComponent = social.icon;
+                return (
+                  <a 
+                    key={social.name} 
+                    href={social.href} 
+                    className="social-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={`${social.name} - ${social.followers} followers`}
+                  >
+                    <IconComponent />
+                    <span className="social-tooltip">
+                      {social.name} - {social.followers}
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -217,8 +253,21 @@ const Footer = ({ onLogoClick }) => {
                     src={method.image} 
                     alt={method.name}
                     className="payment-icon"
+                    onLoad={() => console.log(`✅ ${method.name} logo loaded successfully`)}
                     onError={(e) => {
-                      e.target.style.display = 'none';
+                      console.error(`❌ Failed to load ${method.name} logo from: ${method.image}`);
+                      // Show fallback text with neutral styling
+                      e.target.style.background = 'transparent';
+                      e.target.style.color = '#94a3b8';
+                      e.target.style.display = 'flex';
+                      e.target.style.alignItems = 'center';
+                      e.target.style.justifyContent = 'center';
+                      e.target.style.fontSize = '10px';
+                      e.target.style.minWidth = '60px';
+                      e.target.style.height = '32px';
+                      e.target.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                      e.target.style.borderRadius = '4px';
+                      e.target.innerHTML = method.name;
                     }}
                   />
                 ))}
