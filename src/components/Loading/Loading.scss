@@ -179,30 +179,6 @@
       }
     }
   }
-
-  // Loading Bar
-  .loading-bar-container {
-    width: 300px;
-    margin: 0 auto 30px;
-
-    .loading-bar {
-      width: 100%;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 2px;
-      overflow: hidden;
-      position: relative;
-
-      .loading-progress {
-        height: 100%;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
-        border-radius: 2px;
-        animation: progressBar 2s ease-in-out;
-        background-size: 200% 100%;
-      }
-    }
-  }
-
   // Loading Text
   .loading-text {
     color: #fff;
