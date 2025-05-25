@@ -116,37 +116,6 @@ const Footer = () => {
 
   return (
     <footer className="footer">
-      {/* Newsletter Section */}
-      <div className="newsletter-section">
-        <div className="newsletter-container">
-          <div className="newsletter-content">
-            <div className="newsletter-text">
-              <h3>Stay Updated with PrinceVibe</h3>
-              <p>Be the first to know about new collections, exclusive offers, and watch care tips.</p>
-            </div>
-            <form onSubmit={handleNewsletterSubmit} className="newsletter-form">
-              <div className="input-group">
-                <EnvelopeIcon className="input-icon" />
-                <input
-                  type="email"
-                  placeholder="Enter your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <button type="submit" className="subscribe-btn">
-                  <span>Subscribe</span>
-                  <ArrowRightIcon />
-                </button>
-              </div>
-              <p className="newsletter-disclaimer">
-                By subscribing, you agree to our Privacy Policy and consent to receive updates.
-              </p>
-            </form>
-          </div>
-        </div>
-      </div>
-
       {/* Main Footer Content */}
       <div className="footer-main">
         <div className="footer-container">
@@ -224,47 +193,6 @@ const Footer = () => {
                 </ul>
               </div>
             ))}
-          </div>
-
-          {/* App Download Section */}
-          {/* <div className="app-download-section">
-            <h4>Download Our App</h4>
-            <p>Get exclusive app-only offers and track your orders on the go.</p>
-            <div className="app-buttons">
-              <a href="#" className="app-button">
-                <DevicePhoneMobileIcon />
-                <div className="app-text">
-                  <span className="download-text">Download on the</span>
-                  <span className="store-name">App Store</span>
-                </div>
-              </a>
-              <a href="#" className="app-button">
-                <ComputerDesktopIcon />
-                <div className="app-text">
-                  <span className="download-text">Get it on</span>
-                  <span className="store-name">Google Play</span>
-                </div>
-              </a>
-            </div>
-          </div> */}
-
-          {/* Certifications */}
-          <div className="certifications-section">
-            <h4>Trust & Security</h4>
-            <div className="certifications-grid">
-              {certifications.map((cert) => {
-                const IconComponent = cert.icon;
-                return (
-                  <div key={cert.name} className="certification-item">
-                    <IconComponent />
-                    <div className="cert-content">
-                      <span className="cert-name">{cert.name}</span>
-                      <span className="cert-description">{cert.description}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
           </div>
         </div>
       </div>
