@@ -36,7 +36,7 @@ const Categories = () => {
       icon: StarIcon,
       productCount: "150+ Products",
       priceRange: "$2,000 - $50,000",
-      features: ["Swiss Movement", "Precious Metals", "Handcrafted"]
+      features: ["Swiss Movement","Precious Metals"]
     },
     {
       id: 2,
@@ -46,7 +46,7 @@ const Categories = () => {
       icon: CpuChipIcon,
       productCount: "80+ Products",
       priceRange: "$199 - $899",
-      features: ["Health Tracking", "GPS", "Wireless Connectivity"]
+    features: ["Health Tracking", "Wireless Connectivity"]
     },
     {
       id: 3,
@@ -56,7 +56,7 @@ const Categories = () => {
       icon: ClockIcon,
       productCount: "120+ Products",
       priceRange: "$99 - $1,500",
-      features: ["Water Resistant", "Shock Proof", "Solar Charging"]
+      features: ["Water Resistant", "Solar Charging"]
     }
   ];
 

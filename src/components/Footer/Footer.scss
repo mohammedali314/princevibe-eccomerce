@@ -171,14 +171,14 @@
       display: grid;
       grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
       gap: 60px;
-      margin-bottom: 60px;
+      margin-bottom: 60px;       
 
       .footer-brand {
         .brand-logo {
-          margin-bottom: 24px;
+          // margin-bottom: 24px;
 
           .logo-image {
-            height: 72px;
+            height: 160px;
             width: auto;
             transition: all 0.3s ease;
 
