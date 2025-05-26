@@ -1,4 +1,4 @@
-const ADMIN_API_BASE_URL = 'http://localhost:5000/api/admin';
+const ADMIN_API_BASE_URL = import.meta.env.VITE_API_BASE_URL ? `${import.meta.env.VITE_API_BASE_URL}/admin` : 'https://princevibe-eccomerce-backend-production.up.railway.app/api/admin';
 
 class AdminApiService {
   constructor() {
