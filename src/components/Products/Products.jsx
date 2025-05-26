@@ -9,16 +9,21 @@ import {
   SparklesIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
+import { useWishlist } from '../../context/WishlistContext';
+import { useCart } from '../../context/CartContext';
 import ApiService from '../../services/api';
 import './Products.scss';
 
 const Products = () => {
   const [activeCategory, setActiveCategory] = useState('all');
-  const [wishlist, setWishlist] = useState(new Set());
   const [isVisible, setIsVisible] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Use global contexts
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -76,20 +81,10 @@ const Products = () => {
   // Remove filteredProducts logic since we fetch filtered data from backend
   const filteredProducts = products;
 
-  const toggleWishlist = (productId) => {
-    const newWishlist = new Set(wishlist);
-    if (newWishlist.has(productId)) {
-      newWishlist.delete(productId);
-    } else {
-      newWishlist.add(productId);
-    }
-    setWishlist(newWishlist);
-  };
-
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-PK', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'PKR',
       minimumFractionDigits: 0
     }).format(price);
   };
@@ -246,14 +241,14 @@ const Products = () => {
                   </div>
                 </Link>
                 <button 
-                  className={`wishlist-btn ${wishlist.has(product.id) ? 'active' : ''}`}
+                  className={`wishlist-btn ${isInWishlist(product.id) ? 'active' : ''}`}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    toggleWishlist(product.id);
+                    toggleWishlist(product);
                   }}
                 >
-                  {wishlist.has(product.id) ? <HeartSolid /> : <HeartIcon />}
+                  {isInWishlist(product.id) ? <HeartSolid /> : <HeartIcon />}
                 </button>
               </div>
 
@@ -294,7 +289,7 @@ const Products = () => {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      console.log(`Added ${product.name} to cart`);
+                      addToCart(product);
                     }}
                   >
                     <ShoppingBagIcon />

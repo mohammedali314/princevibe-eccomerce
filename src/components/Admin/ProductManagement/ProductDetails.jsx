@@ -69,9 +69,10 @@ const ProductDetails = ({ onProductUpdated, onProductDeleted }) => {
 
   // Format price
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-PK', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'PKR',
+      minimumFractionDigits: 0
     }).format(price);
   };
 

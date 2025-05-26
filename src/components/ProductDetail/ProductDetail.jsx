@@ -10,6 +10,8 @@ import {
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
+import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 import ApiService from '../../services/api';
 import './ProductDetail.scss';
 
@@ -19,10 +21,13 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState('description');
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Get cart and wishlist context
+  const { addToCart, isItemInCart, getItemQuantity } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   // Fetch product from backend
   useEffect(() => {
@@ -78,7 +83,7 @@ const ProductDetail = () => {
         <div className="error-container">
           <h3>Oops! Something went wrong</h3>
           <p>{error}</p>
-          <button onClick={() => navigate('/')}>
+          <button onClick={() => navigate('/')} className="btn btn-primary">
             Back to Products
           </button>
         </div>
@@ -93,7 +98,7 @@ const ProductDetail = () => {
         <div className="not-found-container">
           <h3>Product not found</h3>
           <p>The product you're looking for doesn't exist.</p>
-          <button onClick={() => navigate('/')}>
+          <button onClick={() => navigate('/')} className="btn btn-primary">
             Back to Products
           </button>
         </div>
@@ -102,21 +107,79 @@ const ProductDetail = () => {
   }
 
   const handleQuantityChange = (change) => {
-    setQuantity(prev => Math.max(1, prev + change));
+    setQuantity(prev => {
+      const newQuantity = prev + change;
+      const maxQuantity = product?.stock || 10; // Default to 10 if stock not specified
+      return Math.max(1, Math.min(newQuantity, maxQuantity));
+    });
   };
 
   const handleAddToCart = () => {
-    console.log(`Added ${quantity} x ${product.name} to cart`);
-    // Add to cart logic here
+    if (product && quantity > 0) {
+      const currentCartQuantity = getItemQuantity(product);
+      const maxQuantity = product?.stock || 10;
+      const availableToAdd = maxQuantity - currentCartQuantity;
+      
+      if (availableToAdd <= 0) {
+        // Show out of stock message
+        const button = document.querySelector('.add-to-cart');
+        if (button) {
+          const originalText = button.textContent;
+          button.textContent = 'Max quantity reached!';
+          button.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+          
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.style.background = '';
+          }, 2000);
+        }
+        return;
+      }
+      
+      const quantityToAdd = Math.min(quantity, availableToAdd);
+      addToCart(product, quantityToAdd);
+      
+      // Show success feedback
+      const button = document.querySelector('.add-to-cart');
+      if (button) {
+        const originalText = button.textContent;
+        button.textContent = `Added ${quantityToAdd} to Cart! ✓`;
+        button.classList.add('success-feedback');
+        
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('success-feedback');
+        }, 2000);
+      }
+      
+      // Reset quantity to 1 after adding
+      setQuantity(1);
+    }
   };
 
   const handleBuyNow = () => {
-    console.log(`Buy now: ${quantity} x ${product.name}`);
-    // Buy now logic here
+    if (product && quantity > 0) {
+      // Add to cart first
+      addToCart(product, quantity);
+      // Then navigate to checkout
+      navigate('/checkout');
+    }
   };
 
-  const toggleWishlist = () => {
-    setIsWishlisted(!isWishlisted);
+  const handleWishlistToggle = () => {
+    if (product) {
+      const wasInWishlist = isInWishlist(product);
+      toggleWishlist(product);
+      
+      // Show feedback
+      const button = document.querySelector('.wishlist-btn');
+      if (button) {
+        button.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+          button.style.transform = '';
+        }, 200);
+      }
+    }
   };
 
   const formatPrice = (price) => {
@@ -203,7 +266,12 @@ const ProductDetail = () => {
 
               {/* Quantity Selector */}
               <div className="quantity-section">
-                <label className="quantity-label">Quantity</label>
+                <label className="quantity-label">
+                  Quantity
+                  <span className="stock-info">
+                    ({product?.stock || 10} available)
+                  </span>
+                </label>
                 <div className="quantity-controls">
                   <button 
                     className="quantity-btn"
@@ -216,10 +284,18 @@ const ProductDetail = () => {
                   <button 
                     className="quantity-btn"
                     onClick={() => handleQuantityChange(1)}
+                    disabled={quantity >= (product?.stock || 10)}
                   >
                     <PlusIcon />
                   </button>
                 </div>
+                {isItemInCart(product) && (
+                  <div className="cart-status">
+                    <span className="cart-info">
+                      {getItemQuantity(product)} already in cart
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -229,6 +305,9 @@ const ProductDetail = () => {
                   onClick={handleAddToCart}
                 >
                   Add to cart
+                  {isItemInCart(product) && (
+                    <span className="cart-quantity">({getItemQuantity(product)})</span>
+                  )}
                 </button>
                 <button 
                   className="btn btn-secondary buy-now"
@@ -237,10 +316,11 @@ const ProductDetail = () => {
                   Buy it now
                 </button>
                 <button 
-                  className={`wishlist-btn ${isWishlisted ? 'wishlisted' : ''}`}
-                  onClick={toggleWishlist}
+                  className={`wishlist-btn ${isInWishlist(product) ? 'wishlisted' : ''}`}
+                  onClick={handleWishlistToggle}
+                  title={isInWishlist(product) ? 'Remove from wishlist' : 'Add to wishlist'}
                 >
-                  {isWishlisted ? <HeartSolid /> : <HeartIcon />}
+                  {isInWishlist(product) ? <HeartSolid /> : <HeartIcon />}
                 </button>
               </div>
 
