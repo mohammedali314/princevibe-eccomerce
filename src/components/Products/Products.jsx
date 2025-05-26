@@ -9,12 +9,16 @@ import {
   SparklesIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
+import ApiService from '../../services/api';
 import './Products.scss';
 
 const Products = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [wishlist, setWishlist] = useState(new Set());
   const [isVisible, setIsVisible] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -32,175 +36,45 @@ const Products = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Fetch products from backend
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        let response;
+        if (activeCategory === 'all') {
+          response = await ApiService.getProducts();
+        } else {
+          response = await ApiService.getProductsByCategory(activeCategory);
+        }
+
+        const transformedResponse = ApiService.transformResponse(response);
+        setProducts(transformedResponse.data || []);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Failed to load products. Please try again later.');
+        // Fallback to empty array instead of hardcoded data
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [activeCategory]);
+
   const categories = [
     { id: 'all', name: 'All Products', icon: SparklesIcon },
     { id: 'luxury', name: 'Luxury', icon: StarIcon },
     { id: 'smart', name: 'Smart Watches', icon: EyeIcon },
-    { id: 'sport', name: 'Sport', icon: ArrowRightIcon }
+    { id: 'sport', name: 'Sport', icon: ArrowRightIcon },
+    { id: 'classic', name: 'Classic', icon: StarIcon }
   ];
 
-  const products = [
-    {
-      id: 1,
-      name: "Rolex Submariner",
-      category: 'luxury',
-      price: 8995,
-      originalPrice: 9995,
-      image: "https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=800&h=800&fit=crop&q=80",
-      rating: 4.9,
-      reviews: 247,
-      badge: "Bestseller",
-      features: ["Swiss Movement", "Waterproof", "Sapphire Crystal"],
-      isNew: false
-    },
-    {
-      id: 2,
-      name: "Apple Watch Ultra",
-      category: 'smart',
-      price: 799,
-      originalPrice: 899,
-      image: "https://images.unsplash.com/photo-1434056886845-dac89ffe9b56?w=800&h=800&fit=crop&q=80",
-      rating: 4.8,
-      reviews: 892,
-      badge: "New",
-      features: ["GPS", "Cellular", "Titanium Case"],
-      isNew: true
-    },
-    {
-      id: 3,
-      name: "Omega Speedmaster",
-      category: 'luxury',
-      price: 5995,
-      originalPrice: 6495,
-      image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=800&h=800&fit=crop&q=80",
-      rating: 4.9,
-      reviews: 156,
-      badge: "Limited",
-      features: ["Moon Watch", "Manual Wind", "Hesalite Crystal"],
-      isNew: false
-    },
-    {
-      id: 4,
-      name: "Garmin Fenix 7",
-      category: 'sport',
-      price: 699,
-      originalPrice: 799,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=800&fit=crop&q=80",
-      rating: 4.7,
-      reviews: 423,
-      badge: "Popular",
-      features: ["GPS", "Solar Charging", "Rugged Design"],
-      isNew: false
-    },
-    {
-      id: 5,
-      name: "Patek Philippe Calatrava",
-      category: 'luxury',
-      price: 32995,
-      originalPrice: 34995,
-      image: "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=800&h=800&fit=crop&q=80",
-      rating: 5.0,
-      reviews: 89,
-      badge: "Exclusive",
-      features: ["Hand Wound", "Gold Case", "Leather Strap"],
-      isNew: false
-    },
-    {
-      id: 6,
-      name: "Samsung Galaxy Watch",
-      category: 'smart',
-      price: 349,
-      originalPrice: 399,
-      image: "https://images.unsplash.com/photo-1579586337278-3f436f25d4d6?w=800&h=800&fit=crop&q=80",
-      rating: 4.6,
-      reviews: 634,
-      badge: "Value",
-      features: ["AMOLED", "Health Tracking", "Water Resistant"],
-      isNew: false
-    },
-    {
-      id: 7,
-      name: "TAG Heuer Formula 1",
-      category: 'sport',
-      price: 1495,
-      originalPrice: 1695,
-      image: "https://images.unsplash.com/photo-1606859696394-b0e5a3e606a0?w=800&h=800&fit=crop&q=80",
-      rating: 4.8,
-      reviews: 298,
-      badge: "Racing",
-      features: ["Chronograph", "Steel Case", "Racing Design"],
-      isNew: false
-    },
-    {
-      id: 8,
-      name: "Casio G-Shock",
-      category: 'sport',
-      price: 199,
-      originalPrice: 249,
-      image: "https://images.unsplash.com/photo-1594534475808-b18fc33b045e?w=800&h=800&fit=crop&q=80",
-      rating: 4.5,
-      reviews: 1247,
-      badge: "Tough",
-      features: ["Shock Resistant", "Water Proof", "Digital Display"],
-      isNew: false
-    },
-    {
-      id: 9,
-      name: "Cartier Santos",
-      category: 'luxury',
-      price: 7250,
-      originalPrice: 7850,
-      image: "https://images.unsplash.com/photo-1509048191080-d2b9bfece5d7?w=800&h=800&fit=crop&q=80",
-      rating: 4.8,
-      reviews: 178,
-      badge: "Heritage",
-      features: ["Square Case", "Roman Numerals", "Luxury Finish"],
-      isNew: false
-    },
-    {
-      id: 10,
-      name: "Fitbit Versa 4",
-      category: 'smart',
-      price: 199,
-      originalPrice: 229,
-      image: "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=800&h=800&fit=crop&q=80",
-      rating: 4.4,
-      reviews: 892,
-      badge: "Fitness",
-      features: ["Health Tracking", "6+ Day Battery", "Built-in GPS"],
-      isNew: true
-    },
-    {
-      id: 11,
-      name: "Seiko Prospex",
-      category: 'sport',
-      price: 395,
-      originalPrice: 445,
-      image: "https://images.unsplash.com/photo-1508057198894-247b23fe5ade?w=800&h=800&fit=crop&q=80",
-      rating: 4.6,
-      reviews: 445,
-      badge: "Dive",
-      features: ["200M Water Resist", "Automatic", "Luminous Hands"],
-      isNew: false
-    },
-    {
-      id: 12,
-      name: "Audemars Piguet Royal Oak",
-      category: 'luxury',
-      price: 28500,
-      originalPrice: 31000,
-      image: "https://images.unsplash.com/photo-1606839314168-b0e4b80e4d24?w=800&h=800&fit=crop&q=80",
-      rating: 4.9,
-      reviews: 67,
-      badge: "Iconic",
-      features: ["Octagonal Bezel", "Integrated Bracelet", "Swiss Made"],
-      isNew: false
-    }
-  ];
-
-  const filteredProducts = activeCategory === 'all' 
-    ? products 
-    : products.filter(product => product.category === activeCategory);
+  // Remove filteredProducts logic since we fetch filtered data from backend
+  const filteredProducts = products;
 
   const toggleWishlist = (productId) => {
     const newWishlist = new Set(wishlist);
@@ -283,7 +157,67 @@ const Products = () => {
 
         {/* Products Grid */}
         <div className="products-grid">
-          {filteredProducts.map((product, index) => (
+          {loading ? (
+            // Loading state
+            Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="product-card skeleton">
+                <div className="skeleton-image"></div>
+                <div className="skeleton-content">
+                  <div className="skeleton-line skeleton-title"></div>
+                  <div className="skeleton-line skeleton-rating"></div>
+                  <div className="skeleton-line skeleton-price"></div>
+                </div>
+              </div>
+            ))
+          ) : error ? (
+            // Error state
+            <div className="error-state">
+              <div className="error-content">
+                <h3>Oops! Something went wrong</h3>
+                <p>{error}</p>
+                <button 
+                  className="retry-btn"
+                  onClick={() => {
+                    const fetchProducts = async () => {
+                      try {
+                        setLoading(true);
+                        setError(null);
+                        
+                        let response;
+                        if (activeCategory === 'all') {
+                          response = await ApiService.getProducts();
+                        } else {
+                          response = await ApiService.getProductsByCategory(activeCategory);
+                        }
+
+                        const transformedResponse = ApiService.transformResponse(response);
+                        setProducts(transformedResponse.data || []);
+                      } catch (err) {
+                        console.error('Error fetching products:', err);
+                        setError('Failed to load products. Please try again later.');
+                        setProducts([]);
+                      } finally {
+                        setLoading(false);
+                      }
+                    };
+                    fetchProducts();
+                  }}
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            // No products state
+            <div className="no-products-state">
+              <div className="no-products-content">
+                <h3>No products found</h3>
+                <p>We couldn't find any products in this category.</p>
+              </div>
+            </div>
+          ) : (
+            // Products list
+            filteredProducts.map((product, index) => (
             <div 
               key={product.id} 
               className={`product-card ${isVisible ? 'animate' : ''}`}
@@ -369,7 +303,8 @@ const Products = () => {
                 </div>
               </div>
             </div>
-          ))}
+            ))
+          )}
         </div>
 
         {/* View All Button */}

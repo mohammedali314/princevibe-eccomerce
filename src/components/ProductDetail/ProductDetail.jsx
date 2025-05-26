@@ -10,6 +10,7 @@ import {
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
+import ApiService from '../../services/api';
 import './ProductDetail.scss';
 
 const ProductDetail = () => {
@@ -19,77 +20,85 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState('description');
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sample product data - in real app, this would come from API or context
-  const products = [
-    {
-      id: 1,
-      name: "Rolex Submariner",
-      category: 'luxury',
-      price: 8995,
-      originalPrice: 9995,
-      images: [
-        "https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=800&h=800&fit=crop&q=80",
-        "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=800&h=800&fit=crop&q=80",
-        "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=800&h=800&fit=crop&q=80"
-      ],
-      rating: 4.9,
-      reviews: 247,
-      badge: "Bestseller",
-      features: ["Swiss Movement", "Waterproof", "Sapphire Crystal"],
-      description: "The Rolex Submariner is a legendary diving watch, designed to provide top-tier performance and sleek, modern style. Featuring a stunning water-resistant design, this timepiece offers an immersive viewing experience, ensuring you never miss a notification or glance.",
-      specifications: {
-        "Movement": "Swiss Automatic",
-        "Case Material": "Stainless Steel",
-        "Water Resistance": "300m",
-        "Crystal": "Sapphire",
-        "Bezel": "Unidirectional Rotating",
-        "Bracelet": "Oyster Steel"
-      },
-      inStock: true,
-      shipping: "Free shipping within Pakistan",
-      warranty: "2 Year International Warranty"
-    },
-    {
-      id: 2,
-      name: "Apple Watch Ultra",
-      category: 'smart',
-      price: 799,
-      originalPrice: 899,
-      images: [
-        "https://images.unsplash.com/photo-1434056886845-dac89ffe9b56?w=800&h=800&fit=crop&q=80",
-        "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=800&h=800&fit=crop&q=80",
-        "https://images.unsplash.com/photo-1579586337278-3f436f25d4d6?w=800&h=800&fit=crop&q=80"
-      ],
-      rating: 4.8,
-      reviews: 892,
-      badge: "New",
-      features: ["GPS", "Cellular", "Titanium Case"],
-      description: "Premium Apple Watch Ultra, designed to provide top-tier performance and sleek, modern style. Featuring a stunning edge-to-edge curved always-on display, this smartwatch offers an immersive viewing experience, ensuring you never miss a notification or glance.",
-      specifications: {
-        "Display": "Always-On Retina LTPO OLED",
-        "Processor": "S9 SiP",
-        "Storage": "64GB",
-        "Connectivity": "GPS + Cellular",
-        "Water Resistance": "100m",
-        "Battery Life": "Up to 36 hours"
-      },
-      inStock: true,
-      shipping: "Free shipping within Pakistan",
-      warranty: "1 Year Apple Warranty"
-    }
-  ];
-
-  const product = products.find(p => p.id === parseInt(id));
-
+  // Fetch product from backend
   useEffect(() => {
-    if (!product) {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await ApiService.getProduct(id);
+        const transformedResponse = ApiService.transformResponse(response);
+        
+        if (transformedResponse.data) {
+          setProduct(transformedResponse.data);
+        } else {
+          setError('Product not found');
+        }
+      } catch (err) {
+        console.error('Error fetching product:', err);
+        setError('Failed to load product. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
+
+  // Redirect if product not found after loading
+  useEffect(() => {
+    if (!loading && !product && !error) {
       navigate('/');
     }
-  }, [product, navigate]);
+  }, [product, loading, error, navigate]);
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="product-detail loading">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading product details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="product-detail error">
+        <div className="error-container">
+          <h3>Oops! Something went wrong</h3>
+          <p>{error}</p>
+          <button onClick={() => navigate('/')}>
+            Back to Products
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show if no product found
   if (!product) {
-    return <div>Product not found</div>;
+    return (
+      <div className="product-detail not-found">
+        <div className="not-found-container">
+          <h3>Product not found</h3>
+          <p>The product you're looking for doesn't exist.</p>
+          <button onClick={() => navigate('/')}>
+            Back to Products
+          </button>
+        </div>
+      </div>
+    );
   }
 
   const handleQuantityChange = (change) => {
