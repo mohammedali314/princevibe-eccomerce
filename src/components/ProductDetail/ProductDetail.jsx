@@ -7,9 +7,18 @@ import {
   MinusIcon,
   PlusIcon,
   ArrowLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  ShieldCheckIcon,
+  TruckIcon,
+  ArrowPathIcon,
+  CheckBadgeIcon,
+  EyeIcon,
+  ShareIcon,
+  PhotoIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
-import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
+import { HeartIcon as HeartSolid, StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import ApiService from '../../services/api';
@@ -24,10 +33,31 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [imageZoom, setImageZoom] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [toasts, setToasts] = useState([]);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
 
   // Get cart and wishlist context
   const { addToCart, isItemInCart, getItemQuantity } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+
+  // Debug logging
+  useEffect(() => {
+    if (product) {
+      console.log('Product ID:', product.id);
+      console.log('Is in cart:', isItemInCart(product.id));
+      console.log('Cart quantity:', getItemQuantity(product.id));
+      console.log('Is in wishlist:', isInWishlist(product.id));
+    }
+  }, [product, isItemInCart, getItemQuantity, isInWishlist]);
+
+  // Animate content on mount
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Fetch product from backend
   useEffect(() => {
@@ -67,10 +97,14 @@ const ProductDetail = () => {
   // Show loading state
   if (loading) {
     return (
-      <div className="product-detail loading">
+      <div className="product-detail-luxury loading">
         <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Loading product details...</p>
+          <div className="luxury-spinner">
+            <div className="spinner-ring"></div>
+            <div className="spinner-ring"></div>
+            <div className="spinner-ring"></div>
+          </div>
+          <p className="loading-text">Loading Masterpiece...</p>
         </div>
       </div>
     );
@@ -79,12 +113,13 @@ const ProductDetail = () => {
   // Show error state
   if (error) {
     return (
-      <div className="product-detail error">
+      <div className="product-detail-luxury error">
         <div className="error-container">
-          <h3>Oops! Something went wrong</h3>
+          <div className="error-icon">⚠</div>
+          <h3>Something went wrong</h3>
           <p>{error}</p>
-          <button onClick={() => navigate('/')} className="btn btn-primary">
-            Back to Products
+          <button onClick={() => navigate('/')} className="luxury-btn primary">
+            Return to Collection
           </button>
         </div>
       </div>
@@ -94,12 +129,13 @@ const ProductDetail = () => {
   // Show if no product found
   if (!product) {
     return (
-      <div className="product-detail not-found">
+      <div className="product-detail-luxury not-found">
         <div className="not-found-container">
-          <h3>Product not found</h3>
-          <p>The product you're looking for doesn't exist.</p>
-          <button onClick={() => navigate('/')} className="btn btn-primary">
-            Back to Products
+          <div className="not-found-icon">🔍</div>
+          <h3>Timepiece Not Found</h3>
+          <p>The masterpiece you're seeking has moved to a different realm.</p>
+          <button onClick={() => navigate('/')} className="luxury-btn primary">
+            Explore Collection
           </button>
         </div>
       </div>
@@ -109,77 +145,121 @@ const ProductDetail = () => {
   const handleQuantityChange = (change) => {
     setQuantity(prev => {
       const newQuantity = prev + change;
-      const maxQuantity = product?.stock || 10; // Default to 10 if stock not specified
+      const maxQuantity = product?.stock || 10;
       return Math.max(1, Math.min(newQuantity, maxQuantity));
     });
   };
 
   const handleAddToCart = () => {
+    console.log('Add to cart clicked');
+    console.log('isAddingToCart:', isAddingToCart);
+    console.log('product.inStock:', product.inStock);
+    console.log('isItemInCart:', isItemInCart(product.id));
+    
+    if (isAddingToCart) return; // Prevent multiple clicks
+    
+    if (!product.inStock) {
+      showLuxuryToast('Product is currently out of stock', 'error');
+      return;
+    }
+
+    if (isItemInCart(product.id)) {
+      showLuxuryToast('Product is already in your cart', 'info');
+      return;
+    }
+
     if (product && quantity > 0) {
-      const currentCartQuantity = getItemQuantity(product);
-      const maxQuantity = product?.stock || 10;
-      const availableToAdd = maxQuantity - currentCartQuantity;
+      setIsAddingToCart(true);
+      console.log('Setting isAddingToCart to true');
       
-      if (availableToAdd <= 0) {
-        // Show out of stock message
-        const button = document.querySelector('.add-to-cart');
-        if (button) {
-          const originalText = button.textContent;
-          button.textContent = 'Max quantity reached!';
-          button.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
-          
-          setTimeout(() => {
-            button.textContent = originalText;
-            button.style.background = '';
-          }, 2000);
-        }
-        return;
-      }
-      
-      const quantityToAdd = Math.min(quantity, availableToAdd);
-      addToCart(product, quantityToAdd);
-      
-      // Show success feedback
-      const button = document.querySelector('.add-to-cart');
-      if (button) {
-        const originalText = button.textContent;
-        button.textContent = `Added ${quantityToAdd} to Cart! ✓`;
-        button.classList.add('success-feedback');
+      try {
+        const currentCartQuantity = getItemQuantity(product.id);
+        const maxQuantity = product?.stock || 10;
+        const availableToAdd = maxQuantity - currentCartQuantity;
         
+        if (availableToAdd <= 0) {
+          showLuxuryToast('Maximum quantity already in cart', 'error');
+          return;
+        }
+        
+        const quantityToAdd = Math.min(quantity, availableToAdd);
+        console.log('Adding to cart:', quantityToAdd);
+        addToCart(product, quantityToAdd);
+        showLuxuryToast(`Added ${quantityToAdd} ${quantityToAdd === 1 ? 'piece' : 'pieces'} to cart`, 'success');
+        setQuantity(1);
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        showLuxuryToast('Failed to add item to cart', 'error');
+      } finally {
         setTimeout(() => {
-          button.textContent = originalText;
-          button.classList.remove('success-feedback');
-        }, 2000);
+          console.log('Setting isAddingToCart to false');
+          setIsAddingToCart(false);
+        }, 500);
       }
-      
-      // Reset quantity to 1 after adding
-      setQuantity(1);
     }
   };
 
   const handleBuyNow = () => {
+    if (!product.inStock) {
+      showLuxuryToast('Product is currently out of stock', 'error');
+      return;
+    }
+
     if (product && quantity > 0) {
-      // Add to cart first
       addToCart(product, quantity);
-      // Then navigate to checkout
+      showLuxuryToast('Redirecting to checkout...', 'success');
       navigate('/checkout');
     }
   };
 
   const handleWishlistToggle = () => {
+    console.log('Wishlist toggle clicked');
+    console.log('isTogglingWishlist:', isTogglingWishlist);
+    console.log('isInWishlist before:', isInWishlist(product.id));
+    
+    if (isTogglingWishlist) return; // Prevent multiple clicks
+    
     if (product) {
-      const wasInWishlist = isInWishlist(product);
-      toggleWishlist(product);
+      setIsTogglingWishlist(true);
+      console.log('Setting isTogglingWishlist to true');
       
-      // Show feedback
-      const button = document.querySelector('.wishlist-btn');
-      if (button) {
-        button.style.transform = 'scale(1.1)';
+      try {
+        const wasInWishlist = isInWishlist(product.id);
+        console.log('Was in wishlist:', wasInWishlist);
+        toggleWishlist(product);
+        console.log('isInWishlist after:', isInWishlist(product.id));
+        
+        if (wasInWishlist) {
+          showLuxuryToast('Removed from wishlist', 'remove');
+        } else {
+          showLuxuryToast('Added to wishlist', 'wishlist');
+        }
+      } catch (error) {
+        console.error('Error toggling wishlist:', error);
+        showLuxuryToast('Failed to update wishlist', 'error');
+      } finally {
         setTimeout(() => {
-          button.style.transform = '';
-        }, 200);
+          console.log('Setting isTogglingWishlist to false');
+          setIsTogglingWishlist(false);
+        }, 500);
       }
     }
+  };
+
+  const showLuxuryToast = (message, type) => {
+    const id = Date.now();
+    const toast = { id, message, type };
+    
+    setToasts(prev => [...prev, toast]);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 3000);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
   };
 
   const formatPrice = (price) => {
@@ -188,42 +268,66 @@ const ProductDetail = () => {
 
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <StarIcon
-        key={i}
-        className={`star ${i < Math.floor(rating) ? 'filled' : ''}`}
-      />
+      <div key={i} className="star-container">
+        {i < Math.floor(rating) ? 
+          <StarSolid className="star filled" /> : 
+          <StarIcon className="star" />
+        }
+      </div>
     ));
   };
 
   return (
-    <div className="product-detail">
-      {/* Breadcrumb */}
-      <div className="breadcrumb">
+    <div className={`product-detail-luxury ${isVisible ? 'visible' : ''}`}>
+      {/* Hero Section with Breadcrumbs */}
+      <div className="luxury-hero">
+        <div className="hero-background"></div>
         <div className="container">
+          <nav className="luxury-breadcrumb">
           <Link to="/" className="breadcrumb-link">Home</Link>
-          <ChevronRightIcon className="breadcrumb-arrow" />
-          <Link to="/" className="breadcrumb-link">All Products</Link>
-          <ChevronRightIcon className="breadcrumb-arrow" />
+            <ChevronRightIcon className="breadcrumb-separator" />
+            <Link to="/" className="breadcrumb-link">Collection</Link>
+            <ChevronRightIcon className="breadcrumb-separator" />
           <span className="breadcrumb-current">{product.name}</span>
+          </nav>
+          <button 
+            className="back-button"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeftIcon />
+            <span>Back to Collection</span>
+          </button>
         </div>
       </div>
 
-      {/* Product Content */}
-      <div className="product-content">
+      {/* Main Product Section */}
+      <div className="luxury-product-section">
         <div className="container">
-          <div className="product-layout">
-            {/* Product Images */}
-            <div className="product-images">
-              <div className="main-image">
+          <div className="product-grid">
+            
+            {/* Product Gallery */}
+            <div className="product-gallery">
+              <div className="main-image-container">
+                <div className={`main-image ${imageZoom ? 'zoomed' : ''}`}>
                 <img 
                   src={product.images[selectedImage]} 
                   alt={product.name}
-                  className="main-product-image"
+                    onClick={() => setImageZoom(!imageZoom)}
                 />
                 {product.badge && (
-                  <div className="product-badge">{product.badge}</div>
-                )}
+                    <div className="luxury-badge">
+                      <span>{product.badge}</span>
+                    </div>
+                  )}
+                  <button 
+                    className="zoom-button"
+                    onClick={() => setImageZoom(!imageZoom)}
+                  >
+                    <EyeIcon />
+                  </button>
+                </div>
               </div>
+              
               <div className="image-thumbnails">
                 {product.images.map((image, index) => (
                   <div 
@@ -231,187 +335,301 @@ const ProductDetail = () => {
                     className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
                     onClick={() => setSelectedImage(index)}
                   >
-                    <img src={image} alt={`${product.name} ${index + 1}`} />
+                    <img src={image} alt={`${product.name} view ${index + 1}`} />
+                    <div className="thumbnail-overlay"></div>
                   </div>
                 ))}
               </div>
+
+              {/* Image Counter */}
+              <div className="image-counter">
+                <PhotoIcon />
+                <span>{selectedImage + 1} / {product.images.length}</span>
+              </div>
             </div>
 
-            {/* Product Info */}
+            {/* Product Information */}
             <div className="product-info">
+              <div className="product-header">
+                <div className="luxury-category">LUXURY TIMEPIECE</div>
               <h1 className="product-title">{product.name}</h1>
+                <p className="product-subtitle">Crafted for Excellence</p>
               
-              {/* Rating */}
+                {/* Rating & Reviews */}
               <div className="product-rating">
-                <div className="stars">
+                  <div className="stars-container">
                   {renderStars(product.rating)}
+                  </div>
+                  <span className="rating-score">{product.rating}</span>
+                  <span className="reviews-count">({product.reviews} reviews)</span>
                 </div>
-                <span className="rating-text">({product.reviews} reviews)</span>
               </div>
 
-              {/* Price */}
-              <div className="product-pricing">
-                <span className="current-price">{formatPrice(product.price)}</span>
+              {/* Price Section */}
+              <div className="price-section">
+                <div className="current-price">{formatPrice(product.price)}</div>
                 {product.originalPrice && (
-                  <span className="original-price">{formatPrice(product.originalPrice)}</span>
+                  <div className="original-price">{formatPrice(product.originalPrice)}</div>
                 )}
+                <div className="price-note">VAT included • Free worldwide shipping</div>
               </div>
 
               {/* Features */}
-              <div className="product-features">
+              <div className="luxury-features">
+                <h4>Key Features</h4>
+                <div className="features-grid">
                 {product.features.map((feature, index) => (
-                  <span key={index} className="feature-tag">{feature}</span>
+                    <div key={index} className="feature-item">
+                      <CheckBadgeIcon />
+                      <span>{feature}</span>
+                    </div>
                 ))}
+                </div>
               </div>
 
-              {/* Quantity Selector */}
+              {/* Quantity & Stock */}
               <div className="quantity-section">
-                <label className="quantity-label">
-                  Quantity
-                  <span className="stock-info">
-                    ({product?.stock || 10} available)
-                  </span>
-                </label>
+                <div className="section-header">
+                  <label>Quantity</label>
+                  <div className="stock-indicator">
+                    <div className={`stock-dot ${product.inStock ? 'in-stock' : 'out-stock'}`}></div>
+                    <span>{product?.stock || 10} pieces available</span>
+                  </div>
+                </div>
+                
                 <div className="quantity-controls">
                   <button 
-                    className="quantity-btn"
+                    className="qty-btn minus"
                     onClick={() => handleQuantityChange(-1)}
                     disabled={quantity <= 1}
                   >
                     <MinusIcon />
                   </button>
-                  <span className="quantity-value">{quantity}</span>
+                  <div className="quantity-display">
+                    <span className="qty-number">{quantity}</span>
+                  </div>
                   <button 
-                    className="quantity-btn"
+                    className="qty-btn plus"
                     onClick={() => handleQuantityChange(1)}
                     disabled={quantity >= (product?.stock || 10)}
                   >
                     <PlusIcon />
                   </button>
                 </div>
-                {isItemInCart(product) && (
+
+                {isItemInCart(product.id) && (
                   <div className="cart-status">
-                    <span className="cart-info">
-                      {getItemQuantity(product)} already in cart
-                    </span>
+                    <ShoppingBagIcon />
+                    <span>{getItemQuantity(product.id)} already in cart</span>
                   </div>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className="product-actions">
+              <div className="luxury-actions">
+                <div className="primary-actions">
                 <button 
-                  className="btn btn-primary add-to-cart"
-                  onClick={handleAddToCart}
+                    className="luxury-btn primary-gold buy-now"
+                    onClick={handleBuyNow}
+                    disabled={!product.inStock}
                 >
-                  Add to cart
-                  {isItemInCart(product) && (
-                    <span className="cart-quantity">({getItemQuantity(product)})</span>
-                  )}
+                    <span>Buy Now</span>
                 </button>
+                  
                 <button 
-                  className="btn btn-secondary buy-now"
-                  onClick={handleBuyNow}
-                >
-                  Buy it now
+                    className={`luxury-btn secondary add-to-cart ${isAddingToCart ? 'loading' : ''}`}
+                    onClick={handleAddToCart}
+                    disabled={!product.inStock || isItemInCart(product.id) || isAddingToCart}
+                  >
+                    <ShoppingBagIcon />
+                    <span>
+                      {isAddingToCart 
+                        ? 'Adding...' 
+                        : isItemInCart(product.id) 
+                          ? 'Already in Cart' 
+                          : 'Add to Cart'
+                      }
+                    </span>
+                    {isItemInCart(product.id) && !isAddingToCart && (
+                      <div className="cart-badge">{getItemQuantity(product.id)}</div>
+                    )}
                 </button>
+                </div>
+
+                <div className="secondary-actions">
                 <button 
-                  className={`wishlist-btn ${isInWishlist(product) ? 'wishlisted' : ''}`}
-                  onClick={handleWishlistToggle}
-                  title={isInWishlist(product) ? 'Remove from wishlist' : 'Add to wishlist'}
-                >
-                  {isInWishlist(product) ? <HeartSolid /> : <HeartIcon />}
+                    className={`wishlist-btn ${isInWishlist(product.id) ? 'active loved' : ''} ${isTogglingWishlist ? 'loading' : ''}`}
+                    onClick={handleWishlistToggle}
+                    disabled={isTogglingWishlist}
+                  >
+                    {isInWishlist(product.id) ? <HeartSolid /> : <HeartIcon />}
+                    <span>
+                      {isTogglingWishlist 
+                        ? 'Updating...' 
+                        : isInWishlist(product.id) 
+                          ? 'Wishlisted' 
+                          : 'Add to Wishlist'
+                      }
+                    </span>
+                  </button>
+                  
+                  <button className="share-btn">
+                    <ShareIcon />
+                    <span>Share</span>
                 </button>
+                </div>
               </div>
 
-              {/* Product Status */}
-              <div className="product-status">
-                <div className="status-item">
-                  <span className="status-label">Availability:</span>
-                  <span className={`status-value ${product.inStock ? 'in-stock' : 'out-of-stock'}`}>
-                    {product.inStock ? 'In Stock' : 'Out of Stock'}
-                  </span>
+              {/* Product Guarantees */}
+              <div className="luxury-guarantees">
+                <div className="guarantee-item">
+                  <ShieldCheckIcon />
+                  <div>
+                    <strong>2-Year Warranty</strong>
+                    <span>International coverage</span>
+                  </div>
                 </div>
-                <div className="status-item">
-                  <span className="status-label">Shipping:</span>
-                  <span className="status-value">{product.shipping}</span>
+                <div className="guarantee-item">
+                  <TruckIcon />
+                  <div>
+                    <strong>Free Shipping</strong>
+                    <span>Worldwide delivery</span>
+                  </div>
                 </div>
-                <div className="status-item">
-                  <span className="status-label">Warranty:</span>
-                  <span className="status-value">{product.warranty}</span>
+                <div className="guarantee-item">
+                  <ArrowPathIcon />
+                  <div>
+                    <strong>30-Day Returns</strong>
+                    <span>Hassle-free policy</span>
+                  </div>
+                </div>
+              </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Product Tabs */}
-          <div className="product-tabs">
-            <div className="tab-headers">
+      {/* Product Details Tabs */}
+      <div className="luxury-tabs-section">
+        <div className="container">
+          <div className="tabs-container">
+            <div className="tab-navigation">
               <button 
-                className={`tab-header ${activeTab === 'description' ? 'active' : ''}`}
+                className={`tab-btn ${activeTab === 'description' ? 'active' : ''}`}
                 onClick={() => setActiveTab('description')}
               >
-                Product description
+                Description
               </button>
               <button 
-                className={`tab-header ${activeTab === 'specifications' ? 'active' : ''}`}
+                className={`tab-btn ${activeTab === 'specifications' ? 'active' : ''}`}
                 onClick={() => setActiveTab('specifications')}
               >
                 Specifications
               </button>
               <button 
-                className={`tab-header ${activeTab === 'shipping' ? 'active' : ''}`}
+                className={`tab-btn ${activeTab === 'shipping' ? 'active' : ''}`}
                 onClick={() => setActiveTab('shipping')}
               >
-                Shipping & Return
+                Shipping & Returns
               </button>
             </div>
 
             <div className="tab-content">
               {activeTab === 'description' && (
-                <div className="description-content">
-                  <p>{product.description}</p>
-                  <h4>Key Features:</h4>
-                  <ul>
+                <div className="tab-pane description">
+                  <h3>About this Timepiece</h3>
+                  <p className="description-text">{product.description}</p>
+                  
+                  <div className="features-detailed">
+                    <h4>Craftsmanship Details</h4>
+                    <ul className="features-list">
                     {product.features.map((feature, index) => (
-                      <li key={index}>{feature}</li>
+                        <li key={index}>
+                          <CheckBadgeIcon />
+                          <span>{feature}</span>
+                        </li>
                     ))}
                   </ul>
+                  </div>
                 </div>
               )}
 
               {activeTab === 'specifications' && (
-                <div className="specifications-content">
-                  <h4>Technical Specifications</h4>
-                  <table className="specs-table">
-                    <tbody>
+                <div className="tab-pane specifications">
+                  <h3>Technical Specifications</h3>
+                  <div className="specs-grid">
                       {Object.entries(product.specifications).map(([key, value]) => (
-                        <tr key={key}>
-                          <td className="spec-label">{key}</td>
-                          <td className="spec-value">{value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      <div key={key} className="spec-row">
+                        <span className="spec-label">{key}</span>
+                        <span className="spec-value">{value}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
               {activeTab === 'shipping' && (
-                <div className="shipping-content">
+                <div className="tab-pane shipping">
+                  <div className="shipping-grid">
+                    <div className="shipping-section">
                   <h4>Shipping Information</h4>
-                  <p><strong>Free Shipping:</strong> Available for orders within Pakistan</p>
-                  <p><strong>Delivery Time:</strong> 2-5 business days</p>
-                  <p><strong>Express Delivery:</strong> Available in major cities (1-2 days)</p>
-                  
+                      <ul>
+                        <li><strong>Free Worldwide Shipping:</strong> On all orders</li>
+                        <li><strong>Express Delivery:</strong> 1-3 business days</li>
+                        <li><strong>Standard Delivery:</strong> 3-7 business days</li>
+                        <li><strong>White Glove Service:</strong> Available in major cities</li>
+                      </ul>
+                    </div>
+                    
+                    <div className="shipping-section">
                   <h4>Return Policy</h4>
-                  <p><strong>Return Window:</strong> 30 days from delivery</p>
-                  <p><strong>Condition:</strong> Items must be in original condition</p>
-                  <p><strong>Return Shipping:</strong> Free for defective items</p>
+                      <ul>
+                        <li><strong>30-Day Returns:</strong> Full refund guarantee</li>
+                        <li><strong>Original Condition:</strong> Items must be unworn</li>
+                        <li><strong>Free Returns:</strong> We cover return shipping</li>
+                        <li><strong>Exchange Policy:</strong> Size exchanges available</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Luxury Toast Container */}
+      <div className="luxury-toast-container">
+        {toasts.map(toast => (
+          <div 
+            key={toast.id}
+            className={`luxury-toast ${toast.type}`}
+            onClick={() => removeToast(toast.id)}
+          >
+            <div className="toast-icon">
+              {toast.type === 'success' && <CheckCircleIcon />}
+              {toast.type === 'error' && <ExclamationTriangleIcon />}
+              {toast.type === 'info' && <ShoppingBagIcon />}
+              {toast.type === 'wishlist' && <HeartSolid />}
+              {toast.type === 'remove' && <HeartIcon />}
+            </div>
+            <div className="toast-content">
+              <span className="toast-message">{toast.message}</span>
+              <div className="toast-progress">
+                <div className="progress-bar"></div>
+              </div>
+            </div>
+            <button 
+              className="toast-close"
+              onClick={(e) => {
+                e.stopPropagation();
+                removeToast(toast.id);
+              }}
+            >
+              ×
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );

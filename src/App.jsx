@@ -213,7 +213,7 @@ function App() {
       <WishlistProvider>
         <Router>
           <AppContent />
-        </Router>
+    </Router>
       </WishlistProvider>
     </CartProvider>
   );
