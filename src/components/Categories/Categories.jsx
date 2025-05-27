@@ -71,7 +71,7 @@ const Categories = () => {
       icon: StarIcon,
       features: ["Swiss Movement", "Precious Metals", "Limited Edition"],
       priceRange: "Rs. 200,000 - Rs. 5,000,000",
-      backgroundColor: "linear-gradient(135deg, #ffd700 0%, #ffed4e 100%)"
+      backgroundColor: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
     },
     {
       id: 'smart',
@@ -91,7 +91,7 @@ const Categories = () => {
       icon: ShieldCheckIcon,
       features: ["Water Resistant", "Solar Charging", "Shock Proof"],
       priceRange: "Rs. 15,000 - Rs. 200,000",
-      backgroundColor: "linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)"
+      backgroundColor: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
     },
   ];
 

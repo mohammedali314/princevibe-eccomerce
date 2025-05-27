@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   HeartIcon,
   ShoppingBagIcon,
@@ -18,6 +18,8 @@ import ApiService from '../../services/api';
 import './Products.scss';
 
 const Products = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('all');
   const [isVisible, setIsVisible] = useState(false);
   const [products, setProducts] = useState([]);
@@ -29,9 +31,42 @@ const Products = () => {
     wishlist: new Set()
   });
 
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearchMode, setIsSearchMode] = useState(false);
+
   // Use global contexts
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { addToCart, isItemInCart, getItemQuantity } = useCart();
+
+  // Parse URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchParam = urlParams.get('search');
+    const categoryParam = urlParams.get('category');
+    const featuredParam = urlParams.get('featured');
+
+    if (searchParam) {
+      setSearchQuery(searchParam);
+      setIsSearchMode(true);
+      setActiveCategory('all');
+    } else if (categoryParam) {
+      setActiveCategory(categoryParam);
+      setIsSearchMode(false);
+      setSearchQuery('');
+    } else if (featuredParam === 'true') {
+      setActiveCategory('featured');
+      setIsSearchMode(false);
+      setSearchQuery('');
+    } else {
+      setIsSearchMode(false);
+      setSearchQuery('');
+      if (!activeCategory) {
+        setActiveCategory('all');
+      }
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -57,26 +92,49 @@ const Products = () => {
         setError(null);
         
         let response;
-        if (activeCategory === 'all') {
-          response = await ApiService.getProducts();
+        
+        if (isSearchMode && searchQuery) {
+          // Search mode
+          response = await ApiService.searchProducts(searchQuery);
+          const transformedResponse = ApiService.transformResponse(response);
+          setSearchResults(transformedResponse.data || []);
+          setProducts(transformedResponse.data || []);
         } else {
-          response = await ApiService.getProductsByCategory(activeCategory);
+          // Category mode
+          if (activeCategory === 'all') {
+            response = await ApiService.getProducts();
+          } else if (activeCategory === 'featured') {
+            response = await ApiService.getProducts({ featured: 'true' });
+          } else {
+            response = await ApiService.getProductsByCategory(activeCategory);
+          }
+          
+          const transformedResponse = ApiService.transformResponse(response);
+          setProducts(transformedResponse.data || []);
+          setSearchResults([]);
         }
-
-        const transformedResponse = ApiService.transformResponse(response);
-        setProducts(transformedResponse.data || []);
       } catch (err) {
         console.error('Error fetching products:', err);
         setError('Failed to load products. Please try again later.');
-        // Fallback to empty array instead of hardcoded data
         setProducts([]);
+        setSearchResults([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, [activeCategory]);
+  }, [activeCategory, isSearchMode, searchQuery]);
+
+  // Handle category change
+  const handleCategoryChange = (categoryId) => {
+    setActiveCategory(categoryId);
+    setIsSearchMode(false);
+    setSearchQuery('');
+    
+    // Update URL without search params
+    navigate('/', { replace: true });
+  };
 
   // Enhanced Add to Cart functionality from ProductDetail
   const handleAddToCart = (product, e) => {
@@ -236,35 +294,69 @@ const Products = () => {
           <div className="header-content">
             <span className="section-badge">
               <SparklesIcon />
-              Curated Collection
+              {isSearchMode ? 'Search Results' : 'Curated Collection'}
             </span>
             <h2 className="section-title">
-              Trending <span className="title-accent">Products</span>
+              {isSearchMode ? (
+                <>
+                  Results for <span className="title-accent">"{searchQuery}"</span>
+                </>
+              ) : (
+                <>
+                  Trending <span className="title-accent">Products</span>
+                </>
+              )}
             </h2>
             <p className="section-subtitle">
-              Discover our handpicked selection of the world's finest watches, 
-              where tradition meets innovation in perfect harmony.
+              {isSearchMode ? (
+                `Found ${products.length} product${products.length !== 1 ? 's' : ''} matching your search.`
+              ) : (
+                'Discover our handpicked selection of the world\'s finest watches, where tradition meets innovation in perfect harmony.'
+              )}
             </p>
           </div>
         </div>
 
-        {/* Category Filter */}
-        <div className="category-filter">
-          {categories.map((category) => {
-            const IconComponent = category.icon;
-            return (
-              <button
-                key={category.id}
-                className={`filter-btn ${activeCategory === category.id ? 'active' : ''}`}
-                data-category={category.id}
-                onClick={() => setActiveCategory(category.id)}
-              >
-                <IconComponent />
-                <span>{category.name}</span>
-              </button>
-            );
-          })}
-        </div>
+        {/* Category Filter - Hide when in search mode */}
+        {!isSearchMode && (
+          <div className="category-filter">
+            {categories.map((category) => {
+              const IconComponent = category.icon;
+              return (
+                <button
+                  key={category.id}
+                  className={`filter-btn ${activeCategory === category.id ? 'active' : ''}`}
+                  data-category={category.id}
+                  onClick={() => handleCategoryChange(category.id)}
+                >
+                  <IconComponent />
+                  <span>{category.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Search Results Header */}
+        {isSearchMode && (
+          <div className="search-results-header">
+            <div className="search-info">
+              <h3>Search Results for "{searchQuery}"</h3>
+              <p>{products.length} product{products.length !== 1 ? 's' : ''} found</p>
+            </div>
+            <button 
+              className="clear-search-btn"
+              onClick={() => {
+                setIsSearchMode(false);
+                setSearchQuery('');
+                setActiveCategory('all');
+                navigate('/', { replace: true });
+              }}
+            >
+              Clear Search
+            </button>
+          </div>
+        )}
 
         {/* Products Grid */}
         <div className="products-grid">

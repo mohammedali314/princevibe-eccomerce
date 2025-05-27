@@ -78,6 +78,16 @@ const Hero = () => {
     });
   }, [currentSlide, slides]);
 
+  const handleCTAClick = () => {
+    const productsSection = document.getElementById('products');
+    if (productsSection) {
+      productsSection.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }
+  };
+
   const goToSlide = (index) => {
     setCurrentSlide(index);
   };
@@ -168,7 +178,7 @@ const Hero = () => {
                 </div>
 
                 <div className="cta-section">
-                  <button className="cta-primary">
+                  <button className="cta-primary" onClick={handleCTAClick}>
                     <span>{slide.cta}</span>
                     <ArrowRightIcon />
                   </button>

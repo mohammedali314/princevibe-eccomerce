@@ -732,9 +732,6 @@ const ProductDetail = () => {
             </div>
             <div className="toast-content">
               <span className="toast-message">{toast.message}</span>
-              <div className="toast-progress">
-                <div className="progress-bar"></div>
-              </div>
             </div>
             <button 
               className="toast-close"
