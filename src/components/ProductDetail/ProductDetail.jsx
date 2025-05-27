@@ -59,6 +59,26 @@ const ProductDetail = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Scroll to top when component mounts or product changes
+  useEffect(() => {
+    // Immediate scroll for better mobile experience
+    window.scrollTo(0, 0);
+    
+    // Smooth scroll as backup
+    const smoothScroll = () => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
+    };
+    
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(smoothScroll, 100);
+    
+    return () => clearTimeout(timer);
+  }, [id]); // Trigger when product ID changes
+
   // Fetch product from backend
   useEffect(() => {
     const fetchProduct = async () => {
@@ -208,7 +228,18 @@ const ProductDetail = () => {
     if (product && quantity > 0) {
       addToCart(product, quantity);
       showLuxuryToast('Redirecting to checkout...', 'success');
-      navigate('/checkout');
+      
+      // Scroll to top before navigation
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
+      
+      // Small delay to allow scroll before navigation
+      setTimeout(() => {
+        navigate('/checkout');
+      }, 300);
     }
   };
 
