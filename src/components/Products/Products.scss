@@ -550,11 +550,14 @@
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
+        white-space: nowrap;
+        min-width: 120px;
 
         svg {
           width: 16px;
           height: 16px;
           transition: transform 0.3s ease;
+          flex-shrink: 0;
         }
 
         &::before {
@@ -835,6 +838,9 @@
         .add-to-cart-btn {
           width: 100%;
           justify-content: center;
+          min-height: 48px;
+          font-size: 0.9rem;
+          padding: 0.875rem 1.5rem;
         }
       }
     }

@@ -381,11 +381,26 @@ const ProductDetail = () => {
         <div className="hero-background"></div>
         <div className="container">
           <nav className="luxury-breadcrumb">
-          <Link to="/" className="breadcrumb-link">Home</Link>
+            <Link to="/" className="breadcrumb-link">Home</Link>
             <ChevronRightIcon className="breadcrumb-separator" />
-            <Link to="/" className="breadcrumb-link">Collection</Link>
+            <Link 
+              to="/" 
+              className="breadcrumb-link"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/');
+                setTimeout(() => {
+                  const productsSection = document.getElementById('products');
+                  if (productsSection) {
+                    productsSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }, 100);
+              }}
+            >
+              Collection
+            </Link>
             <ChevronRightIcon className="breadcrumb-separator" />
-          <span className="breadcrumb-current">{getProductType(product)}</span>
+            <span className="breadcrumb-current">{getProductType(product)}</span>
           </nav>
           <button 
             className="back-button"

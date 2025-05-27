@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   MagnifyingGlassIcon, 
   UserIcon, 
@@ -14,6 +15,8 @@ import Wishlist from '../Wishlist/Wishlist';
 import './Navbar.scss';
 
 const Navbar = ({ onLogoClick }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -38,16 +41,41 @@ const Navbar = ({ onLogoClick }) => {
 
   const handleSmoothScroll = (e, targetId) => {
     e.preventDefault();
-    const target = document.getElementById(targetId);
-    if (target) {
-      target.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
+    
+    // If we're on a product detail page, navigate to home first
+    if (location.pathname.includes('/product/')) {
+      navigate('/');
+      setTimeout(() => {
+        const target = document.getElementById(targetId);
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 100);
+    } else {
+      // If we're on homepage, scroll directly
+      const target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
     }
   };
 
   const handleLogoClick = () => {
+    // If we're on a product detail page, navigate to home
+    if (location.pathname.includes('/product/')) {
+      navigate('/');
+    } else {
+      // If we're on homepage, scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // Still call the onLogoClick prop for loading animation
     if (onLogoClick) {
       onLogoClick();
     }
