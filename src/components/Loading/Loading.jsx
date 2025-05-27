@@ -56,7 +56,7 @@ const Loading = ({ isVisible, onComplete }) => {
         {/* Loading Text */}
         <div className="loading-text">
           <span className="main-text">Loading PrinceVibe</span>
-          <span className="sub-text">Crafting Excellence...</span>
+          <span className="sub-text">Wear The Crown...</span>
         </div>
 
         {/* Sparkle Effects */}

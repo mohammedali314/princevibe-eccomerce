@@ -7,9 +7,11 @@ import {
   StarIcon,
   ClockIcon,
   ArrowRightIcon,
-  SparklesIcon
+  SparklesIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
-import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
+import { HeartIcon as HeartSolid, StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
 import ApiService from '../../services/api';
@@ -21,10 +23,15 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [toasts, setToasts] = useState([]);
+  const [loadingItems, setLoadingItems] = useState({
+    cart: new Set(),
+    wishlist: new Set()
+  });
 
   // Use global contexts
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const { addToCart } = useCart();
+  const { addToCart, isItemInCart, getItemQuantity } = useCart();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -71,6 +78,112 @@ const Products = () => {
     fetchProducts();
   }, [activeCategory]);
 
+  // Enhanced Add to Cart functionality from ProductDetail
+  const handleAddToCart = (product, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('Add to cart clicked for:', product.name);
+    
+    // Check if already loading
+    if (loadingItems.cart.has(product.id)) return;
+    
+    if (!product.inStock) {
+      showLuxuryToast('Product is currently out of stock', 'error');
+      return;
+    }
+
+    if (isItemInCart(product.id)) {
+      showLuxuryToast('Product is already in your cart', 'info');
+      return;
+    }
+
+    // Set loading state
+    setLoadingItems(prev => ({
+      ...prev,
+      cart: new Set([...prev.cart, product.id])
+    }));
+
+    try {
+      const currentCartQuantity = getItemQuantity(product.id);
+      const maxQuantity = product?.stock || 10;
+      const availableToAdd = maxQuantity - currentCartQuantity;
+      
+      if (availableToAdd <= 0) {
+        showLuxuryToast('Maximum quantity already in cart', 'error');
+        return;
+      }
+      
+      addToCart(product, 1);
+      showLuxuryToast(`Added ${product.name} to cart`, 'success');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      showLuxuryToast('Failed to add item to cart', 'error');
+    } finally {
+      setTimeout(() => {
+        setLoadingItems(prev => ({
+          ...prev,
+          cart: new Set([...prev.cart].filter(id => id !== product.id))
+        }));
+      }, 500);
+    }
+  };
+
+  // Enhanced Wishlist Toggle functionality from ProductDetail
+  const handleWishlistToggle = (product, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('Wishlist toggle clicked for:', product.name);
+    
+    // Check if already loading
+    if (loadingItems.wishlist.has(product.id)) return;
+
+    // Set loading state
+    setLoadingItems(prev => ({
+      ...prev,
+      wishlist: new Set([...prev.wishlist, product.id])
+    }));
+
+    try {
+      const wasInWishlist = isInWishlist(product.id);
+      toggleWishlist(product);
+      
+      if (wasInWishlist) {
+        showLuxuryToast('Removed from wishlist', 'remove');
+      } else {
+        showLuxuryToast('Added to wishlist', 'wishlist');
+      }
+    } catch (error) {
+      console.error('Error toggling wishlist:', error);
+      showLuxuryToast('Failed to update wishlist', 'error');
+    } finally {
+      setTimeout(() => {
+        setLoadingItems(prev => ({
+          ...prev,
+          wishlist: new Set([...prev.wishlist].filter(id => id !== product.id))
+        }));
+      }, 500);
+    }
+  };
+
+  // Luxury Toast System from ProductDetail
+  const showLuxuryToast = (message, type) => {
+    const id = Date.now();
+    const toast = { id, message, type };
+    
+    setToasts(prev => [...prev, toast]);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 3000);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
+
   const categories = [
     { id: 'all', name: 'All Products', icon: SparklesIcon },
     { id: 'luxury', name: 'Luxury', icon: StarIcon },
@@ -115,6 +228,7 @@ const Products = () => {
   };
 
   return (
+    <>
     <section id="products" className={`products-section ${isVisible ? 'visible' : ''}`}>
       <div className="products-container">
         {/* Section Header */}
@@ -153,67 +267,67 @@ const Products = () => {
 
         {/* Products Grid */}
         <div className="products-grid">
-          {loading ? (
-            // Loading state
-            Array.from({ length: 6 }, (_, i) => (
-              <div key={i} className="product-card skeleton">
-                <div className="skeleton-image"></div>
-                <div className="skeleton-content">
-                  <div className="skeleton-line skeleton-title"></div>
-                  <div className="skeleton-line skeleton-rating"></div>
-                  <div className="skeleton-line skeleton-price"></div>
+            {loading ? (
+              // Loading state
+              Array.from({ length: 6 }, (_, i) => (
+                <div key={i} className="product-card skeleton">
+                  <div className="skeleton-image"></div>
+                  <div className="skeleton-content">
+                    <div className="skeleton-line skeleton-title"></div>
+                    <div className="skeleton-line skeleton-rating"></div>
+                    <div className="skeleton-line skeleton-price"></div>
+                  </div>
+                </div>
+              ))
+            ) : error ? (
+              // Error state
+              <div className="error-state">
+                <div className="error-content">
+                  <h3>Oops! Something went wrong</h3>
+                  <p>{error}</p>
+                  <button 
+                    className="retry-btn"
+                    onClick={() => {
+                      const fetchProducts = async () => {
+                        try {
+                          setLoading(true);
+                          setError(null);
+                          
+                          let response;
+                          if (activeCategory === 'all') {
+                            response = await ApiService.getProducts();
+                          } else {
+                            response = await ApiService.getProductsByCategory(activeCategory);
+                          }
+
+                          const transformedResponse = ApiService.transformResponse(response);
+                          setProducts(transformedResponse.data || []);
+                        } catch (err) {
+                          console.error('Error fetching products:', err);
+                          setError('Failed to load products. Please try again later.');
+                          setProducts([]);
+                        } finally {
+                          setLoading(false);
+                        }
+                      };
+                      fetchProducts();
+                    }}
+                  >
+                    Try Again
+                  </button>
                 </div>
               </div>
-            ))
-          ) : error ? (
-            // Error state
-            <div className="error-state">
-              <div className="error-content">
-                <h3>Oops! Something went wrong</h3>
-                <p>{error}</p>
-                <button 
-                  className="retry-btn"
-                  onClick={() => {
-                    const fetchProducts = async () => {
-                      try {
-                        setLoading(true);
-                        setError(null);
-                        
-                        let response;
-                        if (activeCategory === 'all') {
-                          response = await ApiService.getProducts();
-                        } else {
-                          response = await ApiService.getProductsByCategory(activeCategory);
-                        }
-
-                        const transformedResponse = ApiService.transformResponse(response);
-                        setProducts(transformedResponse.data || []);
-                      } catch (err) {
-                        console.error('Error fetching products:', err);
-                        setError('Failed to load products. Please try again later.');
-                        setProducts([]);
-                      } finally {
-                        setLoading(false);
-                      }
-                    };
-                    fetchProducts();
-                  }}
-                >
-                  Try Again
-                </button>
+            ) : filteredProducts.length === 0 ? (
+              // No products state
+              <div className="no-products-state">
+                <div className="no-products-content">
+                  <h3>No products found</h3>
+                  <p>We couldn't find any products in this category.</p>
+                </div>
               </div>
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            // No products state
-            <div className="no-products-state">
-              <div className="no-products-content">
-                <h3>No products found</h3>
-                <p>We couldn't find any products in this category.</p>
-              </div>
-            </div>
-          ) : (
-            // Products list
-            filteredProducts.map((product, index) => (
+            ) : (
+              // Products list
+              filteredProducts.map((product, index) => (
             <div 
               key={product.id} 
               className={`product-card ${isVisible ? 'animate' : ''}`}
@@ -242,14 +356,11 @@ const Products = () => {
                   </div>
                 </Link>
                 <button 
-                  className={`wishlist-btn ${isInWishlist(product.id) ? 'active' : ''}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleWishlist(product);
-                  }}
-                >
-                  {isInWishlist(product.id) ? <HeartSolid /> : <HeartIcon />}
+                    className={`wishlist-btn ${isInWishlist(product.id) ? 'active loved' : ''} ${loadingItems.wishlist.has(product.id) ? 'loading' : ''}`}
+                    onClick={(e) => handleWishlistToggle(product, e)}
+                    disabled={loadingItems.wishlist.has(product.id)}
+                  >
+                    {isInWishlist(product.id) ? <HeartSolid /> : <HeartIcon />}
                 </button>
               </div>
 
@@ -286,21 +397,28 @@ const Products = () => {
                     )}
                   </div>
                   <button 
-                    className="add-to-cart-btn"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      addToCart(product);
-                    }}
+                      className={`add-to-cart-btn ${loadingItems.cart.has(product.id) ? 'loading' : ''} ${isItemInCart(product.id) ? 'in-cart' : ''}`}
+                      onClick={(e) => handleAddToCart(product, e)}
+                      disabled={!product.inStock || isItemInCart(product.id) || loadingItems.cart.has(product.id)}
                   >
                     <ShoppingBagIcon />
-                    <span>Add to Cart</span>
+                      <span>
+                        {loadingItems.cart.has(product.id) 
+                          ? 'Adding...' 
+                          : isItemInCart(product.id) 
+                            ? `In Cart (${getItemQuantity(product.id)})` 
+                            : 'Add to Cart'
+                        }
+                      </span>
+                      {isItemInCart(product.id) && !loadingItems.cart.has(product.id) && (
+                        <div className="cart-badge">{getItemQuantity(product.id)}</div>
+                      )}
                   </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            ))
-          )}
+              ))
+            )}
         </div>
 
         {/* View All Button */}
@@ -312,6 +430,38 @@ const Products = () => {
         </div>
       </div>
     </section>
+
+      {/* Luxury Toast Container - Moved outside to escape stacking context */}
+      <div className="luxury-toast-container">
+        {toasts.map(toast => (
+          <div 
+            key={toast.id}
+            className={`luxury-toast ${toast.type}`}
+            onClick={() => removeToast(toast.id)}
+          >
+            <div className="toast-icon">
+              {toast.type === 'success' && <CheckCircleIcon />}
+              {toast.type === 'error' && <ExclamationTriangleIcon />}
+              {toast.type === 'info' && <ShoppingBagIcon />}
+              {toast.type === 'wishlist' && <HeartSolid />}
+              {toast.type === 'remove' && <HeartIcon />}
+            </div>
+            <div className="toast-content">
+              <span className="toast-message">{toast.message}</span>
+            </div>
+            <button 
+              className="toast-close"
+              onClick={(e) => {
+                e.stopPropagation();
+                removeToast(toast.id);
+              }}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+    </>
   );
 };
 

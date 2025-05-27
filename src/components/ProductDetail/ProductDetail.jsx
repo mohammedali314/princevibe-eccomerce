@@ -293,6 +293,72 @@ const ProductDetail = () => {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
+  // Get product type for breadcrumb navigation
+  const getProductType = (product) => {
+    if (!product) return '⌚ Product';
+    
+    // Check for different product types/badges
+    if (product.badge) {
+      switch (product.badge.toLowerCase()) {
+        case 'exclusive':
+          return '👑 Exclusive';
+        case 'limited edition':
+        case 'limited':
+          return '💎 Limited Edition';
+        case 'new arrival':
+        case 'new':
+          return '✨ New Arrival';
+        case 'best seller':
+        case 'bestseller':
+          return '🔥 Best Seller';
+        case 'featured':
+          return '⭐ Featured';
+        case 'premium':
+          return '🏆 Premium';
+        case 'vintage':
+          return '🕰️ Vintage';
+        case 'classic':
+          return '📿 Classic';
+        default:
+          return `⌚ ${product.badge}`;
+      }
+    }
+    
+    // Fallback based on price range for luxury classification
+    if (product.price > 500000) return '👑 Exclusive';
+    if (product.price > 300000) return '🏆 Premium';
+    if (product.price > 150000) return '💫 Luxury';
+    
+    // Check if it's a trending/popular item based on rating and reviews
+    if (product.rating >= 4.8 && product.reviews > 50) return '🔥 Best Seller';
+    if (product.rating >= 4.5 && product.reviews > 20) return '⭐ Featured';
+    if (product.rating >= 4.0) return '👍 Popular';
+    
+    // Check brand for classification
+    const brandClassification = {
+      'patek philippe': '👑 Exclusive',
+      'rolex': '🏆 Premium',
+      'omega': '💫 Luxury',
+      'cartier': '👑 Exclusive',
+      'breitling': '🏆 Premium',
+      'tag heuer': '💫 Luxury',
+      'tissot': '📿 Classic',
+      'seiko': '👍 Popular'
+    };
+    
+    if (product.name) {
+      const productName = product.name.toLowerCase();
+      for (const [brand, type] of Object.entries(brandClassification)) {
+        if (productName.includes(brand)) {
+          return type;
+        }
+      }
+    }
+    
+    // Default fallback
+    return '⌚ Timepiece';
+  };
+
   const formatPrice = (price) => {
     return `Rs.${price.toLocaleString()}.00`;
   };
@@ -319,11 +385,15 @@ const ProductDetail = () => {
             <ChevronRightIcon className="breadcrumb-separator" />
             <Link to="/" className="breadcrumb-link">Collection</Link>
             <ChevronRightIcon className="breadcrumb-separator" />
-          <span className="breadcrumb-current">{product.name}</span>
+          <span className="breadcrumb-current">{getProductType(product)}</span>
           </nav>
           <button 
             className="back-button"
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              // Scroll to top before navigation
+              window.scrollTo(0, 0);
+              navigate(-1);
+            }}
           >
             <ArrowLeftIcon />
             <span>Back to Collection</span>
@@ -383,8 +453,9 @@ const ProductDetail = () => {
             <div className="product-info">
               <div className="product-header">
                 <div className="luxury-category">LUXURY TIMEPIECE</div>
+                {/* <div className="product-type-badge">{getProductType(product)}</div> */}
               <h1 className="product-title">{product.name}</h1>
-                <p className="product-subtitle">Crafted for Excellence</p>
+                <p className="product-subtitle">Wear The Crown </p>
               
                 {/* Rating & Reviews */}
               <div className="product-rating">

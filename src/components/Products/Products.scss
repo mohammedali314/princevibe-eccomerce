@@ -402,6 +402,33 @@
           svg {
             color: white;
           }
+
+          &.loved {
+            animation: heartBeat 0.6s ease;
+            
+            svg {
+              filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.3));
+            }
+          }
+        }
+
+        &.loading {
+          cursor: wait;
+          
+          svg {
+            animation: spin 1s linear infinite;
+          }
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+
+          &:hover {
+            transform: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+          }
         }
       }
     }
@@ -553,6 +580,65 @@
             transform: translateX(3px);
           }
         }
+
+        // Loading state
+        &.loading {
+          cursor: wait;
+          
+          svg {
+            animation: spin 1s linear infinite;
+          }
+        }
+
+        // Already in cart state
+        &.in-cart {
+          background: linear-gradient(135deg, #10b981, #059669);
+          
+          &:hover:not(:disabled) {
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.4);
+          }
+        }
+
+        // Disabled state
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+
+          &::before {
+            display: none;
+          }
+
+          &:hover {
+            transform: none;
+            box-shadow: none;
+            
+            svg {
+              transform: none;
+            }
+          }
+        }
+
+        // Cart badge for quantity
+        .cart-badge {
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          background: #f59e0b;
+          color: white;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.7rem;
+          font-weight: 700;
+          border: 2px solid white;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+          animation: scaleIn 0.3s ease;
+        }
       }
     }
   }
@@ -664,6 +750,32 @@
   50% {
     transform: scale(1.1);
   }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.1); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 // Responsive Design
@@ -991,4 +1103,257 @@
       line-height: 1.6;
     }
   }
+}
+
+// =============================================================================
+// LUXURY TOAST SYSTEM - Matching ProductDetail styling
+// =============================================================================
+
+.luxury-toast-container {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  pointer-events: none;
+  isolation: isolate;
+  transform: translateZ(0);
+
+  @media (max-width: 768px) {
+    top: 1rem;
+    right: 1rem;
+    left: 1rem;
+  }
+
+  .luxury-toast {
+    background: rgba(255, 255, 255, 0.95);
+    color: #1e293b;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 320px;
+    max-width: 420px;
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    pointer-events: auto;
+    transform: translateX(100%);
+    animation: slideInRight 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    will-change: transform;
+
+    @media (max-width: 768px) {
+      min-width: auto;
+      width: 100%;
+      padding: 1rem 1.25rem;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+      border-radius: inherit;
+      z-index: -1;
+    }
+
+    &.success {
+      border-left: 4px solid #10b981;
+      
+      .toast-icon {
+        background: rgba(16, 185, 129, 0.1);
+        
+        svg {
+          color: #10b981;
+        }
+      }
+    }
+
+    &.error {
+      border-left: 4px solid #ef4444;
+      
+      .toast-icon {
+        background: rgba(239, 68, 68, 0.1);
+        
+        svg {
+          color: #ef4444;
+        }
+      }
+    }
+
+    &.info {
+      border-left: 4px solid #3b82f6;
+      
+      .toast-icon {
+        background: rgba(59, 130, 246, 0.1);
+        
+        svg {
+          color: #3b82f6;
+        }
+      }
+    }
+
+    &.wishlist {
+      border-left: 4px solid #ef4444;
+      
+      .toast-icon {
+        background: rgba(239, 68, 68, 0.1);
+        animation: heartPulse 0.6s ease;
+        
+        svg {
+          color: #ef4444;
+          filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.3));
+        }
+      }
+    }
+
+    &.remove {
+      border-left: 4px solid #6b7280;
+      
+      .toast-icon {
+        background: rgba(107, 114, 128, 0.1);
+        
+        svg {
+          color: #6b7280;
+        }
+      }
+    }
+
+    .toast-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+      
+      svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.1));
+      }
+    }
+
+    .toast-content {
+      flex: 1;
+      
+      .toast-message {
+        font-weight: 600;
+        font-size: 0.875rem;
+        line-height: 1.4;
+        display: block;
+        margin-bottom: 0.75rem;
+        color: #374151;
+      }
+
+      .toast-progress {
+        width: 100%;
+        height: 3px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+
+        .progress-bar {
+          height: 100%;
+          border-radius: 2px;
+          width: 100%;
+          transform: translateX(-100%);
+          animation: progressBar 3s linear forwards;
+        }
+      }
+    }
+
+    &.success .toast-content .toast-progress .progress-bar {
+      background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+    }
+
+    &.error .toast-content .toast-progress .progress-bar {
+      background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+    }
+
+    &.info .toast-content .toast-progress .progress-bar {
+      background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+    }
+
+    &.wishlist .toast-content .toast-progress .progress-bar {
+      background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+    }
+
+    &.remove .toast-content .toast-progress .progress-bar {
+      background: linear-gradient(90deg, #6b7280 0%, #9ca3af 100%);
+    }
+
+    .toast-close {
+      background: rgba(0, 0, 0, 0.05);
+      border: none;
+      color: #6b7280;
+      font-size: 1.125rem;
+      font-weight: 400;
+      cursor: pointer;
+      padding: 0;
+      width: 1.75rem;
+      height: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+        color: #374151;
+        transform: scale(1.1);
+      }
+    }
+
+    &:hover {
+      transform: translateX(-8px);
+      box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes progressBar {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes heartPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 } 
