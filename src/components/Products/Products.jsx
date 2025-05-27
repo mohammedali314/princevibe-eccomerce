@@ -5,6 +5,7 @@ import {
   ShoppingBagIcon,
   EyeIcon,
   StarIcon,
+  ClockIcon,
   ArrowRightIcon,
   SparklesIcon
 } from '@heroicons/react/24/outline';
@@ -75,7 +76,7 @@ const Products = () => {
     { id: 'luxury', name: 'Luxury', icon: StarIcon },
     { id: 'smart', name: 'Smart Watches', icon: EyeIcon },
     { id: 'sport', name: 'Sport', icon: ArrowRightIcon },
-    { id: 'classic', name: 'Classic', icon: StarIcon }
+    { id: 'classic', name: 'Classic', icon: ClockIcon }
   ];
 
   // Remove filteredProducts logic since we fetch filtered data from backend
