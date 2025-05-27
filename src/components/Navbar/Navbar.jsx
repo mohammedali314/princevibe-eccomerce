@@ -311,25 +311,21 @@ const Navbar = ({ onLogoClick }) => {
 
         {/* Navigation Links */}
         <div className="navbar-menu">
-          <div className="nav-link">
-            <a href="#hero" onClick={(e) => handleSmoothScroll(e, 'hero')}>
+          <div className="nav-link" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
               <span>Home</span>
-            </a>
+            <div className="nav-indicator"></div>
           </div>
-          <div className="nav-link">
-            <a href="#products" onClick={(e) => handleSmoothScroll(e, 'products')}>
+          <div className="nav-link" onClick={() => navigate('/#products')} style={{ cursor: 'pointer' }}>
               <span>All Products</span>
-            </a>
+            <div className="nav-indicator"></div>
           </div>
-          <div className="nav-link">
-            <a href="#about" onClick={(e) => handleSmoothScroll(e, 'about')}>
+          <div className="nav-link" onClick={() => navigate('/about')} style={{ cursor: 'pointer' }}>
               <span>About Us</span>
-            </a>
+            <div className="nav-indicator"></div>
           </div>
-          <div className="nav-link">
-            <a href="#contact" onClick={(e) => handleSmoothScroll(e, 'contact')}>
+          <div className="nav-link" onClick={() => navigate('/contact')} style={{ cursor: 'pointer' }}>
               <span>Contact Us</span>
-            </a>
+            <div className="nav-indicator"></div>
           </div>
         </div>
 
@@ -671,10 +667,46 @@ const Navbar = ({ onLogoClick }) => {
             )}
           </div>
 
-          <a href="#hero" onClick={(e) => handleSmoothScroll(e, 'hero')} className="mobile-nav-link">Home</a>
-          <a href="#products" onClick={(e) => handleSmoothScroll(e, 'products')} className="mobile-nav-link">All Products</a>
-          <a href="#about" onClick={(e) => handleSmoothScroll(e, 'about')} className="mobile-nav-link">About Us</a>
-          <a href="#contact" onClick={(e) => handleSmoothScroll(e, 'contact')} className="mobile-nav-link">Contact Us</a>
+          <div 
+            className="mobile-nav-link" 
+            onClick={() => {
+              navigate('/');
+              setIsMobileMenuOpen(false);
+            }}
+            style={{ cursor: 'pointer' }}
+          >
+            Home
+          </div>
+          <div 
+            className="mobile-nav-link" 
+            onClick={() => {
+              navigate('/#products');
+              setIsMobileMenuOpen(false);
+            }}
+            style={{ cursor: 'pointer' }}
+          >
+            All Products
+          </div>
+          <div 
+            className="mobile-nav-link" 
+            onClick={() => {
+              navigate('/about');
+              setIsMobileMenuOpen(false);
+            }}
+            style={{ cursor: 'pointer' }}
+          >
+            About Us
+          </div>
+          <div 
+            className="mobile-nav-link" 
+            onClick={() => {
+              navigate('/contact');
+              setIsMobileMenuOpen(false);
+            }}
+            style={{ cursor: 'pointer' }}
+          >
+            Contact Us
+          </div>
             
             {/* Mobile Action Buttons */}
             <div className="mobile-actions">

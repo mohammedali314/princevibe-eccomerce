@@ -9,6 +9,8 @@ import Products from './components/Products/Products';
 import Features from './components/Features/Features';
 import Footer from './components/Footer/Footer';
 import ProductDetail from './components/ProductDetail/ProductDetail';
+import About from './components/About/About';
+import Contact from './components/Contact/Contact';
 import Loading from './components/Loading/Loading';
 import AdminLogin from './components/Admin/AdminLogin';
 import AdminDashboard from './components/Admin/AdminDashboard';
@@ -167,6 +169,26 @@ const AppContent = () => {
               </>
             } 
           />
+            <Route 
+              path="/about" 
+            element={
+              <>
+                <Navbar onLogoClick={triggerLoading} />
+                <About />
+                <Footer onLogoClick={triggerLoading} />
+              </>
+            } 
+            />
+            <Route 
+              path="/contact" 
+            element={
+              <>
+                <Navbar onLogoClick={triggerLoading} />
+                <Contact />
+                <Footer onLogoClick={triggerLoading} />
+              </>
+            } 
+            />
 
           {/* Admin Routes */}
           <Route 
