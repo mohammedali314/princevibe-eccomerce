@@ -55,6 +55,11 @@ class ApiService {
     return this.makeRequest(`/products/slug/${slug}`);
   }
 
+  // Get product statistics
+  async getProductStats() {
+    return this.makeRequest('/products/stats');
+  }
+
   // Transform backend product data to match frontend expectations
   transformProduct(product) {
     return {

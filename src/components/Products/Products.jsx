@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   HeartIcon,
@@ -256,6 +256,7 @@ const Products = () => {
               <button
                 key={category.id}
                 className={`filter-btn ${activeCategory === category.id ? 'active' : ''}`}
+                data-category={category.id}
                 onClick={() => setActiveCategory(category.id)}
               >
                 <IconComponent />

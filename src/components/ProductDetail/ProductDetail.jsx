@@ -381,7 +381,7 @@ const ProductDetail = () => {
         <div className="hero-background"></div>
         <div className="container">
           <nav className="luxury-breadcrumb">
-            <Link to="/" className="breadcrumb-link">Home</Link>
+          <Link to="/" className="breadcrumb-link">Home</Link>
             <ChevronRightIcon className="breadcrumb-separator" />
             <Link 
               to="/" 
