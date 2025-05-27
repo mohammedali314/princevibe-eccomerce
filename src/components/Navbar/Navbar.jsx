@@ -224,30 +224,56 @@ const Navbar = ({ onLogoClick }) => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handleSmoothScroll = (e, targetId) => {
-    e.preventDefault();
+  // Helper function to wait for element and scroll to it
+  const scrollToProducts = () => {
+    const maxAttempts = 10;
+    let attempts = 0;
     
-    // If we're on a product detail page, navigate to home first
-    if (location.pathname.includes('/product/')) {
-      navigate('/');
-      setTimeout(() => {
-        const target = document.getElementById(targetId);
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      }, 100);
-    } else {
-      // If we're on homepage, scroll directly
-      const target = document.getElementById(targetId);
+    const tryScroll = () => {
+      const target = document.getElementById('products');
       if (target) {
         target.scrollIntoView({
           behavior: 'smooth',
           block: 'start'
         });
+        return true;
       }
+      
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(tryScroll, 200); // Try again in 200ms
+      }
+      return false;
+    };
+    
+    tryScroll();
+  };
+
+  // New function to handle navigation to products section from any page
+  const handleProductsNavigation = () => {
+    if (location.pathname === '/') {
+      // If we're already on homepage, just scroll to products
+      scrollToProducts();
+    } else {
+      // If we're on a different page, navigate to home first then scroll
+      navigate('/');
+      setTimeout(() => {
+        scrollToProducts();
+      }, 300); // Increased timeout to allow page to load
+    }
+  };
+
+  // New function to handle navigation to home (top of page)
+  const handleHomeNavigation = () => {
+    if (location.pathname === '/') {
+      // If we're already on homepage, scroll to top
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    } else {
+      // If we're on a different page, navigate to home
+      navigate('/');
     }
   };
 
@@ -311,11 +337,11 @@ const Navbar = ({ onLogoClick }) => {
 
         {/* Navigation Links */}
         <div className="navbar-menu">
-          <div className="nav-link" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+          <div className="nav-link" onClick={handleHomeNavigation} style={{ cursor: 'pointer' }}>
               <span>Home</span>
             <div className="nav-indicator"></div>
           </div>
-          <div className="nav-link" onClick={() => navigate('/#products')} style={{ cursor: 'pointer' }}>
+          <div className="nav-link" onClick={handleProductsNavigation} style={{ cursor: 'pointer' }}>
               <span>All Products</span>
             <div className="nav-indicator"></div>
           </div>
@@ -670,7 +696,7 @@ const Navbar = ({ onLogoClick }) => {
           <div 
             className="mobile-nav-link" 
             onClick={() => {
-              navigate('/');
+              handleHomeNavigation();
               setIsMobileMenuOpen(false);
             }}
             style={{ cursor: 'pointer' }}
@@ -680,7 +706,7 @@ const Navbar = ({ onLogoClick }) => {
           <div 
             className="mobile-nav-link" 
             onClick={() => {
-              navigate('/#products');
+              handleProductsNavigation();
               setIsMobileMenuOpen(false);
             }}
             style={{ cursor: 'pointer' }}

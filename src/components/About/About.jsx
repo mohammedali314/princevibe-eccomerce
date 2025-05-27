@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   SparklesIcon, 
   HeartIcon, 
@@ -16,6 +17,8 @@ import Aboutimage from '../../../public/photos/LOGO.jpeg';
 import Arhamimage from '../../../public/photos/Arham.png';
 
 const About = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const heroRef = useRef(null);
   const statsRef = useRef(null);
   const valuesRef = useRef(null);
@@ -174,6 +177,50 @@ const About = () => {
 //       gradient: 'from-amber-500 to-orange-600'
 //     }
 //   ];
+
+  // Helper function to wait for element and scroll to it
+  const scrollToProducts = () => {
+    const maxAttempts = 10;
+    let attempts = 0;
+    
+    const tryScroll = () => {
+      const target = document.getElementById('products');
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+        return true;
+      }
+      
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(tryScroll, 200); // Try again in 200ms
+      }
+      return false;
+    };
+    
+    tryScroll();
+  };
+
+  // Function to handle navigation to products section
+  const handleProductsNavigation = () => {
+    navigate('/');
+    setTimeout(() => {
+      scrollToProducts();
+    }, 300); // Increased timeout to allow page to load
+  };
+
+  // Function to handle navigation to home (top of page)
+  const handleHomeNavigation = () => {
+    navigate('/');
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }, 100);
+  };
 
   return (
     <div className="about-page">
@@ -422,10 +469,10 @@ const About = () => {
             <h2>Ready to Find Your Perfect Timepiece?</h2>
             <p>Explore our curated collection of luxury watches and discover the one that speaks to you.</p>
             <div className="cta-buttons">
-              <button className="btn-primary" onClick={() => window.location.href = '/#products'}>
+              <button className="btn-primary" onClick={handleProductsNavigation}>
                 Shop Collection
               </button>
-              <button className="btn-secondary" onClick={() => window.location.href = '/#contact'}>
+              <button className="btn-secondary" onClick={() => navigate('/contact')}>
                 Contact Us
               </button>
             </div>
