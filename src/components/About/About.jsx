@@ -41,33 +41,26 @@ const About = () => {
       social: { linkedin: '#', twitter: '#' }
     },
     {
-      name: 'Arham',
+      name: 'Arham Luqman',
       role: 'Founder & Social Media Manager',
       image: Arhamimage,
       description: 'Expert horologist specializing in vintage and luxury pieces',
       social: { linkedin: '#', twitter: '#' }
     },
-    {
-      name: 'Sarah Johnson',
-      role: 'Customer Experience Director',
-      image: 'https://images.unsplash.com/photo-1494790108755-2616b612b1b4?w=400&h=400&fit=crop&crop=face&q=80',
-      description: 'Dedicated to ensuring exceptional customer satisfaction',
-      social: { linkedin: '#', twitter: '#' }
-    },
-    {
-      name: 'David Chen',
-      role: 'Product Specialist',
-      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face&q=80',
-      description: 'Expert in luxury watch authentication and curation',
-      social: { linkedin: '#', twitter: '#' }
-    }
-  ];
-
-  const stats = [
-    { number: '50K+', label: 'Happy Customers', icon: HeartIcon },
-    { number: '10+', label: 'Premium Watches', icon: ClockIcon },
-    { number: '100%', label: 'Satisfaction Rate', icon: StarIcon },
-    { number: '24/7', label: 'Customer Support', icon: ShieldCheckIcon }
+    // {
+    //   name: 'Sarah Johnson',
+    //   role: 'Customer Experience Director',
+    //   image: 'https://images.unsplash.com/photo-1494790108755-2616b612b1b4?w=400&h=400&fit=crop&crop=face&q=80',
+    //   description: 'Dedicated to ensuring exceptional customer satisfaction',
+    //   social: { linkedin: '#', twitter: '#' }
+    // },
+    // {
+    //   name: 'David Chen',
+    //   role: 'Product Specialist',
+    //   image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face&q=80',
+    //   description: 'Expert in luxury watch authentication and curation',
+    //   social: { linkedin: '#', twitter: '#' }
+    // }
   ];
 
   const milestones = [
@@ -150,33 +143,6 @@ const About = () => {
     // Resume auto-scroll after 8 seconds
     setTimeout(() => setIsAutoScrolling(true), 8000);
   };
-
-//   const values = [
-//     {
-//       icon: SparklesIcon,
-//       title: 'Quality Excellence',
-//       description: 'We source only the finest timepieces from renowned manufacturers, ensuring every watch meets our rigorous quality standards.',
-//       gradient: 'from-purple-500 to-indigo-600'
-//     },
-//     {
-//       icon: ShieldCheckIcon,
-//       title: 'Trust & Authenticity',
-//       description: 'Every watch comes with authenticity guarantees and comprehensive warranties, giving you complete peace of mind.',
-//       gradient: 'from-indigo-500 to-cyan-600'
-//     },
-//     {
-//       icon: HeartIcon,
-//       title: 'Customer First',
-//       description: 'Your satisfaction is our priority. We provide personalized service and support throughout your watch journey.',
-//       gradient: 'from-pink-500 to-rose-600'
-//     },
-//     {
-//       icon: LightBulbIcon,
-//       title: 'Innovation',
-//       description: 'We embrace the latest in horological innovation while respecting traditional craftsmanship and timeless design.',
-//       gradient: 'from-amber-500 to-orange-600'
-//     }
-//   ];
 
   // Helper function to wait for element and scroll to it
   const scrollToProducts = () => {
@@ -268,25 +234,6 @@ const About = () => {
               />
               <div className="watch-glow"></div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="stats-section" ref={statsRef}>
-        <div className="container">
-          <div className="stats-grid">
-            {stats.map((stat, index) => (
-              <div key={index} className="stat-card" style={{ animationDelay: `${index * 0.1}s` }}>
-                <div className="stat-icon">
-                  <stat.icon />
-                </div>
-                <div className="stat-content">
-                  <div className="stat-number">{stat.number}</div>
-                  <div className="stat-label">{stat.label}</div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>

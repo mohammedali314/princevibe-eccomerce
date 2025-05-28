@@ -189,7 +189,7 @@ const AppContent = () => {
                 <Footer onLogoClick={triggerLoading} />
               </>
             } 
-            />
+          />
 
           {/* Admin Routes */}
           <Route 
@@ -233,13 +233,13 @@ const AppContent = () => {
 function App() {
   return (
     <AuthProvider>
-      <CartProvider>
-        <WishlistProvider>
-          <Router>
-            <AppContent />
-          </Router>
-        </WishlistProvider>
-      </CartProvider>
+    <CartProvider>
+      <WishlistProvider>
+        <Router>
+          <AppContent />
+    </Router>
+      </WishlistProvider>
+    </CartProvider>
     </AuthProvider>
   );
 }

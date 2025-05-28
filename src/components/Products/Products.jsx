@@ -101,16 +101,16 @@ const Products = () => {
           setProducts(transformedResponse.data || []);
         } else {
           // Category mode
-          if (activeCategory === 'all') {
-            response = await ApiService.getProducts();
+        if (activeCategory === 'all') {
+          response = await ApiService.getProducts();
           } else if (activeCategory === 'featured') {
             response = await ApiService.getProducts({ featured: 'true' });
-          } else {
-            response = await ApiService.getProductsByCategory(activeCategory);
-          }
-          
-          const transformedResponse = ApiService.transformResponse(response);
-          setProducts(transformedResponse.data || []);
+        } else {
+          response = await ApiService.getProductsByCategory(activeCategory);
+        }
+
+        const transformedResponse = ApiService.transformResponse(response);
+        setProducts(transformedResponse.data || []);
           setSearchResults([]);
         }
       } catch (err) {
@@ -303,7 +303,7 @@ const Products = () => {
                 </>
               ) : (
                 <>
-                  Trending <span className="title-accent">Products</span>
+              Trending <span className="title-accent">Products</span>
                 </>
               )}
             </h2>
@@ -319,22 +319,22 @@ const Products = () => {
 
         {/* Category Filter - Hide when in search mode */}
         {!isSearchMode && (
-          <div className="category-filter">
-            {categories.map((category) => {
-              const IconComponent = category.icon;
-              return (
-                <button
-                  key={category.id}
-                  className={`filter-btn ${activeCategory === category.id ? 'active' : ''}`}
-                  data-category={category.id}
+        <div className="category-filter">
+          {categories.map((category) => {
+            const IconComponent = category.icon;
+            return (
+              <button
+                key={category.id}
+                className={`filter-btn ${activeCategory === category.id ? 'active' : ''}`}
+                data-category={category.id}
                   onClick={() => handleCategoryChange(category.id)}
-                >
-                  <IconComponent />
-                  <span>{category.name}</span>
-                </button>
-              );
-            })}
-          </div>
+              >
+                <IconComponent />
+                <span>{category.name}</span>
+              </button>
+            );
+          })}
+        </div>
         )}
 
         {/* Search Results Header */}

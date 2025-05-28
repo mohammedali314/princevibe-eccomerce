@@ -652,7 +652,7 @@ const Navbar = ({ onLogoClick }) => {
                         >
                           <span className="action-icon">⚡</span>
                           <span>Sports Watches</span>
-                        </button>
+          </button>
                         <button
                           className="quick-action-item"
                           onClick={() => navigate('/?featured=true')}
@@ -678,7 +678,7 @@ const Navbar = ({ onLogoClick }) => {
             </div>
           </div>
 
-          <button className="action-btn wishlist-btn" onClick={handleWishlistClick}>
+            <button className="action-btn wishlist-btn" onClick={handleWishlistClick}>
             <HeartIcon />
               {wishlistItemsCount > 0 && (
                 <span className="badge">{wishlistItemsCount}</span>
