@@ -678,17 +678,7 @@ const Navbar = ({ onLogoClick }) => {
             </div>
           </div>
 
-          {/* Authentication UI */}
-          {isAuthenticated ? (
-            <UserMenu onClose={() => {}} />
-          ) : (
-            <button className="action-btn" onClick={handleUserIconClick}>
-            <UserIcon />
-              <span className="tooltip">Sign In</span>
-          </button>
-          )}
-
-            <button className="action-btn wishlist-btn" onClick={handleWishlistClick}>
+          <button className="action-btn wishlist-btn" onClick={handleWishlistClick}>
             <HeartIcon />
               {wishlistItemsCount > 0 && (
                 <span className="badge">{wishlistItemsCount}</span>
@@ -702,6 +692,16 @@ const Navbar = ({ onLogoClick }) => {
               )}
             <span className="tooltip">Cart</span>
           </button>
+
+          {/* Authentication UI */}
+          {isAuthenticated ? (
+            <UserMenu onClose={() => {}} />
+          ) : (
+            <button className="action-btn" onClick={handleUserIconClick}>
+            <UserIcon />
+              <span className="tooltip">Sign In</span>
+          </button>
+          )}
         </div>
 
         {/* Mobile Menu Button */}

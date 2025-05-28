@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { 
   XMarkIcon, 
@@ -21,6 +21,16 @@ const Cart = ({ isOpen, onClose }) => {
   } = useCart();
 
   const [isClearing, setIsClearing] = useState(false);
+  const [iconsLoaded, setIconsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Check if icons are loaded properly
+    const timer = setTimeout(() => {
+      setIconsLoaded(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [isOpen]);
 
   const handleQuantityChange = (productId, newQuantity) => {
     if (newQuantity < 1) {
@@ -99,17 +109,23 @@ const Cart = ({ isOpen, onClose }) => {
                       
                       <div className="quantity-controls">
                         <button
-                          className="qty-btn"
+                          className="qty-btn minus-btn"
                           onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                          aria-label="Decrease quantity"
+                          title="Decrease quantity"
                         >
-                          <MinusIcon />
+                          <MinusIcon className="qty-icon" />
+                          <span className="qty-text">−</span>
                         </button>
                         <span className="quantity">{item.quantity}</span>
                         <button
-                          className="qty-btn"
+                          className="qty-btn plus-btn"
                           onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                          aria-label="Increase quantity"
+                          title="Increase quantity"
                         >
-                          <PlusIcon />
+                          <PlusIcon className="qty-icon" />
+                          <span className="qty-text">+</span>
                         </button>
                       </div>
                     </div>
