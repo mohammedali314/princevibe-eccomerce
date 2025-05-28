@@ -1,0 +1,620 @@
+/* ====================================
+   CLEAN BLACK & WHITE AUTHMODAL DESIGN
+   ==================================== */
+
+/* Global SVG reset for heroicons */
+svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Icon sizing utilities */
+.w-3 { 
+  width: 0.75rem !important; 
+  height: 0.75rem !important; 
+}
+.h-3 { 
+  width: 0.75rem !important; 
+  height: 0.75rem !important; 
+}
+.w-4 { 
+  width: 1rem !important; 
+  height: 1rem !important; 
+}
+.h-4 { 
+  width: 1rem !important; 
+  height: 1rem !important; 
+}
+.w-5 { 
+  width: 1.25rem !important; 
+  height: 1.25rem !important; 
+}
+.h-5 { 
+  width: 1.25rem !important; 
+  height: 1.25rem !important; 
+}
+
+.auth-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.auth-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid #e5e7eb;
+
+  @media (max-width: 768px) {
+    margin: 10px;
+    border-radius: 8px;
+    max-height: 85vh;
+  }
+}
+
+/* ====================================
+   CLOSE BUTTON
+   ==================================== */
+.close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+
+  .close-icon {
+    font-size: 24px;
+    font-weight: 300;
+    color: #6b7280;
+    line-height: 1;
+    user-select: none;
+  }
+
+  &:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+
+    .close-icon {
+      color: #374151;
+    }
+  }
+}
+
+/* ====================================
+   HEADER SECTION
+   ==================================== */
+.auth-header {
+  padding: 40px 40px 24px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 32px 24px 20px;
+  }
+
+  h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 8px;
+    line-height: 1.2;
+
+    @media (max-width: 768px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  p {
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+/* ====================================
+   TAB SWITCHER
+   ==================================== */
+.auth-tabs {
+  padding: 0 40px;
+  margin-bottom: 24px;
+
+  @media (max-width: 768px) {
+    padding: 0 24px;
+    margin-bottom: 20px;
+  }
+
+  .tab-container {
+    display: flex;
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 4px;
+    border: 1px solid #e5e7eb;
+
+    .tab {
+      flex: 1;
+      padding: 12px 16px;
+      background: none;
+      border: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #6b7280;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-radius: 6px;
+
+      &.active {
+        color: #111827;
+        background: #ffffff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      &:hover:not(.active) {
+        color: #374151;
+      }
+    }
+  }
+}
+
+/* ====================================
+   MESSAGES
+   ==================================== */
+.message {
+  margin: 0 40px 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  @media (max-width: 768px) {
+    margin: 0 24px 16px;
+  }
+
+  svg {
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+  }
+
+  &.success {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+
+    svg {
+      color: #16a34a;
+    }
+  }
+
+  &.error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+
+    svg {
+      color: #dc2626;
+    }
+  }
+}
+
+/* ====================================
+   FORM STYLES
+   ==================================== */
+.auth-form {
+  padding: 0 40px 40px;
+
+  @media (max-width: 768px) {
+    padding: 0 24px 32px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr 1fr; /* Keep 2 columns on mobile */
+      gap: 12px;
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr 1fr; /* Still 2 columns on very small screens */
+      gap: 10px;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+
+      .optional {
+        color: #9ca3af;
+        font-weight: 400;
+      }
+    }
+
+    .input-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      > svg {
+        position: absolute;
+        left: 12px;
+        width: 18px !important;
+        height: 18px !important;
+        color: #9ca3af;
+        z-index: 1;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px 12px 12px 40px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        background: #ffffff;
+        color: #111827;
+
+        &:focus {
+          outline: none;
+          border-color: #111827;
+          box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+
+          + .toggle-password svg,
+          ~ svg {
+            color: #111827;
+          }
+        }
+
+        &::placeholder {
+          color: #9ca3af;
+        }
+
+        &[type="date"] {
+          color: #6b7280;
+        }
+      }
+
+      .toggle-password {
+        position: absolute;
+        right: 12px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+
+        svg {
+          width: 18px !important;
+          height: 18px !important;
+          color: #9ca3af;
+          stroke: currentColor;
+          fill: none;
+          stroke-width: 2;
+        }
+
+        &:hover svg {
+          color: #111827;
+        }
+      }
+    }
+
+    &.checkbox-group {
+      .checkbox-label {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        cursor: pointer;
+        line-height: 1.5;
+
+        input[type="checkbox"] {
+          display: none;
+        }
+
+        .checkmark {
+          width: 20px;
+          height: 20px;
+          border: 1px solid #d1d5db;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+          flex-shrink: 0;
+          margin-top: 2px;
+          background: #ffffff;
+
+          svg {
+            width: 14px !important;
+            height: 14px !important;
+            color: #ffffff;
+            opacity: 0;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+          }
+        }
+
+        input[type="checkbox"]:checked + .checkmark {
+          background: #111827;
+          border-color: #111827;
+
+          svg {
+            opacity: 1;
+          }
+        }
+
+        .checkbox-text {
+          font-size: 0.875rem;
+          color: #6b7280;
+
+          a {
+            color: #111827;
+            text-decoration: underline;
+            font-weight: 600;
+
+            &:hover {
+              color: #000000;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+
+      input[type="checkbox"] {
+        display: none;
+      }
+
+      .checkmark {
+        width: 18px;
+        height: 18px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        background: #ffffff;
+
+        svg {
+          width: 12px !important;
+          height: 12px !important;
+          color: #ffffff;
+          opacity: 0;
+          stroke: currentColor;
+          fill: none;
+          stroke-width: 2;
+        }
+      }
+
+      input[type="checkbox"]:checked + .checkmark {
+        background: #111827;
+        border-color: #111827;
+
+        svg {
+          opacity: 1;
+        }
+      }
+
+      span {
+        font-size: 0.875rem;
+        color: #6b7280;
+        font-weight: 500;
+      }
+    }
+
+    .forgot-password {
+      color: #111827;
+      text-decoration: underline;
+      font-size: 0.875rem;
+      font-weight: 600;
+
+      &:hover {
+        color: #000000;
+      }
+    }
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 12px 24px;
+    background: #111827;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &:hover:not(:disabled) {
+      background: #000000;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .loading-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .loading-spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top: 2px solid #ffffff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    }
+  }
+}
+
+/* ====================================
+   FOOTER
+   ==================================== */
+.auth-footer {
+  padding: 20px 40px 32px;
+  text-align: center;
+  border-top: 1px solid #e5e7eb;
+
+  @media (max-width: 768px) {
+    padding: 16px 24px 28px;
+  }
+
+  p {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0;
+
+    .switch-mode {
+      background: none;
+      border: none;
+      color: #111827;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+
+      &:hover {
+        color: #000000;
+      }
+    }
+  }
+}
+
+/* ====================================
+   MOBILE RESPONSIVENESS
+   ==================================== */
+@media (max-width: 480px) {
+  .auth-modal {
+    margin: 8px;
+    border-radius: 8px;
+  }
+
+  .auth-header {
+    padding: 24px 20px 16px;
+
+    h2 {
+      font-size: 1.25rem;
+    }
+
+    p {
+      font-size: 0.875rem;
+    }
+  }
+
+  .auth-form {
+    padding: 0 20px 24px;
+
+    .form-row {
+      grid-template-columns: 1fr 1fr; /* Maintain 2 columns even on smallest screens */
+      gap: 8px;
+    }
+
+    .form-group {
+      .input-container input {
+        padding: 10px 10px 10px 36px;
+        font-size: 0.875rem;
+      }
+
+      .input-container > svg {
+        left: 10px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .submit-btn {
+      padding: 12px 20px;
+      font-size: 0.875rem;
+    }
+  }
+
+  .close-btn {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+
+    .close-icon {
+      font-size: 24px;
+      font-weight: 300;
+      color: #6b7280;
+      line-height: 1;
+      user-select: none;
+    }
+  }
+} 

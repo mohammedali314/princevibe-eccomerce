@@ -14,9 +14,12 @@ import {
 } from '@heroicons/react/24/outline';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useAuth } from '../../context/AuthContext';
 import ApiService from '../../services/api';
 import Cart from '../Cart/Cart';
 import Wishlist from '../Wishlist/Wishlist';
+import AuthModal from '../Auth/AuthModal';
+import UserMenu from '../Auth/UserMenu';
 import './Navbar.scss';
 
 const Navbar = ({ onLogoClick }) => {
@@ -26,6 +29,10 @@ const Navbar = ({ onLogoClick }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+
+  // Authentication state
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('login'); // 'login' or 'signup'
 
   // Search functionality state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -47,6 +54,9 @@ const Navbar = ({ onLogoClick }) => {
   // Get cart and wishlist context
   const { cartItemsCount } = useCart();
   const { wishlistItemsCount } = useWishlist();
+
+  // Get authentication context
+  const { isAuthenticated, user } = useAuth();
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -308,6 +318,25 @@ const Navbar = ({ onLogoClick }) => {
 
   const closeWishlist = () => {
     setIsWishlistOpen(false);
+  };
+
+  // Authentication handlers
+  const openAuthModal = (mode = 'login') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
+
+  const handleUserIconClick = () => {
+    if (isAuthenticated) {
+      // User menu will handle the dropdown
+      return;
+    } else {
+      openAuthModal('login');
+    }
   };
 
   return (
@@ -593,10 +622,16 @@ const Navbar = ({ onLogoClick }) => {
             </div>
           </div>
 
-          <button className="action-btn">
+          {/* Authentication UI */}
+          {isAuthenticated ? (
+            <UserMenu onClose={() => {}} />
+          ) : (
+            <button className="action-btn" onClick={handleUserIconClick}>
             <UserIcon />
-            <span className="tooltip">Account</span>
+              <span className="tooltip">Sign In</span>
           </button>
+          )}
+
             <button className="action-btn wishlist-btn" onClick={handleWishlistClick}>
             <HeartIcon />
               {wishlistItemsCount > 0 && (
@@ -736,14 +771,69 @@ const Navbar = ({ onLogoClick }) => {
             
             {/* Mobile Action Buttons */}
             <div className="mobile-actions">
-              <button className="mobile-action-btn" onClick={handleWishlistClick}>
+              {/* Mobile Authentication */}
+              {isAuthenticated ? (
+                <div className="mobile-user-info">
+                  <div className="mobile-user-avatar">
+                    <span>{user?.firstName?.[0]}{user?.lastName?.[0]}</span>
+                  </div>
+                  <div className="mobile-user-details">
+                    <span className="user-name">{user?.firstName} {user?.lastName}</span>
+                    <span className="user-email">{user?.email}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="mobile-auth-buttons">
+                  <button 
+                    className="mobile-auth-btn primary" 
+                    onClick={() => {
+                      openAuthModal('login');
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <UserIcon />
+                    <span>Sign In</span>
+                  </button>
+                  <button 
+                    className="mobile-auth-btn secondary" 
+                    onClick={() => {
+                      openAuthModal('signup');
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <span>Create Account</span>
+                  </button>
+                </div>
+              )}
+              
+              <button className="mobile-action-btn" onClick={() => {
+                handleWishlistClick();
+                setIsMobileMenuOpen(false);
+              }}>
                 <HeartIcon />
                 <span>Wishlist ({wishlistItemsCount})</span>
               </button>
-              <button className="mobile-action-btn" onClick={handleCartClick}>
+              
+              <button className="mobile-action-btn" onClick={() => {
+                handleCartClick();
+                setIsMobileMenuOpen(false);
+              }}>
                 <ShoppingBagIcon />
                 <span>Cart ({cartItemsCount})</span>
               </button>
+              
+              {isAuthenticated && (
+                <button 
+                  className="mobile-action-btn logout" 
+                  onClick={() => {
+                    // Add logout functionality here when implemented
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  <UserIcon />
+                  <span>Logout</span>
+                </button>
+              )}
             </div>
         </div>
       </div>
@@ -754,6 +844,13 @@ const Navbar = ({ onLogoClick }) => {
 
       {/* Wishlist Sidebar */}
       <Wishlist isOpen={isWishlistOpen} onClose={closeWishlist} />
+
+      {/* Authentication Modal */}
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={closeAuthModal} 
+        initialMode={authModalMode} 
+      />
     </>
   );
 };

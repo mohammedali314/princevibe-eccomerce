@@ -115,6 +115,86 @@ class ApiService {
     }
     return response;
   }
+
+  // User Authentication Methods
+
+  // User login
+  async login(email, password) {
+    return this.makeRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+  }
+
+  // User signup/register
+  async signup(userData) {
+    return this.makeRequest('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  // User logout
+  async logout() {
+    const token = localStorage.getItem('userToken');
+    if (token) {
+      try {
+        await this.makeRequest('/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+      } catch (error) {
+        console.error('Logout API error:', error);
+      }
+    }
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userData');
+  }
+
+  // Get current user profile
+  async getUserProfile() {
+    const token = localStorage.getItem('userToken');
+    if (!token) throw new Error('No authentication token');
+    
+    return this.makeRequest('/auth/profile', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+  }
+
+  // Update user profile
+  async updateUserProfile(userData) {
+    const token = localStorage.getItem('userToken');
+    if (!token) throw new Error('No authentication token');
+    
+    return this.makeRequest('/auth/profile', {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(userData),
+    });
+  }
+
+  // Check if user is authenticated
+  isUserAuthenticated() {
+    return !!localStorage.getItem('userToken');
+  }
+
+  // Get current user data from localStorage
+  getCurrentUser() {
+    const userData = localStorage.getItem('userData');
+    return userData ? JSON.parse(userData) : null;
+  }
+
+  // Store user authentication data
+  storeUserAuth(token, userData) {
+    localStorage.setItem('userToken', token);
+    localStorage.setItem('userData', JSON.stringify(userData));
+  }
 }
 
 export default new ApiService(); 

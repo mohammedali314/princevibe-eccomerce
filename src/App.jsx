@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
+import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar/Navbar';
 import Hero from './components/Hero/Hero';
 import Categories from './components/Categories/Categories';
@@ -231,13 +232,15 @@ const AppContent = () => {
 
 function App() {
   return (
-    <CartProvider>
-      <WishlistProvider>
-        <Router>
-          <AppContent />
-    </Router>
-      </WishlistProvider>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <WishlistProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </WishlistProvider>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 
