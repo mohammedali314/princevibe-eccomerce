@@ -10,7 +10,14 @@ import {
   ClockIcon,
   ArrowTrendingUpIcon,
   SparklesIcon,
-  XCircleIcon
+  XCircleIcon,
+  UserCircleIcon,
+  CogIcon,
+  ClipboardDocumentListIcon,
+  QuestionMarkCircleIcon,
+  ArrowRightOnRectangleIcon,
+  ChevronDownIcon,
+  ChevronUpIcon
 } from '@heroicons/react/24/outline';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -33,6 +40,7 @@ const Navbar = ({ onLogoClick }) => {
   // Authentication state
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState('login'); // 'login' or 'signup'
+  const [isMobileUserMenuOpen, setIsMobileUserMenuOpen] = useState(false);
 
   // Search functionality state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -56,7 +64,7 @@ const Navbar = ({ onLogoClick }) => {
   const { wishlistItemsCount } = useWishlist();
 
   // Get authentication context
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -197,6 +205,25 @@ const Navbar = ({ onLogoClick }) => {
     }
   }, [isSearchOpen]);
 
+  // Handle click outside mobile user dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Close mobile user dropdown if clicking outside
+      if (isMobileUserMenuOpen && !event.target.closest('.mobile-user-section')) {
+        setIsMobileUserMenuOpen(false);
+      }
+    };
+
+    if (isMobileUserMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('touchstart', handleClickOutside);
+      };
+    }
+  }, [isMobileUserMenuOpen]);
+
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -336,6 +363,35 @@ const Navbar = ({ onLogoClick }) => {
       return;
     } else {
       openAuthModal('login');
+    }
+  };
+
+  // Mobile user menu handlers
+  const handleMobileUserMenuClick = (action) => {
+    setIsMobileUserMenuOpen(false);
+    setIsMobileMenuOpen(false);
+    
+    switch (action) {
+      case 'profile':
+        navigate('/profile');
+        break;
+      case 'orders':
+        navigate('/orders');
+        break;
+      case 'wishlist':
+        navigate('/wishlist');
+        break;
+      case 'settings':
+        navigate('/settings');
+        break;
+      case 'help':
+        navigate('/help');
+        break;
+      case 'logout':
+        logout();
+        break;
+      default:
+        break;
     }
   };
 
@@ -773,14 +829,76 @@ const Navbar = ({ onLogoClick }) => {
             <div className="mobile-actions">
               {/* Mobile Authentication */}
               {isAuthenticated ? (
-                <div className="mobile-user-info">
-                  <div className="mobile-user-avatar">
-                    <span>{user?.firstName?.[0]}{user?.lastName?.[0]}</span>
-                  </div>
-                  <div className="mobile-user-details">
-                    <span className="user-name">{user?.firstName} {user?.lastName}</span>
-                    <span className="user-email">{user?.email}</span>
-                  </div>
+                <div className="mobile-user-section">
+                  <button 
+                    className="mobile-user-trigger"
+                    onClick={() => setIsMobileUserMenuOpen(!isMobileUserMenuOpen)}
+                  >
+                    <div className="mobile-user-avatar">
+                      <span>{user?.firstName?.[0]}{user?.lastName?.[0]}</span>
+                    </div>
+                    <div className="mobile-user-details">
+                      <span className="user-name">{user?.firstName} {user?.lastName}</span>
+                      <span className="user-email">{user?.email}</span>
+                    </div>
+                    {isMobileUserMenuOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                  </button>
+
+                  {isMobileUserMenuOpen && (
+                    <div className="mobile-user-dropdown">
+                      <button 
+                        className="mobile-menu-item"
+                        onClick={() => handleMobileUserMenuClick('profile')}
+                      >
+                        <UserCircleIcon />
+                        <span>My Profile</span>
+                      </button>
+                      
+                      <button 
+                        className="mobile-menu-item"
+                        onClick={() => handleMobileUserMenuClick('orders')}
+                      >
+                        <ClipboardDocumentListIcon />
+                        <span>My Orders</span>
+                      </button>
+                      
+                      <button 
+                        className="mobile-menu-item"
+                        onClick={() => handleMobileUserMenuClick('wishlist')}
+                      >
+                        <HeartIcon />
+                        <span>Wishlist</span>
+                      </button>
+                      
+                      <div className="mobile-menu-divider"></div>
+                      
+                      <button 
+                        className="mobile-menu-item"
+                        onClick={() => handleMobileUserMenuClick('settings')}
+                      >
+                        <CogIcon />
+                        <span>Settings</span>
+                      </button>
+                      
+                      <button 
+                        className="mobile-menu-item"
+                        onClick={() => handleMobileUserMenuClick('help')}
+                      >
+                        <QuestionMarkCircleIcon />
+                        <span>Help & Support</span>
+                      </button>
+                      
+                      <div className="mobile-menu-divider"></div>
+                      
+                      <button 
+                        className="mobile-menu-item logout"
+                        onClick={() => handleMobileUserMenuClick('logout')}
+                      >
+                        <ArrowRightOnRectangleIcon />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="mobile-auth-buttons">
@@ -821,19 +939,6 @@ const Navbar = ({ onLogoClick }) => {
                 <ShoppingBagIcon />
                 <span>Cart ({cartItemsCount})</span>
               </button>
-              
-              {isAuthenticated && (
-                <button 
-                  className="mobile-action-btn logout" 
-                  onClick={() => {
-                    // Add logout functionality here when implemented
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  <UserIcon />
-                  <span>Logout</span>
-                </button>
-              )}
             </div>
         </div>
       </div>
