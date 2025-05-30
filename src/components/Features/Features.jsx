@@ -34,8 +34,8 @@ const Features = () => {
     {
       id: 1,
       icon: TruckIcon,
-      title: "Free Worldwide Shipping",
-      description: "Complimentary shipping on all orders above $500. Fast and secure delivery worldwide.",
+      title: "Free Shipping in Pakistan",
+      description: "Complimentary delivery across Pakistan with tracking and secure packaging.",
       color: "blue"
     },
     {
@@ -78,19 +78,19 @@ const Features = () => {
   const stats = [
     {
       id: 1,
-      number: "50,000+",
+      number: "12000",
       label: "Happy Customers",
       icon: StarIcon
     },
     {
       id: 2,
-      number: "15+",
+      number: "5+",
       label: "Years Experience",
       icon: ClockIcon
     },
     {
       id: 3,
-      number: "500+",
+      number: "10+",
       label: "Luxury Brands",
       icon: CheckBadgeIcon
     },

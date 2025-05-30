@@ -488,7 +488,7 @@ const ProductDetail = () => {
                 {product.originalPrice && (
                   <div className="original-price">{formatPrice(product.originalPrice)}</div>
                 )}
-                <div className="price-note">VAT included • Free worldwide shipping</div>
+                <div className="price-note">VAT included • Free shipping in Pakistan</div>
               </div>
 
               {/* Features */}
@@ -691,7 +691,7 @@ const ProductDetail = () => {
                     <div className="shipping-section">
                   <h4>Shipping Information</h4>
                       <ul>
-                        <li><strong>Free Worldwide Shipping:</strong> On all orders</li>
+                        <li><strong>Free Shipping in Pakistan:</strong> On all orders</li>
                         <li><strong>Express Delivery:</strong> 1-3 business days</li>
                         <li><strong>Standard Delivery:</strong> 3-7 business days</li>
                         <li><strong>White Glove Service:</strong> Available in major cities</li>

@@ -12,6 +12,7 @@ import Footer from './components/Footer/Footer';
 import ProductDetail from './components/ProductDetail/ProductDetail';
 import About from './components/About/About';
 import Contact from './components/Contact/Contact';
+import Testimonials from './components/Testimonials/Testimonials';
 import Loading from './components/Loading/Loading';
 import AdminLogin from './components/Admin/AdminLogin';
 import AdminDashboard from './components/Admin/AdminDashboard';
@@ -22,7 +23,7 @@ import './App.css';
 const HomePage = ({ triggerLoading }) => (
   <>
     <Hero />
-    <Categories />
+    {/* <Categories /> */}
     <Products />
     <Features />
   </>
@@ -186,6 +187,16 @@ const AppContent = () => {
               <>
                 <Navbar onLogoClick={triggerLoading} />
                 <Contact />
+                <Footer onLogoClick={triggerLoading} />
+              </>
+            } 
+          />
+            <Route 
+              path="/testimonials" 
+            element={
+              <>
+                <Navbar onLogoClick={triggerLoading} />
+                <Testimonials />
                 <Footer onLogoClick={triggerLoading} />
               </>
             } 

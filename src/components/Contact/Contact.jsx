@@ -409,8 +409,8 @@ const Contact = () => {
             <div className="info-grid">
               <div className="info-item">
                 <GlobeAltIcon />
-                <h4>Global Shipping</h4>
-                <p>We ship worldwide with secure packaging and tracking</p>
+                <h4>Pakistan Shipping</h4>
+                <p>We ship across Pakistan with secure packaging and tracking</p>
               </div>
               <div className="info-item">
                 <HeartIcon />

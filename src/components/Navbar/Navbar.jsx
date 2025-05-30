@@ -434,6 +434,10 @@ const Navbar = ({ onLogoClick }) => {
               <span>About Us</span>
             <div className="nav-indicator"></div>
           </div>
+          <div className="nav-link" onClick={() => navigate('/testimonials')} style={{ cursor: 'pointer' }}>
+              <span>Testimonials</span>
+            <div className="nav-indicator"></div>
+          </div>
           <div className="nav-link" onClick={() => navigate('/contact')} style={{ cursor: 'pointer' }}>
               <span>Contact Us</span>
             <div className="nav-indicator"></div>
@@ -813,6 +817,16 @@ const Navbar = ({ onLogoClick }) => {
             style={{ cursor: 'pointer' }}
           >
             About Us
+          </div>
+          <div 
+            className="mobile-nav-link" 
+            onClick={() => {
+              navigate('/testimonials');
+              setIsMobileMenuOpen(false);
+            }}
+            style={{ cursor: 'pointer' }}
+          >
+            Testimonials
           </div>
           <div 
             className="mobile-nav-link" 

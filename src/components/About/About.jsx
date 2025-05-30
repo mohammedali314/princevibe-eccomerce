@@ -218,7 +218,7 @@ const About = () => {
               </div>
               <div className="feature">
                 <CheckCircleIcon />
-                <span>Worldwide Shipping</span>
+                <span>Pakistan Shipping</span>
               </div>
               <div className="feature">
                 <CheckCircleIcon />
