@@ -1,185 +1,149 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
-  UserIcon, 
-  CogIcon, 
-  ShoppingBagIcon, 
-  HeartIcon,
-  ArrowRightOnRectangleIcon,
-  UserCircleIcon,
+  UserCircleIcon, 
   ClipboardDocumentListIcon,
-  QuestionMarkCircleIcon
+  QuestionMarkCircleIcon,
+  ArrowRightOnRectangleIcon,
+  ChevronDownIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import './UserMenu.scss';
 
-const UserMenu = ({ onClose }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef(null);
-  const { user, logout, isAuthenticated } = useAuth();
+const UserMenu = ({ isOpen, setIsOpen, buttonRef }) => {
   const navigate = useNavigate();
+  const { user, logout, isAuthenticated } = useAuth();
+  const menuRef = useRef(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (
+        menuRef.current && 
+        !menuRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
         setIsOpen(false);
-        if (onClose) onClose();
       }
     };
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('touchstart', handleClickOutside);
+      setIsAnimating(true);
+    } else {
+      setIsAnimating(false);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, setIsOpen, buttonRef]);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
+  const handleMenuItemClick = (path, callback) => {
+    setIsAnimating(false);
+    setTimeout(() => {
       setIsOpen(false);
-      if (onClose) onClose();
-      navigate('/');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+      if (callback) {
+        callback();
+      } else if (path) {
+        navigate(path);
+      }
+    }, 150);
   };
 
-  const handleMenuClick = (action) => {
-    setIsOpen(false);
-    if (onClose) onClose();
-    
-    switch (action) {
-      case 'profile':
-        navigate('/profile');
-        break;
-      case 'orders':
-        navigate('/orders');
-        break;
-      case 'wishlist':
-        navigate('/wishlist');
-        break;
-      case 'settings':
-        navigate('/settings');
-        break;
-      case 'help':
-        navigate('/help');
-        break;
-      default:
-        break;
-    }
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
+
+  const menuItems = [
+    {
+      icon: UserCircleIcon,
+      label: 'My Profile',
+      path: '/profile',
+      description: 'Manage your account'
+    },
+    {
+      icon: ClipboardDocumentListIcon,
+      label: 'My Orders',
+      path: '/orders',
+      description: 'Track your purchases'
+    },
+    {
+      icon: QuestionMarkCircleIcon,
+      label: 'Help & Support',
+      path: '/help',
+      description: 'Get assistance'
+    }
+  ];
 
   if (!isAuthenticated || !user) {
     return null;
   }
 
   return (
-    <div className="user-menu" ref={menuRef}>
-      <button 
-        className="user-menu-trigger"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <div className="user-avatar">
-          {user.avatar ? (
-            <img src={user.avatar} alt={user.firstName} />
-          ) : (
-            <div className="avatar-placeholder">
-              {(user.firstName?.[0] || user.email?.[0] || 'U').toUpperCase()}
-            </div>
-          )}
-        </div>
-        <span className="user-name">
-          {user.firstName || user.email?.split('@')[0] || 'User'}
-        </span>
-      </button>
-
-      {isOpen && (
-        <div className="user-menu-dropdown">
-          <div className="menu-header">
-            <div className="user-info">
-              <div className="user-avatar large">
-                {user.avatar ? (
-                  <img src={user.avatar} alt={user.firstName} />
-                ) : (
-                  <div className="avatar-placeholder">
-                    {(user.firstName?.[0] || user.email?.[0] || 'U').toUpperCase()}
-                  </div>
-                )}
-              </div>
-              <div className="user-details">
-                <h4>{user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email}</h4>
-                <p>{user.email}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="menu-content">
-            <div className="menu-section">
-              <button 
-                className="menu-item"
-                onClick={() => handleMenuClick('profile')}
-              >
+    <div 
+      ref={menuRef}
+      className={`user-menu ${isOpen ? 'open' : ''} ${isAnimating ? 'animating' : ''}`}
+    >
+      <div className="menu-container">
+        {/* User Info Header */}
+        <div className="user-info-header">
+          <div className="user-avatar">
+            {user.avatar ? (
+              <img src={user.avatar} alt={user.firstName} />
+            ) : (
+              <div className="avatar-placeholder">
                 <UserCircleIcon />
-                <span>My Profile</span>
-              </button>
-              
-              <button 
-                className="menu-item"
-                onClick={() => handleMenuClick('orders')}
-              >
-                <ClipboardDocumentListIcon />
-                <span>My Orders</span>
-              </button>
-              
-              <button 
-                className="menu-item"
-                onClick={() => handleMenuClick('wishlist')}
-              >
-                <HeartIcon />
-                <span>Wishlist</span>
-              </button>
-            </div>
-
-            <div className="menu-divider"></div>
-
-            <div className="menu-section">
-              <button 
-                className="menu-item"
-                onClick={() => handleMenuClick('settings')}
-              >
-                <CogIcon />
-                <span>Settings</span>
-              </button>
-              
-              <button 
-                className="menu-item"
-                onClick={() => handleMenuClick('help')}
-              >
-                <QuestionMarkCircleIcon />
-                <span>Help & Support</span>
-              </button>
-            </div>
-
-            <div className="menu-divider"></div>
-
-            <div className="menu-section">
-              <button 
-                className="menu-item logout"
-                onClick={handleLogout}
-              >
-                <ArrowRightOnRectangleIcon />
-                <span>Sign Out</span>
-              </button>
-            </div>
+              </div>
+            )}
+          </div>
+          <div className="user-details">
+            <h3 className="user-name">
+              {user.firstName && user.lastName 
+                ? `${user.firstName} ${user.lastName}` 
+                : user.email?.split('@')[0] || 'User'
+              }
+            </h3>
+            <p className="user-email">{user.email}</p>
           </div>
         </div>
-      )}
+
+        {/* Menu Items */}
+        <div className="menu-items">
+          {menuItems.map((item, index) => {
+            const IconComponent = item.icon;
+            return (
+              <button
+                key={index}
+                className="menu-item"
+                onClick={() => handleMenuItemClick(item.path)}
+              >
+                <div className="item-icon">
+                  <IconComponent />
+                </div>
+                <div className="item-content">
+                  <span className="item-label">{item.label}</span>
+                  <span className="item-description">{item.description}</span>
+                </div>
+                <ChevronDownIcon className="item-arrow" />
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Logout */}
+        <div className="menu-footer">
+          <button
+            className="logout-btn"
+            onClick={() => handleMenuItemClick(null, handleLogout)}
+          >
+            <ArrowRightOnRectangleIcon />
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

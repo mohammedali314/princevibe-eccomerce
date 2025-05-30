@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   MagnifyingGlassIcon, 
   UserIcon, 
-  HeartIcon, 
+  HeartIcon,
   ShoppingBagIcon,
   Bars3Icon,
   XMarkIcon,
@@ -12,7 +12,6 @@ import {
   SparklesIcon,
   XCircleIcon,
   UserCircleIcon,
-  CogIcon,
   ClipboardDocumentListIcon,
   QuestionMarkCircleIcon,
   ArrowRightOnRectangleIcon,
@@ -41,6 +40,7 @@ const Navbar = ({ onLogoClick }) => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState('login'); // 'login' or 'signup'
   const [isMobileUserMenuOpen, setIsMobileUserMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   // Search functionality state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -58,6 +58,7 @@ const Navbar = ({ onLogoClick }) => {
   const searchContainerRef = useRef(null);
   const searchModalRef = useRef(null);
   const debounceRef = useRef(null);
+  const userButtonRef = useRef(null);
 
   // Get cart and wishlist context
   const { cartItemsCount } = useCart();
@@ -359,8 +360,7 @@ const Navbar = ({ onLogoClick }) => {
 
   const handleUserIconClick = () => {
     if (isAuthenticated) {
-      // User menu will handle the dropdown
-      return;
+      setIsUserMenuOpen(!isUserMenuOpen);
     } else {
       openAuthModal('login');
     }
@@ -377,12 +377,6 @@ const Navbar = ({ onLogoClick }) => {
         break;
       case 'orders':
         navigate('/orders');
-        break;
-      case 'wishlist':
-        navigate('/wishlist');
-        break;
-      case 'settings':
-        navigate('/settings');
         break;
       case 'help':
         navigate('/help');
@@ -699,12 +693,26 @@ const Navbar = ({ onLogoClick }) => {
 
           {/* Authentication UI */}
           {isAuthenticated ? (
-            <UserMenu onClose={() => {}} />
+            <div className="user-menu-container">
+              <button 
+                ref={userButtonRef}
+                className="action-btn user-btn" 
+                onClick={handleUserIconClick}
+              >
+                <UserCircleIcon />
+                <span className="tooltip">Account</span>
+              </button>
+              <UserMenu 
+                isOpen={isUserMenuOpen} 
+                setIsOpen={setIsUserMenuOpen} 
+                buttonRef={userButtonRef} 
+              />
+            </div>
           ) : (
             <button className="action-btn" onClick={handleUserIconClick}>
-            <UserIcon />
+              <UserIcon />
               <span className="tooltip">Sign In</span>
-          </button>
+            </button>
           )}
         </div>
 
@@ -874,24 +882,6 @@ const Navbar = ({ onLogoClick }) => {
                       >
                         <ClipboardDocumentListIcon />
                         <span>My Orders</span>
-                      </button>
-                      
-                      <button 
-                        className="mobile-menu-item"
-                        onClick={() => handleMobileUserMenuClick('wishlist')}
-                      >
-                        <HeartIcon />
-                        <span>Wishlist</span>
-                      </button>
-                      
-                      <div className="mobile-menu-divider"></div>
-                      
-                      <button 
-                        className="mobile-menu-item"
-                        onClick={() => handleMobileUserMenuClick('settings')}
-                      >
-                        <CogIcon />
-                        <span>Settings</span>
                       </button>
                       
                       <button 

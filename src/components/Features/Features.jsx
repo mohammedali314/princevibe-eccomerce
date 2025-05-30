@@ -78,7 +78,7 @@ const Features = () => {
   const stats = [
     {
       id: 1,
-      number: "12000",
+      number: "12K+",
       label: "Happy Customers",
       icon: StarIcon
     },

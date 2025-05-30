@@ -149,7 +149,7 @@ const Testimonials = () => {
             <p>Discover the experiences of our valued customers who have chosen excellence</p>
             <div className="hero-stats">
               <div className="stat">
-                <span className="stat-number">12000</span>
+                <span className="stat-number">12K+</span>
                 <span className="stat-label">Happy Customers</span>
               </div>
               <div className="stat">

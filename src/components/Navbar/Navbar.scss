@@ -351,6 +351,11 @@
         background: rgba(236, 72, 153, 0.1);
         color: #ec4899;
       }
+
+      // User menu container for proper dropdown positioning
+      .user-menu-container {
+        position: relative;
+      }
     }
   }
 
