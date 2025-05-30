@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StarIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
-import { PlayIcon, PauseIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
+import { StarIcon } from '@heroicons/react/24/solid';
 import './Testimonials.scss';
 
 const Testimonials = () => {
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [hoveredCard, setHoveredCard] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const testimonialRef = useRef(null);
@@ -110,60 +107,6 @@ const Testimonials = () => {
     });
   }, []);
 
-  // Auto-play functionality
-  useEffect(() => {
-    let interval;
-    if (isAutoPlay) {
-      interval = setInterval(() => {
-        setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-      }, 5000);
-    }
-    return () => clearInterval(interval);
-  }, [isAutoPlay, testimonials.length]);
-
-  // Navigation functions
-  const nextTestimonial = () => {
-    const container = document.querySelector('.testimonial-main');
-    if (container) {
-      container.style.opacity = '0.5';
-      container.style.transform = 'translateX(20px)';
-      setTimeout(() => {
-        setCurrentTestimonial(prev => 
-          prev === testimonials.length - 1 ? 0 : prev + 1
-        );
-        container.style.opacity = '1';
-        container.style.transform = 'translateX(0)';
-      }, 200);
-    } else {
-      setCurrentTestimonial(prev => 
-        prev === testimonials.length - 1 ? 0 : prev + 1
-      );
-    }
-  };
-
-  const prevTestimonial = () => {
-    const container = document.querySelector('.testimonial-main');
-    if (container) {
-      container.style.opacity = '0.5';
-      container.style.transform = 'translateX(-20px)';
-      setTimeout(() => {
-        setCurrentTestimonial(prev => 
-          prev === 0 ? testimonials.length - 1 : prev - 1
-        );
-        container.style.opacity = '1';
-        container.style.transform = 'translateX(0)';
-      }, 200);
-    } else {
-      setCurrentTestimonial(prev => 
-        prev === 0 ? testimonials.length - 1 : prev - 1
-      );
-    }
-  };
-
-  const goToTestimonial = (index) => {
-    setCurrentTestimonial(index);
-  };
-
   // Render stars
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -172,26 +115,6 @@ const Testimonials = () => {
         className={`star ${i < rating ? 'filled' : 'empty'}`}
       />
     ));
-  };
-
-  // Handle smooth scroll to sections
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start',
-        inline: 'nearest'
-      });
-    }
-  };
-
-  // Smooth scroll to top
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
   };
 
   // Enhanced navigation with smooth transitions
@@ -246,102 +169,6 @@ const Testimonials = () => {
         </div>
       </section>
 
-      {/* Featured Testimonial Section */}
-      {/* <section id="featured-testimonial" className="featured-testimonial">
-        <div className="container">
-          <div className="section-header">
-            <h2>Featured Stories</h2>
-            <p>Authentic experiences from our distinguished clientele</p>
-          </div>
-
-          <div className="testimonial-carousel">
-            <div className="carousel-container">
-              <div className="testimonial-main">
-                <div className="testimonial-content">
-                  <div className="quote-icon">
-                    <ChatBubbleLeftIcon />
-                  </div>
-                  <p className="testimonial-text">
-                    {testimonials[currentTestimonial].text}
-                  </p>
-                  <div className="testimonial-rating">
-                    {renderStars(testimonials[currentTestimonial].rating)}
-                    <span className="rating-text">({testimonials[currentTestimonial].rating}.0)</span>
-                  </div>
-                </div>
-                
-                <div className="testimonial-author">
-                  <div className="author-image">
-                    <img 
-                      src={testimonials[currentTestimonial].image} 
-                      alt={testimonials[currentTestimonial].name}
-                      loading="lazy"
-                    />
-                    <div className="verified-badge">✓</div>
-                  </div>
-                  <div className="author-info">
-                    <h4>{testimonials[currentTestimonial].name}</h4>
-                    <p>{testimonials[currentTestimonial].title}</p>
-                    <span className="location">📍 {testimonials[currentTestimonial].location}</span>
-                    <span className="product">Purchased: {testimonials[currentTestimonial].product}</span>
-                    <span className="purchase-date">{testimonials[currentTestimonial].purchaseDate}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Navigation Controls */}
-              {/* <div className="carousel-controls">
-                <button 
-                  className="control-btn prev" 
-                  onClick={prevTestimonial}
-                  aria-label="Previous testimonial"
-                >
-                  <ChevronLeftIcon />
-                </button>
-                
-                <div className="carousel-indicators">
-                  {testimonials.map((_, index) => (
-                    <button
-                      key={index}
-                      className={`indicator ${index === currentTestimonial ? 'active' : ''}`}
-                      onClick={() => {
-                        setCurrentTestimonial(index);
-                        // Add smooth visual transition
-                        const container = document.querySelector('.testimonial-main');
-                        if (container) {
-                          container.style.opacity = '0.5';
-                          setTimeout(() => {
-                            container.style.opacity = '1';
-                          }, 200);
-                        }
-                      }}
-                    />
-                  ))}
-                </div>
-
-                <button 
-                  className="control-btn next" 
-                  onClick={nextTestimonial}
-                  aria-label="Next testimonial"
-                >
-                  <ChevronRightIcon />
-                </button>
-              </div>
-
-              {/* Auto-play Control */}
-              {/* <button 
-                className="autoplay-control"
-                onClick={() => setIsAutoPlay(!isAutoPlay)}
-                aria-label={isAutoPlay ? 'Pause autoplay' : 'Start autoplay'}
-              >
-                {isAutoPlay ? <PauseIcon /> : <PlayIcon />}
-                <span>{isAutoPlay ? 'Pause' : 'Play'}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section> */}
-
       {/* All Testimonials Grid */}
       <section id="all-testimonials" className="all-testimonials">
         <div className="container">
@@ -357,7 +184,6 @@ const Testimonials = () => {
                 className={`testimonial-card ${hoveredCard === index ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard(index)}
                 onMouseLeave={() => setHoveredCard(null)}
-                onClick={() => goToTestimonial(index)}
               >
                 <div className="card-content">
                   <div className="card-header">
@@ -401,34 +227,6 @@ const Testimonials = () => {
           </div>
         </div>
       </section>
-
-      {/* Statistics Section */}
-      {/* <section className="testimonials-stats">
-        <div className="container">
-          <div className="stats-grid">
-            <div className="stat-item">
-              <div className="stat-icon">⭐</div>
-              <div className="stat-value">4.9/5</div>
-              <div className="stat-label">Average Rating</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-icon">🎯</div>
-              <div className="stat-value">12000</div>
-              <div className="stat-label">Satisfied Customers</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-icon">🚀</div>
-              <div className="stat-value">99%</div>
-              <div className="stat-label">Satisfaction Rate</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-icon">💎</div>
-              <div className="stat-value">2+ Years</div>
-              <div className="stat-label">Excellence Record</div>
-            </div>
-          </div>
-        </div>
-      </section> */}
 
       {/* Call to Action Section */}
       <section className="testimonials-cta">

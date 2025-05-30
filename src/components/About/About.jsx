@@ -1,15 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { 
   SparklesIcon, 
-  HeartIcon, 
-  ShieldCheckIcon, 
-  TruckIcon,
-  ClockIcon,
-  StarIcon,
-  UserGroupIcon,
-  GlobeAltIcon,
-  LightBulbIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline';
 import './About.scss';
@@ -18,10 +10,7 @@ import Arhamimage from '../../../public/photos/Arham.png';
 
 const About = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const heroRef = useRef(null);
-  const statsRef = useRef(null);
-  const valuesRef = useRef(null);
   const teamRef = useRef(null);
   const teamCarouselRef = useRef(null);
   
@@ -46,21 +35,7 @@ const About = () => {
       image: Arhamimage,
       description: 'Expert horologist specializing in vintage and luxury pieces',
       social: { linkedin: '#', twitter: '#' }
-    },
-    // {
-    //   name: 'Sarah Johnson',
-    //   role: 'Customer Experience Director',
-    //   image: 'https://images.unsplash.com/photo-1494790108755-2616b612b1b4?w=400&h=400&fit=crop&crop=face&q=80',
-    //   description: 'Dedicated to ensuring exceptional customer satisfaction',
-    //   social: { linkedin: '#', twitter: '#' }
-    // },
-    // {
-    //   name: 'David Chen',
-    //   role: 'Product Specialist',
-    //   image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face&q=80',
-    //   description: 'Expert in luxury watch authentication and curation',
-    //   social: { linkedin: '#', twitter: '#' }
-    // }
+    }
   ];
 
   const milestones = [
@@ -89,7 +64,7 @@ const About = () => {
       });
     }, observerOptions);
 
-    const sections = [heroRef, statsRef, valuesRef, teamRef];
+    const sections = [heroRef, teamRef];
     sections.forEach(ref => {
       if (ref.current) observer.observe(ref.current);
     });
@@ -278,27 +253,6 @@ const About = () => {
           </div>
         </div>
       </section>
-
-      {/* Values Section */}
-      {/* <section className="values-section" ref={valuesRef}>
-        <div className="container">
-          <div className="section-header">
-            <h2>Our Values</h2>
-            <p>The principles that guide everything we do</p>
-          </div>
-          <div className="values-grid">
-            {values.map((value, index) => (
-              <div key={index} className="value-card" style={{ animationDelay: `${index * 0.15}s` }}>
-                <div className={`value-icon bg-gradient-to-r ${value.gradient}`}>
-                  <value.icon />
-                </div>
-                <h3>{value.title}</h3>
-                <p>{value.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section> */}
 
       {/* Timeline Section */}
       <section className="timeline-section">
