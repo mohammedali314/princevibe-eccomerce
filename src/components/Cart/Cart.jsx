@@ -60,15 +60,11 @@ const Cart = ({ isOpen, onClose }) => {
   };
 
   const calculateShipping = () => {
-    return safeCartTotal > 50000 ? 0 : 500;
-  };
-
-  const calculateTax = () => {
-    return Math.round(safeCartTotal * 0.1);
+    return 0; // Always free shipping
   };
 
   const calculateFinalTotal = () => {
-    return safeCartTotal + calculateTax() + calculateShipping();
+    return safeCartTotal; // No tax, no shipping costs
   };
 
   if (!isOpen) return null;
@@ -159,20 +155,9 @@ const Cart = ({ isOpen, onClose }) => {
                 </div>
                 
                 <div className="summary-row">
-                  <span>Tax (10%):</span>
-                  <span>{formatPrice(calculateTax())}</span>
-                </div>
-                
-                <div className="summary-row">
                   <span>Shipping:</span>
-                  <span>{calculateShipping() === 0 ? 'FREE' : formatPrice(calculateShipping())}</span>
+                  <span>FREE</span>
                 </div>
-                
-                {safeCartTotal > 50000 && (
-                  <div className="free-shipping-notice">
-                    🎉 You qualify for free shipping!
-                  </div>
-                )}
                 
                 <div className="summary-row total">
                   <span>Total:</span>

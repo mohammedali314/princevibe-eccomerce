@@ -59,6 +59,14 @@ const CheckoutForm = ({ onOrderComplete }) => {
     subscribeNewsletter: false
   });
 
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   // Ensure cart is always an array and handle edge cases
   const safeCart = Array.isArray(cart) ? cart : [];
   const safeCartTotal = typeof cartTotal === 'number' && !isNaN(cartTotal) ? cartTotal : 0;
@@ -147,13 +155,17 @@ const CheckoutForm = ({ onOrderComplete }) => {
   };
 
   const nextStep = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, 4));
+    if (validateStep(currentStep) && currentStep < steps.length) {
+      setCurrentStep(currentStep + 1);
+      scrollToTop();
     }
   };
 
   const prevStep = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      scrollToTop();
+    }
   };
 
   const applyDiscount = async () => {
@@ -258,6 +270,7 @@ const CheckoutForm = ({ onOrderComplete }) => {
         
         // Move to confirmation step
         setCurrentStep(4);
+        scrollToTop();
         
         // Call completion callback
         if (onOrderComplete) {
@@ -629,7 +642,12 @@ const CheckoutForm = ({ onOrderComplete }) => {
 
               <div className="confirmation-actions">
                 <button
-                  onClick={() => window.location.href = '/'}
+                  onClick={() => {
+                    scrollToTop();
+                    setTimeout(() => {
+                      window.location.href = '/';
+                    }, 300);
+                  }}
                   className="continue-shopping-btn"
                 >
                   <ArrowLeftIcon className="btn-icon" />
@@ -660,7 +678,12 @@ const CheckoutForm = ({ onOrderComplete }) => {
             <div className="empty-cart-message" style={{ textAlign: 'center', padding: '4rem 0' }}>
               <button 
                 className="continue-shopping-btn"
-                onClick={() => window.location.href = '/'}
+                onClick={() => {
+                  scrollToTop();
+                  setTimeout(() => {
+                    window.location.href = '/';
+                  }, 300);
+                }}
                 style={{
                   padding: '1rem 2rem',
                   background: 'linear-gradient(135deg, #000000, #333333)',
