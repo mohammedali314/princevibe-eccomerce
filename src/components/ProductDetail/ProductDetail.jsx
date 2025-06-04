@@ -491,19 +491,6 @@ const ProductDetail = () => {
                 <div className="price-note">VAT included • Free shipping in Pakistan</div>
               </div>
 
-              {/* Features */}
-              <div className="luxury-features">
-                <h4>Key Features</h4>
-                <div className="features-grid">
-                {product.features.map((feature, index) => (
-                    <div key={index} className="feature-item">
-                      <CheckBadgeIcon />
-                      <span>{feature}</span>
-                    </div>
-                ))}
-                </div>
-              </div>
-
               {/* Quantity & Stock */}
               <div className="quantity-section">
                 <div className="section-header">
@@ -594,6 +581,19 @@ const ProductDetail = () => {
                     <ShareIcon />
                     <span>Share</span>
                 </button>
+                </div>
+              </div>
+
+                  {/* Features */}
+                  <div className="luxury-features">
+                <h4>Key Features</h4>
+                <div className="features-grid">
+                {product.features.map((feature, index) => (
+                    <div key={index} className="feature-item">
+                      <CheckBadgeIcon />
+                      <span>{feature}</span>
+                    </div>
+                ))}
                 </div>
               </div>
 

@@ -14,11 +14,6 @@ import About from './components/About/About';
 import Contact from './components/Contact/Contact';
 import Testimonials from './components/Testimonials/Testimonials';
 import Checkout from './components/Checkout/Checkout';
-import UserProfile from './components/User/UserProfile';
-import UserOrders from './components/User/UserOrders';
-import UserSettings from './components/User/UserSettings';
-import UserHelp from './components/User/UserHelp';
-import UserWishlist from './components/User/UserWishlist';
 import Loading from './components/Loading/Loading';
 import AdminLogin from './components/Admin/AdminLogin';
 import AdminDashboard from './components/Admin/AdminDashboard';
@@ -221,10 +216,10 @@ const AppContent = () => {
                 <>
                   <Navbar onLogoClick={triggerLoading} />
                   <Checkout />
-                  <Footer onLogoClick={triggerLoading} />
-                </>
-              } 
-            />
+                <Footer onLogoClick={triggerLoading} />
+              </>
+            } 
+          />
 
           {/* Admin Routes */}
           <Route 
@@ -238,58 +233,6 @@ const AppContent = () => {
               </ProtectedAdminRoute>
             } 
             />
-
-          {/* User Routes */}
-          <Route 
-            path="/profile" 
-            element={
-              <>
-                <Navbar onLogoClick={triggerLoading} />
-                <UserProfile />
-                <Footer onLogoClick={triggerLoading} />
-              </>
-            } 
-          />
-          <Route 
-            path="/orders" 
-            element={
-              <>
-                <Navbar onLogoClick={triggerLoading} />
-                <UserOrders />
-                <Footer onLogoClick={triggerLoading} />
-              </>
-            } 
-          />
-          <Route 
-            path="/settings" 
-            element={
-              <>
-                <Navbar onLogoClick={triggerLoading} />
-                <UserSettings />
-                <Footer onLogoClick={triggerLoading} />
-              </>
-            } 
-          />
-          <Route 
-            path="/help" 
-            element={
-              <>
-                <Navbar onLogoClick={triggerLoading} />
-                <UserHelp />
-                <Footer onLogoClick={triggerLoading} />
-              </>
-            } 
-          />
-          <Route 
-            path="/wishlist" 
-            element={
-              <>
-                <Navbar onLogoClick={triggerLoading} />
-                <UserWishlist />
-                <Footer onLogoClick={triggerLoading} />
-              </>
-            } 
-          />
 
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/" replace />} />

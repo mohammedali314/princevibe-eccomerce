@@ -1,5 +1,5 @@
 // Order Service for Cash on Delivery
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://princevibe-eccomerce-backend-production.up.railway.app/api';
 
 class OrderService {
   constructor() {
@@ -16,7 +16,107 @@ class OrderService {
   // Create a new COD order
   async createCODOrder(orderData) {
     try {
-      const order = {
+      // Prepare the order data for the backend API
+      const apiOrderData = {
+        customer: {
+          name: `${orderData.customer.firstName} ${orderData.customer.lastName}`.trim(),
+          email: orderData.customer.email,
+          phone: orderData.customer.phone,
+          address: {
+            street: orderData.shipping.address,
+            city: orderData.shipping.city,
+            state: orderData.shipping.state,
+            zipCode: orderData.shipping.postalCode,
+            country: orderData.shipping.country || 'Pakistan'
+          }
+        },
+        items: orderData.items.map(item => ({
+          productId: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+          sku: item.sku || `SKU${item.id}`
+        })),
+        summary: {
+          subtotal: orderData.payment.subtotal,
+          tax: 0, // No tax as mentioned in previous conversations
+          shipping: 0, // Free shipping as mentioned
+          discount: orderData.payment.discount || 0,
+          total: orderData.payment.amount
+        },
+        payment: {
+          method: orderData.payment.method || 'cod',
+          status: 'pending'
+        },
+        notes: {
+          customer: orderData.specialInstructions || ''
+        }
+      };
+
+      console.log('Sending order to backend:', apiOrderData);
+
+      // Make API call to backend
+      const response = await fetch(`${API_BASE_URL}/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(apiOrderData)
+      });
+
+      let result;
+      try {
+        result = await response.json();
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        throw new Error('Invalid response from server');
+      }
+
+      if (!response.ok) {
+        console.error('Backend API error:', result);
+        throw new Error(result.message || `Server error: ${response.status}`);
+      }
+
+      if (result.success && result.data) {
+        console.log('Order created successfully in backend:', result.data);
+        
+        // Also save locally as backup
+        const localOrder = {
+          id: result.data._id,
+          orderNumber: result.data.orderNumber,
+          ...orderData,
+          status: result.data.status,
+          paymentStatus: result.data.payment.status,
+          createdAt: result.data.createdAt,
+          updatedAt: result.data.updatedAt,
+          trackingNumber: result.data.trackingNumber,
+          estimatedDelivery: this.calculateEstimatedDelivery(orderData.shipping.city),
+          orderNotes: [],
+          confirmationEmailSent: true, // Backend handles email sending
+          confirmationSmsSent: false
+        };
+
+        this.orders.push(localOrder);
+        localStorage.setItem('prince_vibe_orders', JSON.stringify(this.orders));
+
+        return {
+          success: true,
+          order: result.data,
+          message: 'Order placed successfully! We will contact you within 24 hours to confirm delivery details.'
+        };
+      } else {
+        throw new Error(result.message || 'Failed to create order');
+      }
+
+    } catch (error) {
+      console.error('Order creation error:', error);
+      
+      // Fallback to local storage if API fails
+      console.log('API failed, falling back to local storage...');
+      
+      const fallbackOrder = {
         id: Date.now(),
         orderNumber: this.generateOrderNumber(),
         ...orderData,
@@ -28,30 +128,18 @@ class OrderService {
         estimatedDelivery: this.calculateEstimatedDelivery(orderData.shipping.city),
         orderNotes: [],
         confirmationEmailSent: false,
-        confirmationSmsSent: false
+        confirmationSmsSent: false,
+        isLocalOnly: true // Flag to indicate this order is not in backend
       };
 
-      // Save order locally (in production, this would be saved to a database)
-      this.orders.push(order);
+      this.orders.push(fallbackOrder);
       localStorage.setItem('prince_vibe_orders', JSON.stringify(this.orders));
-
-      // Send confirmation notifications
-      await this.sendConfirmationNotifications(order);
-
-      // Log order creation
-      console.log('COD Order Created:', order);
 
       return {
         success: true,
-        order: order,
-        message: 'Order placed successfully! We will contact you within 24 hours to confirm delivery details.'
-      };
-
-    } catch (error) {
-      console.error('Order creation error:', error);
-      return {
-        success: false,
-        error: error.message || 'Failed to create order'
+        order: fallbackOrder,
+        message: 'Order saved locally. We will process it as soon as our servers are available.',
+        warning: 'Order could not be sent to our servers. Please contact support if you don\'t receive confirmation within 24 hours.'
       };
     }
   }

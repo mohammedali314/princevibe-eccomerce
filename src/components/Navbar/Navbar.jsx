@@ -323,7 +323,7 @@ const Navbar = ({ onLogoClick }) => {
     if (location.pathname !== '/') {
       // Add a small delay to allow scroll to complete, then navigate
       setTimeout(() => {
-        navigate('/');
+      navigate('/');
       }, 100);
     }
     
