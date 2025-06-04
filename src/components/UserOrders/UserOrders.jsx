@@ -17,7 +17,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import './UserOrders.scss';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://princevibe-eccomerce-backend-production.up.railway.app/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 const UserOrders = () => {
   const { user, isAuthenticated } = useAuth();
@@ -36,7 +36,10 @@ const UserOrders = () => {
 
   // Fetch orders from API (only for authenticated users)
   const fetchOrdersFromAPI = async () => {
-    if (!isAuthenticated || !user?._id) {
+    // Check for user ID in different possible property names
+    const userId = user?._id || user?.id;
+    
+    if (!isAuthenticated || !userId) {
       setOrders([]);
       setFilteredOrders([]);
       setLoading(false);
@@ -47,8 +50,8 @@ const UserOrders = () => {
       setLoading(true);
       setError(null);
       
-      // Get token from localStorage
-      const token = localStorage.getItem('token');
+      // Get token from localStorage - Fix key name to match ApiService
+      const token = localStorage.getItem('userToken');
       
       if (!token) {
         throw new Error('No authentication token found');

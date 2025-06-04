@@ -1,5 +1,5 @@
 // Order Service for Cash on Delivery
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://princevibe-eccomerce-backend-production.up.railway.app/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 class OrderService {
   constructor() {
@@ -27,14 +27,22 @@ class OrderService {
   // Create a new COD order (updated to use API for authenticated users)
   async createCODOrder(orderData) {
     try {
-      // Get user authentication data
-      const userData = JSON.parse(localStorage.getItem('user') || '{}');
-      const token = localStorage.getItem('token');
-      const isAuthenticated = !!token && !!userData._id;
+      // Get user authentication data - Fix localStorage key names to match ApiService
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+      const token = localStorage.getItem('userToken');
+      
+      // Check for user ID in different possible property names
+      const userId = userData._id || userData.id;
+      const isAuthenticated = !!token && !!userId;
 
       // For guest users (not authenticated), don't save the order
       if (!isAuthenticated) {
         console.log('Guest user detected - order will not be saved');
+        console.log('Token present:', !!token);
+        console.log('User data present:', !!userData && Object.keys(userData).length > 0);
+        console.log('User ID (_id):', !!userData._id);
+        console.log('User ID (id):', !!userData.id);
+        console.log('Full userData:', userData);
         
         // Return success but with a message about guest orders
         return {
@@ -56,7 +64,7 @@ class OrderService {
       // For authenticated users, prepare order data for the backend API
       const apiOrderData = {
         customer: {
-          userId: userData._id,  // Include user ID for authenticated users
+          userId: userId,  // Use the detected user ID
           name: `${orderData.customer.firstName} ${orderData.customer.lastName}`.trim(),
           email: orderData.customer.email,
           phone: orderData.customer.phone,
@@ -135,9 +143,10 @@ class OrderService {
       
       // For authenticated users, if API fails, still don't fall back to localStorage
       // This ensures consistency with the new API-first approach
-      const userData = JSON.parse(localStorage.getItem('user') || '{}');
-      const token = localStorage.getItem('token');
-      const isAuthenticated = !!token && !!userData._id;
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+      const token = localStorage.getItem('userToken');
+      const userId = userData._id || userData.id;
+      const isAuthenticated = !!token && !!userId;
       
       if (isAuthenticated) {
         return {
@@ -168,10 +177,11 @@ class OrderService {
   // Get orders for current user (authenticated users only)
   async getUserOrders() {
     try {
-      const token = localStorage.getItem('token');
-      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      const token = localStorage.getItem('userToken');
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+      const userId = userData._id || userData.id;
       
-      if (!token || !userData._id) {
+      if (!token || !userId) {
         throw new Error('User not authenticated');
       }
 
@@ -298,9 +308,10 @@ class OrderService {
 
   // Utility method to check if user is authenticated
   isUserAuthenticated() {
-    const token = localStorage.getItem('token');
-    const userData = JSON.parse(localStorage.getItem('user') || '{}');
-    return !!token && !!userData._id;
+    const token = localStorage.getItem('userToken');
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    const userId = userData._id || userData.id;
+    return !!token && !!userId;
   }
 
   // Method to clear local orders (for cleanup purposes)
