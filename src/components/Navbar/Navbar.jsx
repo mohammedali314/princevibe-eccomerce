@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   MagnifyingGlassIcon, 
   UserIcon, 
-  HeartIcon,
+  HeartIcon, 
   ShoppingBagIcon,
   Bars3Icon,
   XMarkIcon,

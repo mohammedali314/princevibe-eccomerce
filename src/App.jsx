@@ -13,6 +13,7 @@ import ProductDetail from './components/ProductDetail/ProductDetail';
 import About from './components/About/About';
 import Contact from './components/Contact/Contact';
 import Testimonials from './components/Testimonials/Testimonials';
+import Checkout from './components/Checkout/Checkout';
 import UserProfile from './components/User/UserProfile';
 import UserOrders from './components/User/UserOrders';
 import UserSettings from './components/User/UserSettings';
@@ -211,7 +212,19 @@ const AppContent = () => {
                 <Footer onLogoClick={triggerLoading} />
               </>
             } 
-          />
+            />
+
+            {/* Checkout Route */}
+            <Route 
+              path="/checkout" 
+              element={
+                <>
+                  <Navbar onLogoClick={triggerLoading} />
+                  <Checkout />
+                  <Footer onLogoClick={triggerLoading} />
+                </>
+              } 
+            />
 
           {/* Admin Routes */}
           <Route 

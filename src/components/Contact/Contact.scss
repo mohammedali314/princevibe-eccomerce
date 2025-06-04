@@ -24,6 +24,7 @@
       font-weight: 800;
       background: linear-gradient(135deg, #1f2937 0%, #667eea 50%, #764ba2 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 1rem;
       line-height: 1.2;
@@ -615,6 +616,7 @@
         font-weight: 800;
         background: linear-gradient(135deg, #1f2937 0%, #667eea 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 1rem;
 
@@ -823,6 +825,7 @@
         margin-bottom: 1rem;
         background: linear-gradient(135deg, #ffffff 0%, #667eea 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
 
         @media (max-width: 768px) {

@@ -24,6 +24,7 @@
       font-weight: 800;
       background: linear-gradient(135deg, #1f2937 0%, #667eea 50%, #764ba2 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 1rem;
       line-height: 1.2;
@@ -199,6 +200,7 @@
         .gradient-text {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #ec4899 100%);
           -webkit-background-clip: text;
+          background-clip: text;
           -webkit-text-fill-color: transparent;
         }
 
@@ -411,6 +413,7 @@
         font-weight: 800;
         background: linear-gradient(135deg, #1f2937 0%, #667eea 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 2rem;
         line-height: 1.2;

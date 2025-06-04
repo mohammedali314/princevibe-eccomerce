@@ -20,6 +20,11 @@ const Cart = ({ isOpen, onClose }) => {
     clearCart 
   } = useCart();
 
+  // Ensure cart is always an array
+  const safeCart = Array.isArray(cart) ? cart : [];
+  const safeCartTotal = typeof cartTotal === 'number' && !isNaN(cartTotal) ? cartTotal : 0;
+  const safeCartItemsCount = typeof cartItemsCount === 'number' && !isNaN(cartItemsCount) ? cartItemsCount : 0;
+
   const [isClearing, setIsClearing] = useState(false);
   const [iconsLoaded, setIconsLoaded] = useState(false);
 
@@ -55,15 +60,15 @@ const Cart = ({ isOpen, onClose }) => {
   };
 
   const calculateShipping = () => {
-    return cartTotal > 50000 ? 0 : 500;
+    return safeCartTotal > 50000 ? 0 : 500;
   };
 
   const calculateTax = () => {
-    return Math.round(cartTotal * 0.1);
+    return Math.round(safeCartTotal * 0.1);
   };
 
   const calculateFinalTotal = () => {
-    return cartTotal + calculateTax() + calculateShipping();
+    return safeCartTotal + calculateTax() + calculateShipping();
   };
 
   if (!isOpen) return null;
@@ -75,7 +80,7 @@ const Cart = ({ isOpen, onClose }) => {
         <div className="cart-header">
           <h2>
             <ShoppingBagIcon className="cart-icon" />
-            Shopping Cart ({cartItemsCount})
+            Shopping Cart ({safeCartItemsCount})
           </h2>
           <button className="close-btn" onClick={onClose}>
             <XMarkIcon />
@@ -84,7 +89,7 @@ const Cart = ({ isOpen, onClose }) => {
 
         {/* Cart Content */}
         <div className="cart-content">
-          {cart.items.length === 0 ? (
+          {safeCart.length === 0 ? (
             <div className="empty-cart">
               <ShoppingBagIcon className="empty-icon" />
               <h3>Your cart is empty</h3>
@@ -97,7 +102,7 @@ const Cart = ({ isOpen, onClose }) => {
             <>
               {/* Cart Items */}
               <div className="cart-items">
-                {cart.items.map((item) => (
+                {safeCart.map((item) => (
                   <div key={item.id} className={`cart-item ${isClearing ? 'clearing' : ''}`}>
                     <div className="item-image">
                       <img src={item.image} alt={item.name} />
@@ -150,7 +155,7 @@ const Cart = ({ isOpen, onClose }) => {
               <div className="cart-summary">
                 <div className="summary-row">
                   <span>Subtotal:</span>
-                  <span>{formatPrice(cartTotal)}</span>
+                  <span>{formatPrice(safeCartTotal)}</span>
                 </div>
                 
                 <div className="summary-row">
@@ -163,7 +168,7 @@ const Cart = ({ isOpen, onClose }) => {
                   <span>{calculateShipping() === 0 ? 'FREE' : formatPrice(calculateShipping())}</span>
                 </div>
                 
-                {cartTotal > 50000 && (
+                {safeCartTotal > 50000 && (
                   <div className="free-shipping-notice">
                     🎉 You qualify for free shipping!
                   </div>

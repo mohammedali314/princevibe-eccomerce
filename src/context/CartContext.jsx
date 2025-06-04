@@ -133,7 +133,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const value = {
-    cart: state,
+    cart: state.items,
     addToCart,
     removeFromCart,
     updateQuantity,
