@@ -24,62 +24,69 @@ const UserOrders = () => {
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('all');
   const [sortBy, setSortBy] = useState('date');
+  const [expandedOrders, setExpandedOrders] = useState(new Set());
 
-  // Fetch orders from backend API
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  // Fetch orders from localStorage (only real orders, no sample data)
   const fetchOrders = async () => {
-    if (!user?.id) {
+    if (!user?.email) {
       setLoading(false);
       return;
     }
 
     try {
       setLoading(true);
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://princevibe-eccomerce-backend-production.up.railway.app/api';
       
-      const response = await fetch(`${API_BASE_URL}/orders/user/${user.id}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('userToken') || user.token}`
-        }
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success) {
-          setOrders(result.data || []);
-          setFilteredOrders(result.data || []);
-        } else {
-          console.error('Failed to fetch orders:', result.message);
-          setOrders([]);
-          setFilteredOrders([]);
-        }
-      } else {
-        // If API is not available, fall back to email-based lookup for now
-        console.log('API not available, using fallback method');
-        
-        // Try to get orders by email as fallback
-        const emailResponse = await fetch(`${API_BASE_URL}/orders/by-email/${user.email}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json'
+      // Get real orders from the existing localStorage key
+      const storedOrders = localStorage.getItem('prince_vibe_orders');
+      let allOrders = [];
+      
+      if (storedOrders) {
+        try {
+          allOrders = JSON.parse(storedOrders);
+          // Ensure orders is an array
+          if (!Array.isArray(allOrders)) {
+            allOrders = [];
           }
-        });
-
-        if (emailResponse.ok) {
-          const emailResult = await emailResponse.json();
-          if (emailResult.success) {
-            setOrders(emailResult.data || []);
-            setFilteredOrders(emailResult.data || []);
-          } else {
-            setOrders([]);
-            setFilteredOrders([]);
-          }
-        } else {
-          setOrders([]);
-          setFilteredOrders([]);
+        } catch (parseError) {
+          console.error('Error parsing stored orders:', parseError);
+          allOrders = [];
         }
       }
+      
+      // Filter orders for current user by email
+      // Check multiple email fields and also allow partial matching for similar emails
+      const userOrders = allOrders.filter(order => {
+        const customerEmail = order.customer?.email;
+        const userEmail = order.userEmail;
+        const directEmail = order.email;
+        const currentEmail = user.email;
+        
+        // Exact matches
+        if (customerEmail === currentEmail || 
+            userEmail === currentEmail ||
+            directEmail === currentEmail) {
+          return true;
+        }
+        
+        // For development/testing: also match if the username part (before @) is the same
+        const getCurrentEmailUsername = () => currentEmail.split('@')[0];
+        const getCustomerEmailUsername = () => customerEmail ? customerEmail.split('@')[0] : null;
+        
+        if (getCustomerEmailUsername() === getCurrentEmailUsername()) {
+          return true;
+        }
+        
+        return false;
+      });
+      
+      setOrders(userOrders);
+      setFilteredOrders(userOrders);
+      
     } catch (error) {
       console.error('Error fetching orders:', error);
       setOrders([]);
@@ -91,11 +98,6 @@ const UserOrders = () => {
 
   useEffect(() => {
     fetchOrders();
-    
-    // Set up polling for real-time updates every 30 seconds
-    const interval = setInterval(fetchOrders, 30000);
-    
-    return () => clearInterval(interval);
   }, [user]);
 
   useEffect(() => {
@@ -112,7 +114,7 @@ const UserOrders = () => {
         case 'date':
           return new Date(b.createdAt) - new Date(a.createdAt);
         case 'amount':
-          return (b.summary?.total || 0) - (a.summary?.total || 0);
+          return (b.payment?.amount || b.totalAmount || 0) - (a.payment?.amount || a.totalAmount || 0);
         case 'status':
           return a.status.localeCompare(b.status);
         default:
@@ -189,6 +191,33 @@ const UserOrders = () => {
 
   const handleRefresh = () => {
     fetchOrders();
+  };
+
+  // Expose refresh function for external use (when orders are placed)
+  window.refreshUserOrders = handleRefresh;
+
+  const formatDeliveryDate = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const deliveryDate = new Date(today.getTime() + (5 * 24 * 60 * 60 * 1000)); // 5 days from now
+    
+    return deliveryDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  const toggleOrderExpansion = (orderId) => {
+    setExpandedOrders(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(orderId)) {
+        newSet.delete(orderId);
+      } else {
+        newSet.add(orderId);
+      }
+      return newSet;
+    });
   };
 
   if (loading) {
@@ -275,11 +304,13 @@ const UserOrders = () => {
         {filteredOrders.length === 0 ? (
           <div className="no-orders">
             <InboxIcon className="no-orders-icon" />
-            <h3>No Orders Found</h3>
+            <h3>
+              {filterStatus === 'all' ? 'No Orders Yet' : 'No Orders Found'}
+            </h3>
             <p>
               {filterStatus === 'all' 
                 ? "You haven't placed any orders yet. Start shopping to see your orders here!"
-                : `No orders found with status "${filterStatus}". Try changing the filter.`
+                : `No orders found with status "${filterStatus}". Try changing the filter or browse our products to place your first order.`
               }
             </p>
           </div>
@@ -288,77 +319,143 @@ const UserOrders = () => {
             {filteredOrders.map((order) => {
               const StatusIcon = getStatusIcon(order.status);
               return (
-                <div key={order._id || order.id} className="order-card">
+                <div key={order.id} className="order-card">
                   <div className="card-header">
                     <div className="order-info">
-                      <h3>Order #{order.orderNumber}</h3>
+                      <h3>Order #{order.orderNumber || order.id?.slice(0, 8)}</h3>
                       <div className="order-meta">
                         <div className="order-date">
-                          <CalendarIcon className="icon" />
-                          {formatDate(order.createdAt)}
+                          <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          {new Date(order.createdAt).toLocaleDateString()}
                         </div>
                       </div>
                     </div>
-                    <div className="status-badge" style={{ [getStatusColor(order.status).split(':')[0]]: getStatusColor(order.status).split(':')[1] }}>
-                      <StatusIcon className="status-icon" />
-                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    <div className={`status-badge status-${order.status?.toLowerCase() || 'pending'}`}>
+                      <svg className="status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {order.status || 'Pending'}
                     </div>
                   </div>
 
                   <div className="card-content">
-                    <div className="order-items">
-                      <h4>Items ({order.items?.length || 0})</h4>
-                      <div className="items-list">
-                        {(order.items || []).slice(0, 2).map((item, index) => (
-                          <div key={index} className="item-summary">
-                            <span className="item-name">{item.name}</span>
-                            <span className="item-quantity">x{item.quantity}</span>
-                          </div>
-                        ))}
-                        {(order.items || []).length > 2 && (
-                          <div className="more-items">
-                            +{(order.items || []).length - 2} more items
-                          </div>
-                        )}
+                    {/* Order Summary - Always visible */}
+                    <div className="order-summary-minimal">
+                      <div className="summary-row total">
+                        <span>Total</span>
+                        <span className="total-amount">
+                          <svg className="currency-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                          </svg>
+                          PKR {(order.payment?.amount || order.totalAmount || 0).toLocaleString('en-PK')}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Expanded Details - Show only when expanded */}
+                    {expandedOrders.has(order.id) && (
+                      <div className="expanded-details">
+                        <div className="order-items">
+                          <h4>Order Items</h4>
+                          <div className="order-items-grid">
+                            {order.items?.map((item, index) => (
+                              <div key={index} className="order-item-card">
+                                <div className="item-card-header">
+                                  <div className="item-image">
+                                    {item.image ? (
+                                      <img src={item.image} alt={item.name} />
+                                    ) : (
+                                      <div className="no-image">
+                                        <svg className="placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="item-card-content">
+                                  <div className="item-info">
+                                    <h5 className="item-name">{item.name}</h5>
+                                    <div className="item-pricing">
+                                      <span className="item-price">PKR {(item.price || 0).toLocaleString('en-PK')}</span>
+                                      <span className="item-quantity">Qty: {item.quantity || 1}</span>
+                                    </div>
+                                    <div className="item-total">
+                                      Total: PKR {((item.price || 0) * (item.quantity || 1)).toLocaleString('en-PK')}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
                       </div>
                     </div>
 
                     <div className="order-summary">
                       <div className="summary-row">
-                        <span>Payment Method:</span>
-                        <span className="payment-method">
-                          <CreditCardIcon className="payment-icon" />
-                          {order.payment?.method?.toUpperCase() || 'COD'}
-                        </span>
+                            <span>Subtotal</span>
+                            <span>PKR {(order.payment?.subtotal || order.payment?.amount || 0).toLocaleString('en-PK')}</span>
+                          </div>
+                          <div className="summary-row">
+                            <span>Shipping</span>
+                            <span>PKR {(order.shipping?.cost || 0).toLocaleString('en-PK')}</span>
+                          </div>
+                          <div className="summary-row">
+                            <span>Payment Method</span>
+                            <span className="payment-method">{(order.payment?.method || 'COD').toUpperCase()}</span>
                       </div>
                       <div className="summary-row total">
-                        <span>Total Amount:</span>
-                        <span className="total-amount">{formatCurrency(order.summary?.total || 0)}</span>
+                            <span>Total</span>
+                            <span className="total-amount">
+                              <svg className="currency-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                              </svg>
+                              PKR {(order.payment?.amount || order.totalAmount || 0).toLocaleString('en-PK')}
+                            </span>
                       </div>
                     </div>
 
-                    <div className="order-status-description">
-                      <p>{getStatusDescription(order.status)}</p>
-                      {order.shipping?.trackingNumber && (
-                        <div className="tracking-info">
-                          <TruckIcon className="tracking-icon" />
-                          <span>Tracking: {order.shipping.trackingNumber}</span>
+                        <div className="status-description">
+                          <p>Your order has been received and is awaiting confirmation.</p>
+                          <div className="delivery-info">
+                            <svg className="delivery-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Estimated Delivery: {formatDeliveryDate(order.createdAt)}
+                          </div>
+                        </div>
                         </div>
                       )}
-                    </div>
                   </div>
 
                   <div className="card-actions">
-                    <button className="action-btn primary">
-                      <EyeIcon className="btn-icon" />
-                      View Details
+                    <button 
+                      className="action-btn primary"
+                      onClick={() => toggleOrderExpansion(order.id)}
+                    >
+                      <svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                          d={expandedOrders.has(order.id) 
+                            ? "M5 15l7-7 7 7" 
+                            : "M19 9l-7 7-7-7"
+                          } />
+                      </svg>
+                      {expandedOrders.has(order.id) ? 'Hide Details' : 'View Details'}
                     </button>
-                    {order.status === 'delivered' && (
                       <button className="action-btn secondary">
-                        <ArrowDownTrayIcon className="btn-icon" />
-                        Download Invoice
+                      <svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Contact Support
                       </button>
-                    )}
                   </div>
                 </div>
               );
@@ -368,6 +465,42 @@ const UserOrders = () => {
       </div>
     </div>
   );
+};
+
+// Utility function to save a new order (can be used by checkout components)
+export const saveNewOrder = (userEmail, orderData) => {
+  try {
+    const existingOrders = localStorage.getItem('prince_vibe_orders');
+    let orders = [];
+    
+    if (existingOrders) {
+      orders = JSON.parse(existingOrders);
+      if (!Array.isArray(orders)) {
+        orders = [];
+      }
+    }
+    
+    // Add the new order with current timestamp and user email
+    const newOrder = {
+      ...orderData,
+      id: orderData.id || `ORD_${Date.now()}`,
+      createdAt: orderData.createdAt || new Date().toISOString(),
+      status: orderData.status || 'pending',
+      userEmail: userEmail, // Ensure we track which user this order belongs to
+      customer: {
+        ...orderData.customer,
+        email: userEmail
+      }
+    };
+    
+    orders.unshift(newOrder); // Add to beginning of array
+    localStorage.setItem('prince_vibe_orders', JSON.stringify(orders));
+    
+    return { success: true, order: newOrder };
+  } catch (error) {
+    console.error('Error saving order:', error);
+    return { success: false, error: error.message };
+  }
 };
 
 export default UserOrders; 

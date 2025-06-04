@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar/Navbar';
 import Hero from './components/Hero/Hero';
 import Categories from './components/Categories/Categories';
@@ -17,6 +17,9 @@ import Checkout from './components/Checkout/Checkout';
 import Loading from './components/Loading/Loading';
 import AdminLogin from './components/Admin/AdminLogin';
 import AdminDashboard from './components/Admin/AdminDashboard';
+import UserProfile from './components/UserProfile/UserProfile';
+import UserOrders from './components/UserOrders/UserOrders';
+import UserHelp from './components/UserHelp/UserHelp';
 import AdminApi from './services/adminApi';
 import './App.css';
 
@@ -38,7 +41,16 @@ const ProtectedAdminRoute = ({ children }) => {
 
 // Protected User Route Component
 const ProtectedUserRoute = ({ children }) => {
-  // This will be handled by the Auth context
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+  
   return children;
 };
 
@@ -177,7 +189,7 @@ const AppContent = () => {
                 <Footer onLogoClick={triggerLoading} />
               </>
             } 
-          />
+            />
             <Route 
               path="/about" 
             element={
@@ -197,7 +209,7 @@ const AppContent = () => {
                 <Footer onLogoClick={triggerLoading} />
               </>
             } 
-          />
+            />
             <Route 
               path="/testimonials" 
             element={
@@ -219,7 +231,47 @@ const AppContent = () => {
                 <Footer onLogoClick={triggerLoading} />
               </>
             } 
-          />
+            />
+
+            {/* User Profile Routes */}
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedUserRoute>
+                  <>
+                    <Navbar onLogoClick={triggerLoading} />
+                    <UserProfile />
+                    <Footer onLogoClick={triggerLoading} />
+                  </>
+                </ProtectedUserRoute>
+              } 
+            />
+
+            <Route 
+              path="/orders" 
+              element={
+                <ProtectedUserRoute>
+                  <>
+                    <Navbar onLogoClick={triggerLoading} />
+                    <UserOrders />
+                    <Footer onLogoClick={triggerLoading} />
+                  </>
+                </ProtectedUserRoute>
+              } 
+            />
+
+            <Route 
+              path="/help" 
+              element={
+                <ProtectedUserRoute>
+                  <>
+                    <Navbar onLogoClick={triggerLoading} />
+                    <UserHelp />
+                    <Footer onLogoClick={triggerLoading} />
+                  </>
+                </ProtectedUserRoute>
+              } 
+            />
 
           {/* Admin Routes */}
           <Route 

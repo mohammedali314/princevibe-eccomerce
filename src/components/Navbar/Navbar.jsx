@@ -374,6 +374,11 @@ const Navbar = ({ onLogoClick }) => {
     setIsMobileUserMenuOpen(false);
     setIsMobileMenuOpen(false);
     
+    // Scroll to top for user profile pages
+    if (['profile', 'orders', 'help'].includes(action)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
     switch (action) {
       case 'profile':
         navigate('/profile');

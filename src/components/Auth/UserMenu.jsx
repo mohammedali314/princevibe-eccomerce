@@ -47,6 +47,8 @@ const UserMenu = ({ isOpen, setIsOpen, buttonRef }) => {
       if (callback) {
         callback();
       } else if (path) {
+        // Scroll to top when navigating to user profile pages
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         navigate(path);
       }
     }, 150);
