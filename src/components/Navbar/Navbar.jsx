@@ -316,15 +316,18 @@ const Navbar = ({ onLogoClick }) => {
   };
 
   const handleLogoClick = () => {
-    // If we're on a product detail page, navigate to home
-    if (location.pathname.includes('/product/')) {
-      navigate('/');
-    } else {
-      // If we're on homepage, scroll to top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Always scroll to top first for smooth UX
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // If we're not on the homepage, navigate to home
+    if (location.pathname !== '/') {
+      // Add a small delay to allow scroll to complete, then navigate
+      setTimeout(() => {
+        navigate('/');
+      }, 100);
     }
     
-    // Still call the onLogoClick prop for loading animation
+    // Call the onLogoClick prop for loading animation
     if (onLogoClick) {
       onLogoClick();
     }
