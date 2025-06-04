@@ -38,6 +38,7 @@ const ProductDetail = () => {
   const [toasts, setToasts] = useState([]);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Get cart and wishlist context
   const { addToCart, isItemInCart, getItemQuantity } = useCart();
@@ -277,20 +278,74 @@ const ProductDetail = () => {
     }
   };
 
-  const showLuxuryToast = (message, type) => {
+  const showLuxuryToast = (message, type = 'info') => {
     const id = Date.now();
-    const toast = { id, message, type };
-    
-    setToasts(prev => [...prev, toast]);
-    
-    // Auto remove after 3 seconds
+    const newToast = { id, message, type };
+    setToasts(prev => [...prev, newToast]);
+
     setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
+      removeToast(id);
     }, 3000);
   };
 
   const removeToast = (id) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+
+  const handleShare = () => {
+    setIsShareModalOpen(true);
+  };
+
+  const handleCopyLink = async () => {
+    const productUrl = `${window.location.origin}/product/${product.id}`;
+    try {
+      await navigator.clipboard.writeText(productUrl);
+      showLuxuryToast('Product link copied to clipboard!', 'success');
+      setIsShareModalOpen(false);
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = productUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      showLuxuryToast('Product link copied to clipboard!', 'success');
+      setIsShareModalOpen(false);
+    }
+  };
+
+  const handleSocialShare = (platform) => {
+    const productUrl = `${window.location.origin}/product/${product.id}`;
+    const productTitle = `Check out ${product.name} from Prince Vibe`;
+    const productDescription = `Luxury timepiece: ${product.name} - ${formatPrice(product.price)}`;
+    
+    let shareUrl = '';
+    
+    switch (platform) {
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(`${productTitle}\n${productDescription}\n${productUrl}`)}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}&quote=${encodeURIComponent(productDescription)}`;
+        break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(productTitle)}&url=${encodeURIComponent(productUrl)}`;
+        break;
+      case 'email':
+        shareUrl = `mailto:?subject=${encodeURIComponent(productTitle)}&body=${encodeURIComponent(`${productDescription}\n\nView product: ${productUrl}`)}`;
+        break;
+    }
+    
+    if (shareUrl) {
+      window.open(shareUrl, '_blank', 'noopener,noreferrer');
+      setIsShareModalOpen(false);
+      showLuxuryToast(`Shared on ${platform}!`, 'success');
+    }
+  };
+
+  const closeShareModal = () => {
+    setIsShareModalOpen(false);
   };
 
   // Get product type for breadcrumb navigation
@@ -577,7 +632,7 @@ const ProductDetail = () => {
                     </span>
                   </button>
                   
-                  <button className="share-btn">
+                  <button className="share-btn" onClick={handleShare}>
                     <ShareIcon />
                     <span>Share</span>
                 </button>
@@ -715,7 +770,7 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* Luxury Toast Container */}
+      {/* Luxury Toasts */}
       <div className="luxury-toast-container">
         {toasts.map(toast => (
           <div 
@@ -745,6 +800,56 @@ const ProductDetail = () => {
           </div>
         ))}
       </div>
+
+      {/* Share Modal */}
+      {isShareModalOpen && (
+        <div className="share-modal-overlay" onClick={closeShareModal}>
+          <div className="share-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="share-modal-header">
+              <h3>Share this Product</h3>
+              <button className="close-modal-btn" onClick={closeShareModal}>
+                ×
+              </button>
+            </div>
+            
+            <div className="share-modal-content">
+              <div className="product-preview">
+                <img src={product.images[0]} alt={product.name} />
+                <div className="product-info">
+                  <h4>{product.name}</h4>
+                  <p className="product-price">{formatPrice(product.price)}</p>
+                </div>
+              </div>
+              
+              <div className="share-options">
+                <button className="share-option copy-link" onClick={handleCopyLink}>
+                  <div className="share-icon">🔗</div>
+                  <div className="share-text">
+                    <span className="share-title">Copy Link</span>
+                    <span className="share-description">Share via link</span>
+                  </div>
+                </button>
+                
+                <button className="share-option whatsapp" onClick={() => handleSocialShare('whatsapp')}>
+                  <div className="share-icon">📱</div>
+                  <div className="share-text">
+                    <span className="share-title">WhatsApp</span>
+                    <span className="share-description">Share on WhatsApp</span>
+                  </div>
+                </button>
+                
+                <button className="share-option facebook" onClick={() => handleSocialShare('facebook')}>
+                  <div className="share-icon">📘</div>
+                  <div className="share-text">
+                    <span className="share-title">Facebook</span>
+                    <span className="share-description">Share on Facebook</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

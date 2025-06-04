@@ -168,9 +168,12 @@ class ApiService {
   // Update user profile
   async updateUserProfile(userData) {
     const token = localStorage.getItem('userToken');
-    if (!token) throw new Error('No authentication token');
+    const user = this.getCurrentUser();
     
-    return this.makeRequest('/auth/profile', {
+    if (!token) throw new Error('No authentication token');
+    if (!user || !user._id) throw new Error('User ID not found');
+    
+    return this.makeRequest(`/users/${user._id}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,

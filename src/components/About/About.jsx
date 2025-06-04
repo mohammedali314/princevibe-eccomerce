@@ -7,6 +7,7 @@ import {
 import './About.scss';
 import Aboutimage from '../../../public/photos/LOGO.jpeg';
 import Arhamimage from '../../../public/photos/Arham.png';
+import Princeimage from '../../../public/photos/Profile.jpg';
 
 const About = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const About = () => {
     {
       name: 'Mohammed Ali',
       role: 'Founder & CEO',
-      image: 'https://scontent.fisb6-1.fna.fbcdn.net/v/t39.30808-1/480757793_122192866754056775_7602379442959665743_n.jpg?stp=c0.338.1584.1584a_dst-jpg_s480x480_tt6&_nc_cat=101&ccb=1-7&_nc_sid=e99d92&_nc_eui2=AeHBBjz8SorrmTU9zrios206IejZqAIs2YAh6NmoAizZgAWrbSjxdOQul8MtKqBOn0IWF_0BjsbkBALJuWAqoiqM&_nc_ohc=PWY6ortaqeIQ7kNvwGbwhTz&_nc_oc=AdnrCh00Bh79L2JGe0IFGX1i9QEmBwsX0pBCp0a4Ig4h-QwQhyQvvN7DkmUbr1pl2H3-E6y9LU1ei1JFVFce2XZo&_nc_zt=24&_nc_ht=scontent.fisb6-1.fna&_nc_gid=ZMRoimr2xcSa4HrUBCyrBw&oh=00_AfIQiRM-i4pwehQ2qin8A6cHYOShS0Q2fNYZjlV3fmV58g&oe=683BEDA4',
+      image: Princeimage,
       description: 'Visionary leader with 5+ years in luxury timepieces',
       social: { linkedin: '#', twitter: '#' }
     },
@@ -221,13 +222,13 @@ const About = () => {
               <h2>Our Story</h2>
               <div className="story-paragraphs">
                 <p>
-                  Born from a passion for exceptional timepieces, PrinceVibe began as a dream to make luxury watches accessible to discerning customers worldwide. Our founder, Prince Mohammed, envisioned a platform where horological excellence meets modern convenience.
+                  Born from a passion for exceptional timepieces, PrinceVibe began as a dream to make luxury watches accessible to discerning customers in Pakistan. Our founder, Mohammed Ali, envisioned a platform where horological excellence meets modern convenience.
                 </p>
                 <p>
-                  What started as a small collection of carefully curated watches has grown into a global destination for timepiece enthusiasts. We believe that a watch is more than an accessory—it's a companion for life's most important moments.
+                  What started as a small collection of carefully curated watches has grown into a premier destination for timepiece enthusiasts across Pakistan. We believe that a watch is more than an accessory—it's a companion for life's most important moments.
                 </p>
                 <p>
-                  Today, we continue to uphold our commitment to authenticity, quality, and exceptional customer service, serving thousands of satisfied customers across the globe.
+                  Today, we continue to uphold our commitment to authenticity, quality, and exceptional customer service, serving thousands of satisfied customers across Pakistan.
                 </p>
               </div>
             </div>
