@@ -17,11 +17,14 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import './UserOrders.scss';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://princevibe-eccomerce-backend-production.up.railway.app/api';
+
 const UserOrders = () => {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
   const [sortBy, setSortBy] = useState('date');
   const [expandedOrders, setExpandedOrders] = useState(new Set());
@@ -31,74 +34,110 @@ const UserOrders = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  // Fetch orders from localStorage (only real orders, no sample data)
-  const fetchOrders = async () => {
-    if (!user?.email) {
+  // Fetch orders from API (only for authenticated users)
+  const fetchOrdersFromAPI = async () => {
+    if (!isAuthenticated || !user?._id) {
+      setOrders([]);
+      setFilteredOrders([]);
       setLoading(false);
       return;
     }
 
     try {
       setLoading(true);
+      setError(null);
       
-      // Get real orders from the existing localStorage key
-      const storedOrders = localStorage.getItem('prince_vibe_orders');
-      let allOrders = [];
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
       
-      if (storedOrders) {
-        try {
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/orders/my-orders`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to fetch orders');
+      }
+
+      if (result.success) {
+        const userOrders = result.data || [];
+        setOrders(userOrders);
+        setFilteredOrders(userOrders);
+      } else {
+        throw new Error(result.message || 'Failed to fetch orders');
+      }
+      
+    } catch (error) {
+      console.error('Error fetching orders from API:', error);
+      setError(error.message);
+      
+      // Fallback to localStorage for compatibility
+      try {
+        const storedOrders = localStorage.getItem('prince_vibe_orders');
+        let allOrders = [];
+
+        if (storedOrders) {
           allOrders = JSON.parse(storedOrders);
-          // Ensure orders is an array
           if (!Array.isArray(allOrders)) {
             allOrders = [];
           }
-        } catch (parseError) {
-          console.error('Error parsing stored orders:', parseError);
-          allOrders = [];
         }
+        
+        // Filter orders for current user by email
+        const userOrders = allOrders.filter(order => {
+          const customerEmail = order.customer?.email;
+          const userEmail = order.userEmail;
+          const directEmail = order.email;
+          const currentEmail = user.email;
+          
+          // Exact matches
+          if (customerEmail === currentEmail || 
+              userEmail === currentEmail ||
+              directEmail === currentEmail) {
+            return true;
+          }
+          
+          // For development/testing: also match if the username part (before @) is the same
+          const getCurrentEmailUsername = () => currentEmail.split('@')[0];
+          const getCustomerEmailUsername = () => customerEmail ? customerEmail.split('@')[0] : null;
+          
+          if (getCustomerEmailUsername() === getCurrentEmailUsername()) {
+            return true;
+          }
+          
+          return false;
+        });
+        
+        setOrders(userOrders);
+        setFilteredOrders(userOrders);
+        
+        if (userOrders.length > 0) {
+          setError('Orders loaded from local storage. Please refresh to sync with server.');
+        }
+        
+      } catch (parseError) {
+        console.error('Error parsing localStorage orders:', parseError);
+        setOrders([]);
+        setFilteredOrders([]);
+        setError('Failed to load orders from both server and local storage.');
       }
-      
-      // Filter orders for current user by email
-      // Check multiple email fields and also allow partial matching for similar emails
-      const userOrders = allOrders.filter(order => {
-        const customerEmail = order.customer?.email;
-        const userEmail = order.userEmail;
-        const directEmail = order.email;
-        const currentEmail = user.email;
-        
-        // Exact matches
-        if (customerEmail === currentEmail || 
-            userEmail === currentEmail ||
-            directEmail === currentEmail) {
-          return true;
-        }
-        
-        // For development/testing: also match if the username part (before @) is the same
-        const getCurrentEmailUsername = () => currentEmail.split('@')[0];
-        const getCustomerEmailUsername = () => customerEmail ? customerEmail.split('@')[0] : null;
-        
-        if (getCustomerEmailUsername() === getCurrentEmailUsername()) {
-          return true;
-        }
-        
-        return false;
-      });
-      
-      setOrders(userOrders);
-      setFilteredOrders(userOrders);
-      
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      setOrders([]);
-      setFilteredOrders([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchOrders();
-  }, [user]);
+    fetchOrdersFromAPI();
+  }, [user, isAuthenticated]);
 
   useEffect(() => {
     let filtered = [...orders];
@@ -114,7 +153,10 @@ const UserOrders = () => {
         case 'date':
           return new Date(b.createdAt) - new Date(a.createdAt);
         case 'amount':
-          return (b.payment?.amount || b.totalAmount || 0) - (a.payment?.amount || a.totalAmount || 0);
+          // Handle different data structures
+          const amountA = a.summary?.total || a.payment?.amount || a.totalAmount || 0;
+          const amountB = b.summary?.total || b.payment?.amount || b.totalAmount || 0;
+          return amountB - amountA;
         case 'status':
           return a.status.localeCompare(b.status);
         default:
@@ -190,7 +232,7 @@ const UserOrders = () => {
   };
 
   const handleRefresh = () => {
-    fetchOrders();
+    fetchOrdersFromAPI();
   };
 
   // Expose refresh function for external use (when orders are placed)
@@ -219,6 +261,43 @@ const UserOrders = () => {
       return newSet;
     });
   };
+
+  // Helper function to get order total amount from different data structures
+  const getOrderTotal = (order) => {
+    return order.summary?.total || order.payment?.amount || order.totalAmount || 0;
+  };
+
+  // Helper function to get order number from different data structures
+  const getOrderNumber = (order) => {
+    return order.orderNumber || order.id?.slice(0, 8) || 'N/A';
+  };
+
+  // If user is not authenticated, show login prompt
+  if (!isAuthenticated) {
+    return (
+      <div className="user-orders">
+        <div className="orders-header-section">
+          <div className="container">
+            <h1>My Orders</h1>
+            <p>Track your order history</p>
+          </div>
+        </div>
+        <div className="orders-container">
+          <div className="auth-required">
+            <InboxIcon className="auth-icon" />
+            <h3>Sign In Required</h3>
+            <p>Please sign in to view your orders and track your purchases.</p>
+            <button 
+              className="auth-btn"
+              onClick={() => window.location.href = '/'}
+            >
+              Go to Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -254,6 +333,11 @@ const UserOrders = () => {
           <div className="header-left">
             <h2>Order History</h2>
             <p>Manage and track all your orders</p>
+            {error && (
+              <div className="error-message">
+                <span>⚠️ {error}</span>
+              </div>
+            )}
           </div>
           <div className="header-right">
             <div className="header-stats">
@@ -270,9 +354,9 @@ const UserOrders = () => {
                 <span className="stat-label">Delivered</span>
               </div>
             </div>
-            <button className="refresh-btn" onClick={handleRefresh}>
+            <button className="refresh-btn" onClick={handleRefresh} disabled={loading}>
               <ArrowPathIcon className="refresh-icon" />
-              <span>Refresh</span>
+              <span>{loading ? 'Loading...' : 'Refresh'}</span>
             </button>
           </div>
         </div>
@@ -318,11 +402,15 @@ const UserOrders = () => {
           <div className="orders-grid">
             {filteredOrders.map((order) => {
               const StatusIcon = getStatusIcon(order.status);
+              const orderId = order._id || order.id;
+              const orderTotal = getOrderTotal(order);
+              const orderNumber = getOrderNumber(order);
+              
               return (
-                <div key={order.id} className="order-card">
+                <div key={orderId} className="order-card">
                   <div className="card-header">
                     <div className="order-info">
-                      <h3>Order #{order.orderNumber || order.id?.slice(0, 8)}</h3>
+                      <h3>Order #{orderNumber}</h3>
                       <div className="order-meta">
                         <div className="order-date">
                           <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -352,13 +440,13 @@ const UserOrders = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                               d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                           </svg>
-                          PKR {(order.payment?.amount || order.totalAmount || 0).toLocaleString('en-PK')}
+                          PKR {orderTotal.toLocaleString('en-PK')}
                         </span>
                       </div>
                     </div>
 
                     {/* Expanded Details - Show only when expanded */}
-                    {expandedOrders.has(order.id) && (
+                    {expandedOrders.has(orderId) && (
                       <div className="expanded-details">
                         <div className="order-items">
                           <h4>Order Items</h4>
@@ -393,69 +481,74 @@ const UserOrders = () => {
                                 </div>
                               </div>
                             ))}
-                      </div>
-                    </div>
+                          </div>
+                        </div>
 
-                    <div className="order-summary">
-                      <div className="summary-row">
+                        <div className="order-summary">
+                          <div className="summary-row">
                             <span>Subtotal</span>
-                            <span>PKR {(order.payment?.subtotal || order.payment?.amount || 0).toLocaleString('en-PK')}</span>
+                            <span>PKR {(order.summary?.subtotal || orderTotal).toLocaleString('en-PK')}</span>
                           </div>
                           <div className="summary-row">
                             <span>Shipping</span>
-                            <span>PKR {(order.shipping?.cost || 0).toLocaleString('en-PK')}</span>
+                            <span>PKR {(order.summary?.shipping || order.shipping?.fee || 0).toLocaleString('en-PK')}</span>
                           </div>
                           <div className="summary-row">
                             <span>Payment Method</span>
-                            <span className="payment-method">{(order.payment?.method || 'COD').toUpperCase()}</span>
-                      </div>
-                      <div className="summary-row total">
+                            <span className="payment-method">
+                              {(order.payment?.method || 'COD').toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="summary-row total">
                             <span>Total</span>
                             <span className="total-amount">
                               <svg className="currency-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                                   d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                               </svg>
-                              PKR {(order.payment?.amount || order.totalAmount || 0).toLocaleString('en-PK')}
+                              PKR {orderTotal.toLocaleString('en-PK')}
                             </span>
-                      </div>
-                    </div>
+                          </div>
+                        </div>
 
                         <div className="status-description">
-                          <p>Your order has been received and is awaiting confirmation.</p>
+                          <p>{getStatusDescription(order.status)}</p>
                           <div className="delivery-info">
                             <svg className="delivery-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            Estimated Delivery: {formatDeliveryDate(order.createdAt)}
+                            Estimated Delivery: {order.shipping?.estimatedDelivery ? 
+                              new Date(order.shipping.estimatedDelivery).toLocaleDateString('en-PK') : 
+                              formatDeliveryDate(order.createdAt)
+                            }
                           </div>
                         </div>
-                        </div>
-                      )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="card-actions">
                     <button 
                       className="action-btn primary"
-                      onClick={() => toggleOrderExpansion(order.id)}
+                      onClick={() => toggleOrderExpansion(orderId)}
                     >
                       <svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                          d={expandedOrders.has(order.id) 
+                          d={expandedOrders.has(orderId) 
                             ? "M5 15l7-7 7 7" 
                             : "M19 9l-7 7-7-7"
                           } />
                       </svg>
-                      {expandedOrders.has(order.id) ? 'Hide Details' : 'View Details'}
+                      {expandedOrders.has(orderId) ? 'Hide Details' : 'View Details'}
                     </button>
-                      <button className="action-btn secondary">
+                    <button className="action-btn secondary">
                       <svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                           d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       Contact Support
-                      </button>
+                    </button>
                   </div>
                 </div>
               );
@@ -467,39 +560,69 @@ const UserOrders = () => {
   );
 };
 
-// Utility function to save a new order (can be used by checkout components)
-export const saveNewOrder = (userEmail, orderData) => {
+// Utility function to save a new order to API and localStorage backup
+export const saveNewOrder = async (userToken, orderData) => {
   try {
-    const existingOrders = localStorage.getItem('prince_vibe_orders');
-    let orders = [];
-    
-    if (existingOrders) {
-      orders = JSON.parse(existingOrders);
-      if (!Array.isArray(orders)) {
-        orders = [];
+    // First try to save to API
+    if (userToken) {
+      const response = await fetch(`${API_BASE_URL}/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userToken}`
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        console.log('Order saved to database successfully');
+        return { success: true, order: result.data };
+      } else {
+        throw new Error(result.message || 'Failed to save order to database');
       }
     }
     
-    // Add the new order with current timestamp and user email
-    const newOrder = {
-      ...orderData,
-      id: orderData.id || `ORD_${Date.now()}`,
-      createdAt: orderData.createdAt || new Date().toISOString(),
-      status: orderData.status || 'pending',
-      userEmail: userEmail, // Ensure we track which user this order belongs to
-      customer: {
-        ...orderData.customer,
-        email: userEmail
-      }
-    };
+    // Fallback to localStorage
+    throw new Error('No authentication token provided');
     
-    orders.unshift(newOrder); // Add to beginning of array
-    localStorage.setItem('prince_vibe_orders', JSON.stringify(orders));
-    
-    return { success: true, order: newOrder };
   } catch (error) {
-    console.error('Error saving order:', error);
-    return { success: false, error: error.message };
+    console.error('Error saving order to API:', error);
+    
+    // Fallback to localStorage for backward compatibility
+    try {
+      const existingOrders = localStorage.getItem('prince_vibe_orders');
+      let orders = [];
+      
+      if (existingOrders) {
+        orders = JSON.parse(existingOrders);
+        if (!Array.isArray(orders)) {
+          orders = [];
+        }
+      }
+      
+      // Add the new order with current timestamp
+      const newOrder = {
+        ...orderData,
+        id: orderData.id || `ORD_${Date.now()}`,
+        createdAt: orderData.createdAt || new Date().toISOString(),
+        status: orderData.status || 'pending',
+        isLocalOnly: true // Flag to indicate this order is not in backend
+      };
+      
+      orders.unshift(newOrder); // Add to beginning of array
+      localStorage.setItem('prince_vibe_orders', JSON.stringify(orders));
+      
+      return { 
+        success: true, 
+        order: newOrder,
+        warning: 'Order saved locally only. Please contact support if not processed within 24 hours.'
+      };
+    } catch (localError) {
+      console.error('Error saving order to localStorage:', localError);
+      return { success: false, error: localError.message };
+    }
   }
 };
 

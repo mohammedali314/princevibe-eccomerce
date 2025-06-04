@@ -3,22 +3,60 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://princevibe-ec
 
 class OrderService {
   constructor() {
-    this.orders = JSON.parse(localStorage.getItem('prince_vibe_orders') || '[]');
+    this.orders = this.loadOrdersFromStorage();
+  }
+
+  loadOrdersFromStorage() {
+    try {
+      const stored = localStorage.getItem('prince_vibe_orders');
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Error loading orders from storage:', error);
+      return [];
+    }
   }
 
   // Generate unique order number
   generateOrderNumber() {
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    return `PV${timestamp}${random}`;
+    const prefix = 'PV';
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substr(2, 3).toUpperCase();
+    return `${prefix}${timestamp}${random}`;
   }
 
-  // Create a new COD order
+  // Create a new COD order (updated to use API for authenticated users)
   async createCODOrder(orderData) {
     try {
-      // Prepare the order data for the backend API
+      // Get user authentication data
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      const token = localStorage.getItem('token');
+      const isAuthenticated = !!token && !!userData._id;
+
+      // For guest users (not authenticated), don't save the order
+      if (!isAuthenticated) {
+        console.log('Guest user detected - order will not be saved');
+        
+        // Return success but with a message about guest orders
+        return {
+          success: true,
+          order: {
+            orderNumber: this.generateOrderNumber(),
+            customer: orderData.customer,
+            items: orderData.items,
+            payment: orderData.payment,
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+            isGuestOrder: true
+          },
+          message: 'Order placed successfully! As a guest user, your order details will not be saved to your account. Please keep your order number for tracking.',
+          warning: 'Guest orders are not saved. Sign in to track your orders and access order history.'
+        };
+      }
+
+      // For authenticated users, prepare order data for the backend API
       const apiOrderData = {
         customer: {
+          userId: userData._id,  // Include user ID for authenticated users
           name: `${orderData.customer.firstName} ${orderData.customer.lastName}`.trim(),
           email: orderData.customer.email,
           phone: orderData.customer.phone,
@@ -54,14 +92,15 @@ class OrderService {
         }
       };
 
-      console.log('Sending order to backend:', apiOrderData);
+      console.log('Sending order to backend API:', apiOrderData);
 
       // Make API call to backend
       const response = await fetch(`${API_BASE_URL}/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(apiOrderData)
       });
@@ -82,25 +121,6 @@ class OrderService {
       if (result.success && result.data) {
         console.log('Order created successfully in backend:', result.data);
         
-        // Also save locally as backup
-        const localOrder = {
-          id: result.data._id,
-          orderNumber: result.data.orderNumber,
-          ...orderData,
-          status: result.data.status,
-          paymentStatus: result.data.payment.status,
-          createdAt: result.data.createdAt,
-          updatedAt: result.data.updatedAt,
-          trackingNumber: result.data.trackingNumber,
-          estimatedDelivery: this.calculateEstimatedDelivery(orderData.shipping.city),
-          orderNotes: [],
-          confirmationEmailSent: true, // Backend handles email sending
-          confirmationSmsSent: false
-        };
-
-        this.orders.push(localOrder);
-        localStorage.setItem('prince_vibe_orders', JSON.stringify(this.orders));
-
         return {
           success: true,
           order: result.data,
@@ -113,135 +133,180 @@ class OrderService {
     } catch (error) {
       console.error('Order creation error:', error);
       
-      // Fallback to local storage if API fails
-      console.log('API failed, falling back to local storage...');
+      // For authenticated users, if API fails, still don't fall back to localStorage
+      // This ensures consistency with the new API-first approach
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      const token = localStorage.getItem('token');
+      const isAuthenticated = !!token && !!userData._id;
       
-      const fallbackOrder = {
-        id: Date.now(),
-        orderNumber: this.generateOrderNumber(),
-        ...orderData,
-        status: 'pending',
-        paymentStatus: 'pending',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        trackingNumber: null,
-        estimatedDelivery: this.calculateEstimatedDelivery(orderData.shipping.city),
-        orderNotes: [],
-        confirmationEmailSent: false,
-        confirmationSmsSent: false,
-        isLocalOnly: true // Flag to indicate this order is not in backend
-      };
+      if (isAuthenticated) {
+        return {
+          success: false,
+          error: error.message || 'Failed to create order. Please try again or contact support.',
+          message: 'Unable to process your order at this time. Please try again or contact our customer support.'
+        };
+      } else {
+        // For guest users, return the guest order response
+        return {
+          success: true,
+          order: {
+            orderNumber: this.generateOrderNumber(),
+            customer: orderData.customer,
+            items: orderData.items,
+            payment: orderData.payment,
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+            isGuestOrder: true
+          },
+          message: 'Order placed successfully! As a guest user, your order details will not be saved.',
+          warning: 'Guest orders are not saved. Sign in to track your orders and access order history.'
+        };
+      }
+    }
+  }
 
-      this.orders.push(fallbackOrder);
-      localStorage.setItem('prince_vibe_orders', JSON.stringify(this.orders));
+  // Get orders for current user (authenticated users only)
+  async getUserOrders() {
+    try {
+      const token = localStorage.getItem('token');
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (!token || !userData._id) {
+        throw new Error('User not authenticated');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/orders/my-orders`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to fetch orders');
+      }
 
       return {
         success: true,
-        order: fallbackOrder,
-        message: 'Order saved locally. We will process it as soon as our servers are available.',
-        warning: 'Order could not be sent to our servers. Please contact support if you don\'t receive confirmation within 24 hours.'
+        orders: result.data || []
+      };
+
+    } catch (error) {
+      console.error('Error fetching user orders:', error);
+      return {
+        success: false,
+        error: error.message,
+        orders: []
+      };
+    }
+  }
+
+  // Track order by order number (public method)
+  async trackOrder(orderNumber) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/orders/${orderNumber}/tracking`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to track order');
+      }
+
+      return {
+        success: true,
+        tracking: result.data
+      };
+
+    } catch (error) {
+      console.error('Error tracking order:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // Get order details by order number (public method)
+  async getOrderDetails(orderNumber) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/orders/${orderNumber}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to get order details');
+      }
+
+      return {
+        success: true,
+        order: result.data
+      };
+
+    } catch (error) {
+      console.error('Error getting order details:', error);
+      return {
+        success: false,
+        error: error.message
       };
     }
   }
 
   // Calculate estimated delivery date based on city
   calculateEstimatedDelivery(city) {
-    const businessDays = this.getDeliveryDaysForCity(city);
-    const estimatedDate = new Date();
-    estimatedDate.setDate(estimatedDate.getDate() + businessDays);
-    
-    // Skip weekends
-    while (estimatedDate.getDay() === 0 || estimatedDate.getDay() === 6) {
-      estimatedDate.setDate(estimatedDate.getDate() + 1);
-    }
-    
-    return estimatedDate.toISOString();
+    const today = new Date();
+    const deliveryDays = this.getDeliveryDays(city);
+    const deliveryDate = new Date(today.getTime() + (deliveryDays * 24 * 60 * 60 * 1000));
+    return deliveryDate.toISOString();
   }
 
-  // Get delivery days based on city
-  getDeliveryDaysForCity(city) {
-    const cityDeliveryMap = {
-      'karachi': 2,
-      'lahore': 2,
-      'islamabad': 2,
-      'rawalpindi': 2,
-      'faisalabad': 3,
-      'multan': 3,
-      'peshawar': 3,
-      'quetta': 5,
-      'hyderabad': 3,
-      'gujranwala': 3,
-      'sialkot': 3,
-      'bahawalpur': 4,
-      'sargodha': 4,
-      'sukkur': 4,
-      'larkana': 4,
-      'sheikhupura': 3,
-      'jhang': 4,
-      'rahim yar khan': 4,
-      'gujrat': 3,
-      'kasur': 3,
-      'mardan': 4,
-      'mingora': 4,
-      'sahiwal': 3,
-      'nawabshah': 4,
-      'okara': 3,
-      'mirpur khas': 4,
-      'chiniot': 4,
-      'kamoke': 3,
-      'mandi bahauddin': 4,
-      'jhelum': 3,
-      'sadiqabad': 4,
-      'khanewal': 3,
-      'hafizabad': 3,
-      'kohat': 4,
-      'jacobabad': 5,
-      'shikarpur': 4,
-      'muzaffargarh': 4,
-      'khanpur': 4,
-      'pakpattan': 4,
-      'abbottabad': 4,
-      'tando allahyar': 4,
-      'daharki': 5,
-      'ahmadpur east': 4,
-      'vihari': 3,
-      'wah cantonment': 2,
-      'burewala': 3,
-      'muridke': 3,
-      'tando adam': 4,
-      'jaranwala': 3,
-      'chishtian': 4,
-      'daska': 3,
-      'mianwali': 4,
-      'attock': 3,
-      'vehari': 3,
-      'ferozewala': 3,
-      'chakwal': 3,
-      'gojra': 4,
-      'mian channu': 4,
-      'kot adu': 4,
-      'kamalia': 4,
-      'nowshera': 4,
-      'khushab': 4,
-      'dera ghazi khan': 4,
-      'shahdadkot': 4,
-      'nankana sahib': 3,
-      'bannu': 5,
-      'turbat': 7,
-      'gwadar': 7,
-      'khuzdar': 6,
-      'zhob': 6,
-      'chaman': 6,
-      'gilgit': 7,
-      'skardu': 7,
-      'muzaffarabad': 4,
-      'mirpur': 4,
-      'kotli': 4,
-      'bhimber': 4
-    };
-
+  getDeliveryDays(city) {
+    const majorCities = ['karachi', 'lahore', 'islamabad', 'rawalpindi', 'faisalabad'];
     const normalizedCity = city.toLowerCase().trim();
-    return cityDeliveryMap[normalizedCity] || 5; // Default to 5 days for unknown cities
+    return majorCities.includes(normalizedCity) ? 2 : 5;
+  }
+
+  // Legacy methods for backward compatibility (deprecated)
+  getFilteredOrders(filterStatus = 'all') {
+    console.warn('getFilteredOrders is deprecated. Use getUserOrders() instead.');
+    return this.orders.filter(order => 
+      filterStatus === 'all' || order.status === filterStatus
+    );
+  }
+
+  getAllOrders() {
+    console.warn('getAllOrders is deprecated. Use getUserOrders() instead.');
+    return this.orders;
+  }
+
+  getOrderById(id) {
+    console.warn('getOrderById is deprecated. Use getOrderDetails() instead.');
+    return this.orders.find(order => order.id === id);
+  }
+
+  // Utility method to check if user is authenticated
+  isUserAuthenticated() {
+    const token = localStorage.getItem('token');
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    return !!token && !!userData._id;
+  }
+
+  // Method to clear local orders (for cleanup purposes)
+  clearLocalOrders() {
+    this.orders = [];
+    localStorage.removeItem('prince_vibe_orders');
   }
 
   // Send confirmation notifications
@@ -321,133 +386,6 @@ class OrderService {
         resolve(true);
       }, 1000);
     });
-  }
-
-  // Get order by order number
-  getOrderByNumber(orderNumber) {
-    return this.orders.find(order => order.orderNumber === orderNumber);
-  }
-
-  // Get all orders for admin
-  getAllOrders() {
-    return this.orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  }
-
-  // Update order status
-  updateOrderStatus(orderNumber, status, notes = '') {
-    const order = this.getOrderByNumber(orderNumber);
-    if (!order) {
-      throw new Error('Order not found');
-    }
-
-    order.status = status;
-    order.updatedAt = new Date().toISOString();
-    
-    if (notes) {
-      order.orderNotes.push({
-        note: notes,
-        timestamp: new Date().toISOString(),
-        type: 'status_update'
-      });
-    }
-
-    this.updateOrderInStorage(order);
-    return order;
-  }
-
-  // Update payment status
-  updatePaymentStatus(orderNumber, paymentStatus, transactionId = null) {
-    const order = this.getOrderByNumber(orderNumber);
-    if (!order) {
-      throw new Error('Order not found');
-    }
-
-    order.paymentStatus = paymentStatus;
-    order.updatedAt = new Date().toISOString();
-    
-    if (transactionId) {
-      order.transactionId = transactionId;
-    }
-
-    if (paymentStatus === 'paid') {
-      order.paidAt = new Date().toISOString();
-    }
-
-    this.updateOrderInStorage(order);
-    return order;
-  }
-
-  // Add tracking number
-  addTrackingNumber(orderNumber, trackingNumber, courier = 'TCS') {
-    const order = this.getOrderByNumber(orderNumber);
-    if (!order) {
-      throw new Error('Order not found');
-    }
-
-    order.trackingNumber = trackingNumber;
-    order.courier = courier;
-    order.status = 'shipped';
-    order.shippedAt = new Date().toISOString();
-    order.updatedAt = new Date().toISOString();
-
-    order.orderNotes.push({
-      note: `Order shipped via ${courier}. Tracking: ${trackingNumber}`,
-      timestamp: new Date().toISOString(),
-      type: 'shipping_update'
-    });
-
-    this.updateOrderInStorage(order);
-    
-    // Send shipping notification
-    this.sendShippingNotification(order);
-    
-    return order;
-  }
-
-  // Send shipping notification
-  async sendShippingNotification(order) {
-    try {
-      // Send shipping email
-      const emailData = {
-        to: order.customer.email,
-        subject: `Your Order ${order.orderNumber} Has Been Shipped!`,
-        template: 'shipping-notification',
-        data: {
-          customerName: `${order.customer.firstName} ${order.customer.lastName}`,
-          orderNumber: order.orderNumber,
-          trackingNumber: order.trackingNumber,
-          courier: order.courier,
-          trackingUrl: this.getTrackingUrl(order.courier, order.trackingNumber),
-          estimatedDelivery: new Date(order.estimatedDelivery).toLocaleDateString('en-PK')
-        }
-      };
-
-      console.log('Sending shipping notification email:', emailData);
-
-      // Send shipping SMS
-      const phoneNumber = order.customer.phone.replace(/\D/g, '');
-      const formattedPhone = phoneNumber.startsWith('92') ? phoneNumber : `92${phoneNumber.replace(/^0/, '')}`;
-      
-      const message = `Prince Vibe: Your order ${order.orderNumber} has been shipped via ${order.courier}! Tracking: ${order.trackingNumber}. Expected delivery: ${new Date(order.estimatedDelivery).toLocaleDateString('en-PK')}`;
-      
-      console.log(`Sending shipping SMS to ${formattedPhone}: ${message}`);
-
-    } catch (error) {
-      console.error('Shipping notification error:', error);
-    }
-  }
-
-  // Get tracking URL based on courier
-  getTrackingUrl(courier, trackingNumber) {
-    const trackingUrls = {
-      'TCS': `https://www.tcsexpress.com/track/${trackingNumber}`,
-      'Leopards': `https://leopardscod.com/track/${trackingNumber}`,
-      'Trax': `https://sonic.pk/tracking/${trackingNumber}`,
-      'PostEx': `https://postex.pk/track/${trackingNumber}`,
-      'CallCourier': `https://callcourier.com.pk/tracking/${trackingNumber}`
-    };
-
-    return trackingUrls[courier] || '#';
   }
 
   // Update order in localStorage (in production, this would update database)
