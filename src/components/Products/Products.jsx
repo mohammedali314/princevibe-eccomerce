@@ -450,11 +450,6 @@ const Products = () => {
                         {product.badge}
                       </div>
                     )}
-                    {product.isNew && (
-                      <div className="new-indicator">
-                        <SparklesIcon />
-                      </div>
-                    )}
                   </div>
                 </Link>
                 <button 
