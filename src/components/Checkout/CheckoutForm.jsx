@@ -624,12 +624,33 @@ const CheckoutForm = ({ onOrderComplete }) => {
                 <div className="order-details-card">
                   <h3>Order Information</h3>
                   <p><strong>Order Number:</strong> {orderResult.orderNumber}</p>
+                  <p><strong>Customer Phone:</strong> {formData.phone}</p>
                   <p><strong>Customer Email:</strong> {formData.email}</p>
                   <p><strong>Total Amount:</strong> PKR {(orderResult.payment?.amount || 0).toLocaleString()}</p>
                   <p><strong>Payment Method:</strong> Cash on Delivery</p>
                   <p><strong>Estimated Delivery:</strong> {orderResult.estimatedDelivery ? new Date(orderResult.estimatedDelivery).toLocaleDateString('en-PK') : '3-5 business days'}</p>
                 </div>
               )}
+
+              {/* PHONE-FIRST PRIORITY SECTION */}
+              <div className="phone-verification-priority" style={{
+                background: 'linear-gradient(135deg, #0066cc, #004499)',
+                color: '#ffffff',
+                padding: '1.5rem',
+                borderRadius: '12px',
+                margin: '1.5rem 0',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📞</div>
+                <h3 style={{ color: '#ffffff', marginBottom: '0.5rem' }}>Phone Verification Priority</h3>
+                <p style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
+                  <strong>We will call you within 24 hours to confirm your order</strong>
+                </p>
+                <p style={{ fontSize: '0.95rem', opacity: '0.9' }}>
+                  Our team will verify your details and ensure perfect delivery.
+                  Please keep your phone available: <strong>{formData.phone}</strong>
+                </p>
+              </div>
 
               <div className="guest-tracking-info">
                 <h4>📦 Track Your Order</h4>
@@ -663,12 +684,28 @@ const CheckoutForm = ({ onOrderComplete }) => {
               <div className="next-steps">
                 <h4>What Happens Next?</h4>
                 <ol>
-                  <li>We'll send you an order confirmation email within the next few minutes</li>
-                  <li>You'll receive an SMS with order details and tracking information</li>
-                  <li>Your order will be prepared and packed with care</li>
-                  <li>We'll notify you when your order is out for delivery</li>
-                  <li>Pay cash when your luxury watch arrives at your doorstep</li>
+                  <li><strong>📞 Phone Verification (Within 24 hours):</strong> Our team will call to confirm your order and delivery details</li>
+                  <li><strong>📧 Email Confirmation:</strong> Order confirmation sent to your email</li>
+                  <li><strong>📦 Order Preparation:</strong> Your luxury watch will be carefully prepared and packed</li>
+                  <li><strong>🚚 Shipping Notification:</strong> You'll be notified when your order is out for delivery</li>
+                  <li><strong>💰 Cash on Delivery:</strong> Pay when your premium watch arrives at your doorstep</li>
                 </ol>
+              </div>
+
+              <div style={{
+                background: '#f8f9fa',
+                border: '1px solid #e9ecef',
+                borderRadius: '8px',
+                padding: '1rem',
+                margin: '1rem 0'
+              }}>
+                <h5 style={{ color: '#495057', marginBottom: '0.5rem' }}>💡 Important Notes:</h5>
+                <ul style={{ fontSize: '0.9rem', color: '#6c757d', marginBottom: '0' }}>
+                  <li>Keep your phone accessible for our verification call</li>
+                  <li>We'll confirm your delivery address and timing preferences</li>
+                  <li>Orders are typically delivered within 3-5 business days after confirmation</li>
+                  <li>For urgent delivery needs, please mention during our call</li>
+                </ul>
               </div>
 
               <div className="confirmation-actions">
