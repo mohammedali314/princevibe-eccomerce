@@ -624,16 +624,47 @@ const CheckoutForm = ({ onOrderComplete }) => {
                 <div className="order-details-card">
                   <h3>Order Information</h3>
                   <p><strong>Order Number:</strong> {orderResult.orderNumber}</p>
+                  <p><strong>Customer Email:</strong> {formData.email}</p>
                   <p><strong>Total Amount:</strong> PKR {(orderResult.payment?.amount || 0).toLocaleString()}</p>
                   <p><strong>Payment Method:</strong> Cash on Delivery</p>
                   <p><strong>Estimated Delivery:</strong> {orderResult.estimatedDelivery ? new Date(orderResult.estimatedDelivery).toLocaleDateString('en-PK') : '3-5 business days'}</p>
                 </div>
               )}
 
+              <div className="guest-tracking-info">
+                <h4>📦 Track Your Order</h4>
+                <p>You can track your order anytime using:</p>
+                <ul>
+                  <li><strong>Order Number:</strong> {orderResult?.orderNumber}</li>
+                  <li><strong>Email Address:</strong> {formData.email}</li>
+                </ul>
+                <button
+                  onClick={() => {
+                    window.open('/track-order', '_blank');
+                  }}
+                  className="track-order-btn"
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    background: 'linear-gradient(135deg, #0066cc, #004499)',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    marginTop: '10px',
+                    marginRight: '10px'
+                  }}
+                >
+                  🔍 Track Your Order
+                </button>
+              </div>
+
               <div className="next-steps">
                 <h4>What Happens Next?</h4>
                 <ol>
                   <li>We'll send you an order confirmation email within the next few minutes</li>
+                  <li>You'll receive an SMS with order details and tracking information</li>
                   <li>Your order will be prepared and packed with care</li>
                   <li>We'll notify you when your order is out for delivery</li>
                   <li>Pay cash when your luxury watch arrives at your doorstep</li>

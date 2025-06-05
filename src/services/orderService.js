@@ -35,36 +35,9 @@ class OrderService {
       const userId = userData._id || userData.id;
       const isAuthenticated = !!token && !!userId;
 
-      // For guest users (not authenticated), don't save the order
-      if (!isAuthenticated) {
-        console.log('Guest user detected - order will not be saved');
-        console.log('Token present:', !!token);
-        console.log('User data present:', !!userData && Object.keys(userData).length > 0);
-        console.log('User ID (_id):', !!userData._id);
-        console.log('User ID (id):', !!userData.id);
-        console.log('Full userData:', userData);
-        
-        // Return success but with a message about guest orders
-        return {
-          success: true,
-          order: {
-            orderNumber: this.generateOrderNumber(),
-            customer: orderData.customer,
-            items: orderData.items,
-            payment: orderData.payment,
-            status: 'pending',
-            createdAt: new Date().toISOString(),
-            isGuestOrder: true
-          },
-          message: 'Order placed successfully! As a guest user, your order details will not be saved to your account. Please keep your order number for tracking.',
-          warning: 'Guest orders are not saved. Sign in to track your orders and access order history.'
-        };
-      }
-
-      // For authenticated users, prepare order data for the backend API
+      // Prepare order data for the backend API (for both guest and authenticated users)
       const apiOrderData = {
         customer: {
-          userId: userId,  // Use the detected user ID
           name: `${orderData.customer.firstName} ${orderData.customer.lastName}`.trim(),
           email: orderData.customer.email,
           phone: orderData.customer.phone,
@@ -100,15 +73,24 @@ class OrderService {
         }
       };
 
+      // Add userId only for authenticated users
+      if (isAuthenticated) {
+        apiOrderData.customer.userId = userId;
+        console.log('Authenticated user order - saving with user ID:', userId);
+      } else {
+        console.log('Guest user order - saving without user ID for tracking via email/phone');
+      }
+
       console.log('Sending order to backend API:', apiOrderData);
 
-      // Make API call to backend
+      // Make API call to backend (works for both guest and authenticated users)
       const response = await fetch(`${API_BASE_URL}/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
+          // Include Authorization header only for authenticated users
+          ...(isAuthenticated && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify(apiOrderData)
       });
@@ -129,10 +111,21 @@ class OrderService {
       if (result.success && result.data) {
         console.log('Order created successfully in backend:', result.data);
         
+        // Different success messages for guest vs authenticated users
+        const successMessage = isAuthenticated 
+          ? 'Order placed successfully! You can track it in your account under "My Orders".'
+          : 'Order placed successfully! Please save your order number for tracking. You can track your order using your email and order number.';
+
         return {
           success: true,
           order: result.data,
-          message: 'Order placed successfully! We will contact you within 24 hours to confirm delivery details.'
+          message: successMessage,
+          isAuthenticated: isAuthenticated,
+          trackingInfo: {
+            orderNumber: result.data.orderNumber,
+            email: apiOrderData.customer.email,
+            phone: apiOrderData.customer.phone
+          }
         };
       } else {
         throw new Error(result.message || 'Failed to create order');
@@ -141,36 +134,11 @@ class OrderService {
     } catch (error) {
       console.error('Order creation error:', error);
       
-      // For authenticated users, if API fails, still don't fall back to localStorage
-      // This ensures consistency with the new API-first approach
-      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-      const token = localStorage.getItem('userToken');
-      const userId = userData._id || userData.id;
-      const isAuthenticated = !!token && !!userId;
-      
-      if (isAuthenticated) {
-        return {
-          success: false,
-          error: error.message || 'Failed to create order. Please try again or contact support.',
-          message: 'Unable to process your order at this time. Please try again or contact our customer support.'
-        };
-      } else {
-        // For guest users, return the guest order response
-        return {
-          success: true,
-          order: {
-            orderNumber: this.generateOrderNumber(),
-            customer: orderData.customer,
-            items: orderData.items,
-            payment: orderData.payment,
-            status: 'pending',
-            createdAt: new Date().toISOString(),
-            isGuestOrder: true
-          },
-          message: 'Order placed successfully! As a guest user, your order details will not be saved.',
-          warning: 'Guest orders are not saved. Sign in to track your orders and access order history.'
-        };
-      }
+      return {
+        success: false,
+        error: error.message || 'Failed to create order. Please try again or contact support.',
+        message: 'Unable to process your order at this time. Please try again or contact our customer support.'
+      };
     }
   }
 
@@ -240,6 +208,71 @@ class OrderService {
       return {
         success: false,
         error: error.message
+      };
+    }
+  }
+
+  // Track guest order by order number and email (for guest users)
+  async trackGuestOrder(orderNumber, email) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/orders/track-guest`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          orderNumber: orderNumber,
+          email: email.toLowerCase()
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to track order');
+      }
+
+      return {
+        success: true,
+        order: result.data
+      };
+
+    } catch (error) {
+      console.error('Error tracking guest order:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // Get guest orders by email (for guest users)
+  async getGuestOrders(email) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/orders/by-email/${encodeURIComponent(email.toLowerCase())}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to fetch orders');
+      }
+
+      return {
+        success: true,
+        orders: result.data || []
+      };
+
+    } catch (error) {
+      console.error('Error fetching guest orders:', error);
+      return {
+        success: false,
+        error: error.message,
+        orders: []
       };
     }
   }

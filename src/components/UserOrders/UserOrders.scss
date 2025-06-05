@@ -138,7 +138,7 @@ $status-cancelled: #ef4444;
     text-align: center;
     position: relative;
     overflow: hidden;
-
+    
     &::before {
       content: '';
       position: absolute;
@@ -158,9 +158,9 @@ $status-cancelled: #ef4444;
       margin: 0 auto;
       padding: 0 2rem;
 
-      h1 {
+    h1 {
         font-family: 'Playfair Display', serif;
-        font-size: 3.5rem;
+      font-size: 3.5rem;
         font-weight: 700;
         margin-bottom: 1rem;
         background: linear-gradient(135deg, #ffffff, #e5e5e5);
@@ -170,13 +170,13 @@ $status-cancelled: #ef4444;
 
         @media (max-width: 768px) {
           font-size: 2.5rem;
-        }
       }
+    }
 
-      p {
+    p {
         font-size: 1.2rem;
         opacity: 0.9;
-        font-weight: 300;
+      font-weight: 300;
         letter-spacing: 0.5px;
       }
     }
@@ -244,7 +244,7 @@ $status-cancelled: #ef4444;
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             border: 1px solid rgba(0, 0, 0, 0.04);
-
+            
             .stat-number {
               display: block;
               font-size: 1.5rem;
@@ -469,7 +469,7 @@ $status-cancelled: #ef4444;
             &.status-confirmed {
               background: #dbeafe;
               color: #1e40af;
-            }
+              }
 
             &.status-processing {
               background: #e0e7ff;
@@ -479,12 +479,12 @@ $status-cancelled: #ef4444;
             &.status-shipped {
               background: #cffafe;
               color: #0891b2;
-            }
+                }
 
             &.status-delivered {
               background: #d1fae5;
               color: #065f46;
-            }
+                }
 
             &.status-cancelled {
               background: #fee2e2;
@@ -495,8 +495,8 @@ $status-cancelled: #ef4444;
               background: #fed7aa;
               color: #9a3412;
             }
+            }
           }
-        }
 
         .card-content {
           padding: 1.5rem 2rem;
@@ -559,7 +559,7 @@ $status-cancelled: #ef4444;
                 font-weight: 600;
                 color: #1a1a1a;
                 margin-bottom: 1rem;
-              }
+                  }
 
               .order-items-grid {
                 display: grid;
@@ -634,7 +634,7 @@ $status-cancelled: #ef4444;
                         margin-bottom: 0.5rem;
 
                         .item-price {
-                          font-size: 0.9rem;
+                font-size: 0.9rem;
                           font-weight: 600;
                           color: #059669;
                         }
@@ -695,35 +695,35 @@ $status-cancelled: #ef4444;
                       width: 18px;
                       height: 18px;
                     }
-                  }
                 }
+              }
 
-                .payment-method {
+              .payment-method {
                   background: #000000;
                   color: white;
-                  padding: 0.25rem 0.75rem;
+                padding: 0.25rem 0.75rem;
                   border-radius: 12px;
                   font-size: 0.75rem;
                   font-weight: 600;
-                  text-transform: uppercase;
+                text-transform: uppercase;
                   letter-spacing: 0.5px;
-                }
               }
             }
+          }
 
-            .status-description {
-              p {
+          .status-description {
+            p {
                 font-size: 0.95rem;
                 color: #4b5563;
-                line-height: 1.6;
+              line-height: 1.6;
                 margin-bottom: 1rem;
-              }
+            }
 
               .delivery-info {
-                display: flex;
-                align-items: center;
+              display: flex;
+              align-items: center;
                 gap: 0.5rem;
-                font-size: 0.875rem;
+              font-size: 0.875rem;
                 color: #059669;
                 font-weight: 600;
                 background: #ecfdf5;
@@ -828,11 +828,11 @@ $status-cancelled: #ef4444;
       .container {
         padding: 0 1.5rem;
 
-        h1 {
-          font-size: 2.5rem;
-        }
+      h1 {
+        font-size: 2.5rem;
+      }
 
-        p {
+      p {
           font-size: 1rem;
         }
       }
@@ -864,8 +864,8 @@ $status-cancelled: #ef4444;
   @media (max-width: 480px) {
     .orders-header-section {
       .container {
-        h1 {
-          font-size: 2rem;
+      h1 {
+        font-size: 2rem;
         }
       }
     }
@@ -875,8 +875,8 @@ $status-cancelled: #ef4444;
         .header-left {
           h2 {
             font-size: 1.5rem;
-          }
         }
+      }
 
         .header-right {
           .header-stats {

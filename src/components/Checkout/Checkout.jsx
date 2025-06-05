@@ -80,7 +80,7 @@ const Checkout = () => {
                 </div>
                 <div className="info-item">
                   <span className="label">Total Amount:</span>
-                  <span className="value">Rs. {orderData?.payment?.amount}</span>
+                  <span className="value">Rs. {orderData?.summary?.total}</span>
                 </div>
                 <div className="info-item">
                   <span className="label">Payment Method:</span>

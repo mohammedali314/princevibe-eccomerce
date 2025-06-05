@@ -56,7 +56,7 @@ const UserOrders = () => {
       if (!token) {
         throw new Error('No authentication token found');
       }
-
+      
       const response = await fetch(`${API_BASE_URL}/orders/my-orders`, {
         method: 'GET',
         headers: {
@@ -65,17 +65,17 @@ const UserOrders = () => {
         }
       });
 
-      const result = await response.json();
+        const result = await response.json();
 
       if (!response.ok) {
         throw new Error(result.message || 'Failed to fetch orders');
       }
 
-      if (result.success) {
+        if (result.success) {
         const userOrders = result.data || [];
         setOrders(userOrders);
         setFilteredOrders(userOrders);
-      } else {
+        } else {
         throw new Error(result.message || 'Failed to fetch orders');
       }
       
@@ -125,12 +125,12 @@ const UserOrders = () => {
         
         if (userOrders.length > 0) {
           setError('Orders loaded from local storage. Please refresh to sync with server.');
-        }
+          }
         
       } catch (parseError) {
         console.error('Error parsing localStorage orders:', parseError);
-        setOrders([]);
-        setFilteredOrders([]);
+          setOrders([]);
+          setFilteredOrders([]);
         setError('Failed to load orders from both server and local storage.');
       }
     } finally {
@@ -451,7 +451,7 @@ const UserOrders = () => {
                     {/* Expanded Details - Show only when expanded */}
                     {expandedOrders.has(orderId) && (
                       <div className="expanded-details">
-                        <div className="order-items">
+                    <div className="order-items">
                           <h4>Order Items</h4>
                           <div className="order-items-grid">
                             {order.items?.map((item, index) => (
@@ -482,13 +482,13 @@ const UserOrders = () => {
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
                           </div>
-                        </div>
+                        ))}
+                      </div>
+                    </div>
 
-                        <div className="order-summary">
-                          <div className="summary-row">
+                    <div className="order-summary">
+                      <div className="summary-row">
                             <span>Subtotal</span>
                             <span>PKR {(order.summary?.subtotal || orderTotal).toLocaleString('en-PK')}</span>
                           </div>
@@ -498,11 +498,11 @@ const UserOrders = () => {
                           </div>
                           <div className="summary-row">
                             <span>Payment Method</span>
-                            <span className="payment-method">
+                        <span className="payment-method">
                               {(order.payment?.method || 'COD').toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="summary-row total">
+                        </span>
+                      </div>
+                      <div className="summary-row total">
                             <span>Total</span>
                             <span className="total-amount">
                               <svg className="currency-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -511,11 +511,11 @@ const UserOrders = () => {
                               </svg>
                               PKR {orderTotal.toLocaleString('en-PK')}
                             </span>
-                          </div>
-                        </div>
+                      </div>
+                    </div>
 
                         <div className="status-description">
-                          <p>{getStatusDescription(order.status)}</p>
+                      <p>{getStatusDescription(order.status)}</p>
                           <div className="delivery-info">
                             <svg className="delivery-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
@@ -527,8 +527,8 @@ const UserOrders = () => {
                             }
                           </div>
                         </div>
-                      </div>
-                    )}
+                        </div>
+                      )}
                   </div>
 
                   <div className="card-actions">
@@ -545,13 +545,13 @@ const UserOrders = () => {
                       </svg>
                       {expandedOrders.has(orderId) ? 'Hide Details' : 'View Details'}
                     </button>
-                    <button className="action-btn secondary">
+                      <button className="action-btn secondary">
                       <svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                           d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       Contact Support
-                    </button>
+                      </button>
                   </div>
                 </div>
               );

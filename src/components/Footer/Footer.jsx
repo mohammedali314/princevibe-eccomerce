@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { 
   EnvelopeIcon,
   PhoneIcon,
@@ -21,6 +23,8 @@ import {
   LinkedInIcon,
   TikTokIcon
 } from './SocialIcons';
+import CheckoutTutorial from '../CheckoutTutorial/CheckoutTutorial';
+import AuthModal from '../Auth/AuthModal';
 import './Footer.scss';
 
 const Footer = ({ onLogoClick }) => {
@@ -31,12 +35,91 @@ const Footer = ({ onLogoClick }) => {
     services: false,
     support: false
   });
+  
+  // New state for tutorial and auth
+  const [showCheckoutTutorial, setShowCheckoutTutorial] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('login');
+  
+  // Hooks
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
     // Handle newsletter subscription
     console.log('Newsletter subscription:', email);
     setEmail('');
+  };
+
+  // Navigation Functions (copied from Navbar)
+  const scrollToProducts = () => {
+    const maxAttempts = 10;
+    let attempts = 0;
+    
+    const tryScroll = () => {
+      const target = document.getElementById('products');
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+        return true;
+      }
+      
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(tryScroll, 200);
+      }
+      return false;
+    };
+    
+    tryScroll();
+  };
+
+  const handleProductsNavigation = () => {
+    if (location.pathname === '/') {
+      scrollToProducts();
+    } else {
+      navigate('/');
+      setTimeout(() => {
+        scrollToProducts();
+      }, 300);
+    }
+  };
+
+  const handleCategoryNavigation = (category) => {
+    if (location.pathname === '/') {
+      // If on homepage, scroll to products and set category
+      scrollToProducts();
+      // Trigger category change after scroll
+      setTimeout(() => {
+        // Dispatch custom event to Products component
+        window.dispatchEvent(new CustomEvent('categoryChange', { 
+          detail: { category } 
+        }));
+      }, 500);
+    } else {
+      // Navigate to home with category parameter
+      navigate(`/?category=${category}`);
+    }
+  };
+
+  // Authentication handlers
+  const handleAuthRequired = (action) => {
+    if (isAuthenticated) {
+      // Navigate to the requested page
+      navigate(`/${action}`);
+    } else {
+      // Show login modal
+      setAuthModalMode('login');
+      setShowAuthModal(true);
+    }
+  };
+
+  const handleCheckoutTutorial = () => {
+    setShowCheckoutTutorial(true);
   };
 
   const handleLogoClick = () => {
@@ -55,47 +138,77 @@ const Footer = ({ onLogoClick }) => {
   const currentYear = new Date().getFullYear();
 
   const footerSections = {
-    // company: {
-    //   title: "Company",
-    //   links: [
-    //     { name: "About PrinceVibe", href: "#about" },
-    //     { name: "Our Story", href: "#story" },
-    //     { name: "Careers", href: "#careers" },
-    //     { name: "Press Center", href: "#press" },
-    //     { name: "Sustainability", href: "#sustainability" },
-    //     { name: "Investor Relations", href: "#investors" }
-    //   ]
-    // },
     products: {
       title: "Products",
       links: [
-        { name: "Luxury Watches", href: "#luxury" },
-        { name: "Smart Watches", href: "#smart" },
-        { name: "Sport Watches", href: "#sport" },
-        { name: "Limited Editions", href: "#limited" },
-        { name: "New Arrivals", href: "#new" },
-        { name: "Best Sellers", href: "#bestsellers" }
+        { 
+          name: "All Watches", 
+          action: () => handleProductsNavigation(),
+          type: "function"
+        },
+        { 
+          name: "Featured Watches", 
+          action: () => handleCategoryNavigation('featured'),
+          type: "function"
+        },
+        { 
+          name: "Best Sellers", 
+          action: () => handleCategoryNavigation('popular'),
+          type: "function"
+        },
+        { 
+          name: "New Arrivals", 
+          action: () => handleCategoryNavigation('new'),
+          type: "function"
+        },
+        { 
+          name: "Smart Watches", 
+          action: () => handleCategoryNavigation('smart'),
+          type: "function"
+        },
+        { 
+          name: "Luxury Collection", 
+          action: () => handleCategoryNavigation('luxury'),
+          type: "function"
+        }
       ]
     },
     services: {
       title: "Customer Service",
       links: [
-        { name: "Contact Us", href: "#contact" },
-        { name: "Size Guide", href: "#size-guide" },
-        { name: "Shipping Info", href: "#shipping" },
-        { name: "Returns & Exchanges", href: "#returns" },
-        { name: "Warranty", href: "#warranty" },
-        { name: "Repair Services", href: "#repair" }
+        { name: "Contact Us", href: "/contact", type: "link" },
+        { name: "Track Your Order", href: "/track-order", type: "link" },
+        { name: "Help & Support", href: "/help", type: "link" },
+        { 
+          name: "My Orders", 
+          action: () => handleAuthRequired('orders'),
+          type: "function"
+        },
+        { 
+          name: "My Profile", 
+          action: () => handleAuthRequired('profile'),
+          type: "function"
+        },
+        { name: "Customer Reviews", href: "/testimonials", type: "link" }
       ]
     },
     support: {
       title: "Support",
       links: [
-        { name: "Help Center", href: "#help" },
-        { name: "FAQ", href: "#faq" },
-        { name: "Live Chat", href: "#chat" },
-        { name: "Video Guides", href: "#guides" },
-        { name: "Product Registration", href: "#registration" }
+        { name: "Help Center", href: "/help", type: "link" },
+        { name: "About PrinceVibe", href: "/about", type: "link" },
+        { name: "Order Tracking", href: "/track-order", type: "link" },
+        { name: "FAQ & Support", href: "/help", type: "link" },
+        { 
+          name: "User Account", 
+          action: () => handleAuthRequired('profile'),
+          type: "function"
+        },
+        { 
+          name: "Checkout Process", 
+          action: () => handleCheckoutTutorial(),
+          type: "function"
+        }
       ]
     }
   };
@@ -200,7 +313,16 @@ const Footer = ({ onLogoClick }) => {
                   <ul className="section-links">
                     {section.links.map((link) => (
                       <li key={link.name}>
-                        <a href={link.href}>{link.name}</a>
+                        {link.type === "function" ? (
+                          <button 
+                            onClick={link.action}
+                            className="footer-link-button"
+                          >
+                            {link.name}
+                          </button>
+                        ) : (
+                          <Link to={link.href}>{link.name}</Link>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -293,17 +415,23 @@ const Footer = ({ onLogoClick }) => {
                 {/* <HeartIcon className="heart-icon" /> */}
                 <span>© {currentYear} PrinceVibe. Crafted with love for timepiece enthusiasts.</span>
               </div>
-              {/* <div className="legal-links">
-                <a href="#privacy">Privacy Policy</a>
-                <a href="#terms">Terms of Service</a>
-                <a href="#cookies">Cookie Policy</a>
-                <a href="#accessibility">Accessibility</a>
-                <a href="#sitemap">Sitemap</a>
-              </div> */}
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Checkout Tutorial Modal */}
+      <CheckoutTutorial 
+        isOpen={showCheckoutTutorial}
+        onClose={() => setShowCheckoutTutorial(false)}
+      />
+      
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        mode={authModalMode}
+      />
     </footer>
   );
 };

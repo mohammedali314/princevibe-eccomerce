@@ -14,6 +14,7 @@ import About from './components/About/About';
 import Contact from './components/Contact/Contact';
 import Testimonials from './components/Testimonials/Testimonials';
 import Checkout from './components/Checkout/Checkout';
+import TrackOrder from './components/TrackOrder/TrackOrder';
 import Loading from './components/Loading/Loading';
 import AdminLogin from './components/Admin/AdminLogin';
 import AdminDashboard from './components/Admin/AdminDashboard';
@@ -260,16 +261,27 @@ const AppContent = () => {
               } 
             />
 
+            {/* Help Route - Public for All Users */}
             <Route 
               path="/help" 
               element={
-                <ProtectedUserRoute>
-                  <>
-                    <Navbar onLogoClick={triggerLoading} />
-                    <UserHelp />
-                    <Footer onLogoClick={triggerLoading} />
-                  </>
-                </ProtectedUserRoute>
+                <>
+                  <Navbar onLogoClick={triggerLoading} />
+                  <UserHelp />
+                  <Footer onLogoClick={triggerLoading} />
+                </>
+              } 
+            />
+
+            {/* Track Order Route - Public for Guest Users */}
+            <Route 
+              path="/track-order" 
+              element={
+                <>
+                  <Navbar onLogoClick={triggerLoading} />
+                  <TrackOrder />
+                  <Footer onLogoClick={triggerLoading} />
+                </>
               } 
             />
 

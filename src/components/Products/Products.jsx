@@ -35,6 +35,9 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchMode, setIsSearchMode] = useState(false);
+  
+  // Show more/less state
+  const [showAllProducts, setShowAllProducts] = useState(false);
 
   // Use global contexts
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -251,14 +254,15 @@ const Products = () => {
   ];
 
   // Remove filteredProducts logic since we fetch filtered data from backend
-  const filteredProducts = products;
+  const filteredProducts = showAllProducts ? products : products.slice(0, 6);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-PK', {
       style: 'currency',
       currency: 'PKR',
-      minimumFractionDigits: 0
-    }).format(price);
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price).replace('PKR', 'Rs');
   };
 
   const getBadgeStyle = (badge) => {
@@ -283,6 +287,11 @@ const Products = () => {
     // Fallback to a placeholder image if the original fails to load
     e.target.src = `https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=800&h=800&fit=crop&q=80&auto=format`;
     e.target.onerror = null; // Prevent infinite loop
+  };
+
+  // Toggle show more/less products
+  const toggleShowAllProducts = () => {
+    setShowAllProducts(!showAllProducts);
   };
 
   return (
@@ -515,12 +524,14 @@ const Products = () => {
         </div>
 
         {/* View All Button */}
-        <div className="section-footer">
-          <button className="view-all-btn">
-            <span>View All Collection</span>
-            <ArrowRightIcon />
-          </button>
-        </div>
+        {products.length > 6 && (
+          <div className="section-footer">
+            <button className="view-all-btn" onClick={toggleShowAllProducts}>
+              <span>{showAllProducts ? 'Show Less' : 'View All Collection'}</span>
+              <ArrowRightIcon />
+            </button>
+          </div>
+        )}
       </div>
     </section>
 
