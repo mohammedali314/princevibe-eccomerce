@@ -13,69 +13,63 @@ const Testimonials = () => {
   const testimonials = [
     {
       id: 1,
-      name: "Alexander Hamilton",
-      title: "CEO, Luxury Enterprises",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face&auto=format&q=80",
+      name: "Ahmed Hassan",
+      location: "Karachi, Pakistan",
       rating: 5,
-      text: "Exceptional quality and unparalleled service. This is where luxury meets excellence. Every piece tells a story of craftsmanship and dedication that's truly remarkable.",
-      location: "New York, USA",
+      text: "Excellent service! Received my Rolex Submariner in perfect condition. The delivery was fast and the packaging was premium. Highly recommend Prince Vibe for luxury watches.",
       product: "Rolex Submariner",
-      purchaseDate: "December 2023"
+      purchaseDate: "Nov 2024",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face&q=80"
     },
     {
       id: 2,
-      name: "Sophia Chen",
-      title: "Fashion Director",
-      image: "https://plus.unsplash.com/premium_photo-1670071482460-5c08776521fe?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D",
+      name: "Fatima Ali",
+      location: "Lahore, Pakistan",
       rating: 5,
-      text: "The attention to detail is remarkable. From the packaging to the product itself, everything screams premium quality. An absolutely delightful shopping experience!",
-      location: "London, UK",
-      product: "Apple Watch Ultra",
-      purchaseDate: "November 2023"
+      text: "Amazing collection! Bought an Omega Speedmaster for my husband's birthday. The quality is outstanding and the customer service was exceptional. Will buy again!",
+      product: "Omega Speedmaster",
+      purchaseDate: "Oct 2024",
+      image: "https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=64&h=64&fit=crop&crop=face&q=80"
     },
     {
       id: 3,
-      name: "Marcus Johnson",
-      title: "Investment Banker",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face&auto=format&q=80",
+      name: "Muhammad Imran",
+      location: "Islamabad, Pakistan",
       rating: 5,
-      text: "Outstanding customer experience from start to finish. The team went above and beyond to ensure everything was perfect. This is true luxury redefined.",
-      location: "Dubai, UAE",
-      product: "Omega Speedmaster",
-      purchaseDate: "October 2023"
+      text: "Perfect experience from ordering to delivery. The TAG Heuer Formula 1 exceeded my expectations. Great quality watches with authentic warranty. Prince Vibe is the best!",
+      product: "TAG Heuer Formula 1",
+      purchaseDate: "Dec 2024",
+      image: "https://images.unsplash.com/photo-1472099645058-36a1b6b88b8e?w=64&h=64&fit=crop&crop=face&q=80"
     },
     {
       id: 4,
-      name: "Isabella Rodriguez",
-      title: "Art Curator",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face&auto=format&q=80",
+      name: "Ayesha Khan",
+      location: "Gujranwala, Pakistan",
       rating: 5,
-      text: "Each piece is a work of art. The craftsmanship and attention to detail is extraordinary. I couldn't be happier with my purchase and the entire experience.",
-      location: "Paris, France",
-      product: "TAG Heuer Monaco",
-      purchaseDate: "September 2023"
+      text: "Bought a Cartier Tank for my collection. The authenticity certificate and premium packaging made the experience luxurious. Fast delivery to Gujranwala. Highly satisfied!",
+      product: "Cartier Tank",
+      purchaseDate: "Nov 2024",
+      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=64&h=64&fit=crop&crop=face&q=80"
     },
     {
       id: 5,
-      name: "James Wilson",
-      title: "Tech Entrepreneur",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face&auto=format&q=80",
+      name: "Syed Usman",
+      location: "Faisalabad, Pakistan",
       rating: 5,
-      text: "Revolutionary shopping experience with impeccable service. The quality exceeded my expectations, and the delivery was seamless and professional.",
-      location: "Silicon Valley, USA",
-      product: "Smart Watch Collection",
-      purchaseDate: "August 2023"
+      text: "Outstanding service! The Patek Philippe Calatrava arrived exactly as described. Professional packaging and quick delivery. Prince Vibe has earned a loyal customer.",
+      product: "Patek Philippe Calatrava",
+      purchaseDate: "Jan 2024",
+      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=64&h=64&fit=crop&crop=face&q=80"
     },
     {
       id: 6,
-      name: "Emma Thompson",
-      title: "Luxury Consultant",
-      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face&auto=format&q=80",
+      name: "Zara Sheikh",
+      location: "Multan, Pakistan",
       rating: 5,
-      text: "An extraordinary brand that truly understands luxury. The personalized service and attention to detail make this a standout experience in every way.",
-      location: "Monaco",
-      product: "Diamond Collection",
-      purchaseDate: "July 2023"
+      text: "Incredible collection of luxury watches! Purchased a Breitling Navitimer and it's absolutely perfect. The team was very helpful throughout the process. Definitely recommend!",
+      product: "Breitling Navitimer",
+      purchaseDate: "Oct 2024",
+      image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=64&h=64&fit=crop&crop=face&q=80"
     }
   ];
 
@@ -121,16 +115,38 @@ const Testimonials = () => {
 
   // Enhanced navigation with smooth transitions
   const enhancedScrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const headerOffset = 80; // Account for fixed header
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+    if (sectionId === 'contact') {
+      navigate('/contact');
+    } else if (sectionId === 'home') {
+      navigate('/');
+      setTimeout(() => {
+        const productsSection = document.getElementById('products');
+        if (productsSection) {
+          productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+  const scrollToSection = (sectionId) => {
+    if (sectionId === 'home') {
+      navigate('/');
+      setTimeout(() => {
+        const productsSection = document.getElementById('products');
+        if (productsSection) {
+          productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   };
 
@@ -199,8 +215,7 @@ const Testimonials = () => {
                     </div>
                     <div className="author-details">
                       <h4>{testimonial.name}</h4>
-                      <p>{testimonial.title}</p>
-                      <span className="location">📍 {testimonial.location}</span>
+                      <p>{testimonial.location}</p>
                     </div>
                   </div>
                   

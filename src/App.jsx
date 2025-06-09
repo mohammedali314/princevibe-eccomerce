@@ -23,6 +23,7 @@ import UserOrders from './components/UserOrders/UserOrders';
 import UserHelp from './components/UserHelp/UserHelp';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
+import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 import AdminApi from './services/adminApi';
 import './App.css';
 
@@ -324,6 +325,8 @@ const AppContent = () => {
 
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Scroll to Top Button - Available on all pages */}
+          <ScrollToTop />
           </Routes>
       </div>
 
