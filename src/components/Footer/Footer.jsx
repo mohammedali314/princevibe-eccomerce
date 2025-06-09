@@ -214,11 +214,10 @@ const Footer = ({ onLogoClick }) => {
   };
 
   const socialLinks = [
-    { name: "Facebook", icon: FacebookIcon, href: "https://facebook.com/princevibe", followers: "2.3M" },
-    { name: "Instagram", icon: InstagramIcon, href: "https://instagram.com/princevibe", followers: "1.8M" },
-    { name: "YouTube", icon: YouTubeIcon, href: "https://youtube.com/princevibe", followers: "654K" },
-    { name: "LinkedIn", icon: LinkedInIcon, href: "https://linkedin.com/company/princevibe", followers: "234K" },
-    { name: "TikTok", icon: TikTokIcon, href: "https://tiktok.com/@princevibe", followers: "445K" }
+    { name: "Facebook", icon: FacebookIcon, href: "https://www.facebook.com/profile.php?id=61576899232165",},
+    { name: "Instagram", icon: InstagramIcon, href: "https://www.instagram.com/princevibe_official/", },
+    { name: "YouTube", icon: YouTubeIcon, href: "https://www.youtube.com/channel/UCxAd5CkpTkule-P7rgdevjQ", },
+    { name: "TikTok", icon: TikTokIcon, href: "https://www.tiktok.com/@princevibe_official", }
   ];
 
   const paymentMethods = [
@@ -272,15 +271,15 @@ const Footer = ({ onLogoClick }) => {
               <div className="contact-info">
                 <div className="contact-item">
                   <PhoneIcon />
-                  <span>+1 (555) 123-4567</span>
+                  <span>03089747141 • 03325122666</span>
                 </div>
                 <div className="contact-item">
                   <EnvelopeIcon />
-                  <span>hello@princevibe.com</span>
+                  <span>Princevibe.store@gmail.com</span>
                 </div>
                 <div className="contact-item">
                   <MapPinIcon />
-                  <span>123 Luxury Ave, New York, NY 10001</span>
+                  <span>Butt Palaza, Near HBL Bank Karianwala, Gujrat</span>
                 </div>
               </div>
             </div>

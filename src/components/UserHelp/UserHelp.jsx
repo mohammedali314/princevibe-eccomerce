@@ -73,27 +73,24 @@ const UserHelp = () => {
       icon: EnvelopeIcon,
       title: "Email Support",
       description: "Get help via email",
-      contact: "support@princevibe.com",
-      responseTime: "Response within 24 hours",
-      action: "Send Email",
-      href: "mailto:support@princevibe.com"
+      contact: "Princevibe.store@gmail.com",
+      availability: "Response within 24 hours",
+      href: "mailto:Princevibe.store@gmail.com"
     },
     {
       icon: PhoneIcon,
-      title: "Phone Support",
-      description: "Speak with our team",
-      contact: "+92 300 123 4567",
-      responseTime: "Mon-Fri, 9 AM - 6 PM",
-      action: "Call Now",
-      href: "tel:+923001234567"
+      title: "Phone Support", 
+      description: "Call our support team",
+      contact: "03089747141 • 03325122666",
+      availability: "Mon-Fri, 9AM-6PM",
+      href: "tel:03089747141"
     },
     {
       icon: ChatBubbleLeftRightIcon,
       title: "Live Chat",
-      description: "Chat with support",
+      description: "Chat with our support team",
       contact: "Not Available Now",
-      responseTime: "Will be available soon",
-      action: "Not Available",
+      availability: "Available during business hours",
       href: "#"
     }
   ];
@@ -209,9 +206,9 @@ const UserHelp = () => {
                   <h4>{method.title}</h4>
                   <p>{method.description}</p>
                   <div className="contact-info">{method.contact}</div>
-                  <div className="response-time">{method.responseTime}</div>
+                  <div className="response-time">{method.availability}</div>
                   <a href={method.href} className="contact-btn">
-                    <span>{method.action}</span>
+                    <span>Contact</span>
                     <ArrowRightIcon className="btn-icon" />
                   </a>
                 </div>

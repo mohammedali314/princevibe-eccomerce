@@ -15,40 +15,43 @@ import { useAuth } from '../../context/AuthContext';
 import './AuthModal.scss';
 
 const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
-  const [mode, setMode] = useState(initialMode); // 'login' or 'signup'
+  const [mode, setMode] = useState(initialMode); // 'login' or 'signup' or 'forgot'
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [passwordResetSent, setPasswordResetSent] = useState(false);
   
   const modalRef = useRef(null);
   const { login, signup } = useAuth();
 
   // Form data state
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
     firstName: '',
     lastName: '',
+    email: '',
     phone: '',
     dateOfBirth: '',
-    agreeToTerms: false
+    password: '',
+    confirmPassword: '',
+    agreeToTerms: false,
+    rememberMe: false
   });
 
   // Reset form when modal opens/closes or mode changes
   useEffect(() => {
     if (isOpen) {
       setFormData({
-        email: '',
-        password: '',
-        confirmPassword: '',
         firstName: '',
         lastName: '',
+        email: '',
         phone: '',
         dateOfBirth: '',
-        agreeToTerms: false
+        password: '',
+        confirmPassword: '',
+        agreeToTerms: false,
+        rememberMe: false
       });
       setError('');
       setSuccess('');
@@ -122,6 +125,11 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    if (mode === 'forgot') {
+      await handleForgotPassword(formData.email);
+      return;
+    }
+
     if (!validateForm()) return;
 
     setIsLoading(true);
@@ -159,6 +167,46 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
     }
   };
 
+  const handleForgotPassword = async (email) => {
+    if (!email) {
+      setError('Please enter your email address');
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setPasswordResetSent(true);
+        setSuccess('Password reset email sent! Please check your inbox.');
+        setFormData(prev => ({ ...prev, email: '' }));
+      } else {
+        setError(data.message || 'Failed to send reset email');
+      }
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Handle click outside modal
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -178,32 +226,42 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
 
         {/* Header */}
         <div className="auth-header">
-          <h2>{mode === 'login' ? 'Sign In' : 'Create Account'}</h2>
+          <h2>{mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Create Account' : 'Forgot Password'}</h2>
           <p>
             {mode === 'login' 
               ? 'Welcome back! Please sign in to your account.'
-              : 'Create a new account to get started.'
+              : mode === 'signup' ? 'Create a new account to get started.' : 'Enter your email address to reset your password.'
             }
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="auth-tabs">
-          <div className="tab-container">
-            <button 
-              className={`tab ${mode === 'login' ? 'active' : ''}`}
-              onClick={() => setMode('login')}
-            >
-              Sign In
-            </button>
-            <button 
-              className={`tab ${mode === 'signup' ? 'active' : ''}`}
-              onClick={() => setMode('signup')}
-            >
-              Create Account
-            </button>
-          </div>
-        </div>
+        {/* <div className="auth-tabs">
+          <button
+            type="button"
+            className={`tab ${mode === 'login' ? 'active' : ''}`}
+            onClick={() => {
+              setMode('login');
+              setPasswordResetSent(false);
+              setError('');
+              setSuccess('');
+            }}
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            className={`tab ${mode === 'signup' ? 'active' : ''}`}
+            onClick={() => {
+              setMode('signup');
+              setPasswordResetSent(false);
+              setError('');
+              setSuccess('');
+            }}
+          >
+            Create Account
+          </button>
+        </div> */}
 
         {/* Messages */}
         {success && (
@@ -220,192 +278,288 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
           </div>
         )}
 
+        {/* Forgot Password Success Message */}
+        {passwordResetSent && mode === 'forgot' && (
+          <div className="password-reset-success">
+            <div className="success-icon">📧</div>
+            <h3>Check Your Email</h3>
+            <p>We've sent a password reset link to your email address. Please check your inbox and follow the instructions.</p>
+            <div className="reset-info">
+              <p><strong>⏰ Link expires in 10 minutes</strong></p>
+              <p>If you don't see the email, check your spam folder.</p>
+            </div>
+            <button 
+              type="button" 
+              className="back-to-login"
+              onClick={() => {
+                setMode('login');
+                setPasswordResetSent(false);
+                setError('');
+                setSuccess('');
+              }}
+            >
+              Back to Sign In
+            </button>
+          </div>
+        )}
+
         {/* Form */}
-        <form className="auth-form" onSubmit={handleSubmit}>
-          {mode === 'signup' && (
-            <div className="form-row">
-              <div className="form-group">
-                <label>First Name</label>
-                <div className="input-container">
-                  <UserIcon />
-                  <input
-                    type="text"
-                    name="firstName"
-                    placeholder="First name"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    required
-                  />
+        {!(passwordResetSent && mode === 'forgot') && (
+          <form className="auth-form" onSubmit={handleSubmit}>
+            {/* Forgot Password Mode */}
+            {mode === 'forgot' && (
+              <>
+                <div className="forgot-header">
+                  <h3>🔐 Forgot Password</h3>
+                  <p>Enter your email address and we'll send you a link to reset your password.</p>
                 </div>
-              </div>
-              <div className="form-group">
-                <label>Last Name</label>
-                <div className="input-container">
-                  <UserIcon />
-                  <input
-                    type="text"
-                    name="lastName"
-                    placeholder="Last name"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    required
-                  />
+                
+                <div className="form-group">
+                  <label>Email Address</label>
+                  <div className="input-container">
+                    <EnvelopeIcon />
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Enter your email address"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
 
-          <div className="form-group">
-            <label>Email Address</label>
-            <div className="input-container">
-              <EnvelopeIcon />
-              <input
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-          </div>
-
-          {mode === 'signup' && (
-            <>
-              <div className="form-group">
-                <label>Phone Number <span className="optional">(Optional)</span></label>
-                <div className="input-container">
-                  <PhoneIcon />
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Phone number"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Date of Birth <span className="optional">(Optional)</span></label>
-                <div className="input-container">
-                  <CalendarDaysIcon />
-                  <input
-                    type="date"
-                    name="dateOfBirth"
-                    value={formData.dateOfBirth}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          <div className="form-group">
-            <label>Password</label>
-            <div className="input-container">
-              <LockClosedIcon />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-              />
-              <button
-                type="button"
-                className="toggle-password"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeSlashIcon /> : <EyeIcon />}
-              </button>
-            </div>
-          </div>
-
-          {mode === 'signup' && (
-            <div className="form-group">
-              <label>Confirm Password</label>
-              <div className="input-container">
-                <LockClosedIcon />
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  name="confirmPassword"
-                  placeholder="Confirm your password"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  required
-                />
-                <button
-                  type="button"
-                  className="toggle-password"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                <button 
+                  type="submit" 
+                  className="submit-btn"
+                  disabled={isLoading}
                 >
-                  {showConfirmPassword ? <EyeSlashIcon /> : <EyeIcon />}
+                  {isLoading ? (
+                    <div className="loading-container">
+                      <div className="loading-spinner"></div>
+                      <span>Sending Reset Link...</span>
+                    </div>
+                  ) : (
+                    <span>Send Reset Link</span>
+                  )}
                 </button>
-              </div>
-            </div>
-          )}
 
-          {mode === 'signup' && (
-            <div className="form-group checkbox-group">
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  name="agreeToTerms"
-                  checked={formData.agreeToTerms}
-                  onChange={handleInputChange}
-                  required
-                />
-                <span className="checkmark">
-                  <CheckCircleIcon />
-                </span>
-                <span className="checkbox-text">
-                  I agree to the <a href="/terms" target="_blank">Terms of Service</a> and{' '}
-                  <a href="/privacy" target="_blank">Privacy Policy</a>
-                </span>
-              </label>
-            </div>
-          )}
-
-          {mode === 'login' && (
-            <div className="form-options">
-              <label className="remember-me">
-                <input type="checkbox" name="rememberMe" />
-                <span className="checkmark">
-                  <CheckCircleIcon />
-                </span>
-                <span>Remember me</span>
-              </label>
-              <a href="#" className="forgot-password">Forgot password?</a>
-            </div>
-          )}
-
-          <button 
-            type="submit" 
-            className="submit-btn"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <div className="loading-container">
-                <div className="loading-spinner"></div>
-                <span>{mode === 'login' ? 'Signing In...' : 'Creating Account...'}</span>
-              </div>
-            ) : (
-              <span>{mode === 'login' ? 'Sign In' : 'Create Account'}</span>
+                <div className="forgot-footer">
+                  <button 
+                    type="button" 
+                    className="back-link"
+                    onClick={() => {
+                      setMode('login');
+                      setError('');
+                      setSuccess('');
+                    }}
+                  >
+                    ← Back to Sign In
+                  </button>
+                </div>
+              </>
             )}
-          </button>
-        </form>
+
+            {/* Regular Login/Signup Forms */}
+            {mode !== 'forgot' && (
+              <>
+                {mode === 'signup' && (
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>First Name</label>
+                      <div className="input-container">
+                        <UserIcon />
+                        <input
+                          type="text"
+                          name="firstName"
+                          placeholder="First name"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label>Last Name</label>
+                      <div className="input-container">
+                        <UserIcon />
+                        <input
+                          type="text"
+                          name="lastName"
+                          placeholder="Last name"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="form-group">
+                  <label>Email Address</label>
+                  <div className="input-container">
+                    <EnvelopeIcon />
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {mode === 'signup' && (
+                  <>
+                    <div className="form-group">
+                      <label>Phone Number <span className="optional">(Optional)</span></label>
+                      <div className="input-container">
+                        <PhoneIcon />
+                        <input
+                          type="tel"
+                          name="phone"
+                          placeholder="Phone number"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Date of Birth <span className="optional">(Optional)</span></label>
+                      <div className="input-container">
+                        <CalendarDaysIcon />
+                        <input
+                          type="date"
+                          name="dateOfBirth"
+                          value={formData.dateOfBirth}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                <div className="form-group">
+                  <label>Password</label>
+                  <div className="input-container">
+                    <LockClosedIcon />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="toggle-password"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeSlashIcon /> : <EyeIcon />}
+                    </button>
+                  </div>
+                </div>
+
+                {mode === 'signup' && (
+                  <div className="form-group">
+                    <label>Confirm Password</label>
+                    <div className="input-container">
+                      <LockClosedIcon />
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        name="confirmPassword"
+                        placeholder="Confirm your password"
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="toggle-password"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        {showConfirmPassword ? <EyeSlashIcon /> : <EyeIcon />}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {mode === 'signup' && (
+                  <div className="form-group checkbox-group">
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        name="agreeToTerms"
+                        checked={formData.agreeToTerms}
+                        onChange={handleInputChange}
+                        required
+                      />
+                      <span className="checkmark">
+                        <CheckCircleIcon />
+                      </span>
+                      <span className="checkbox-text">
+                        I agree to the <a href="/terms" target="_blank">Terms of Service</a> and{' '}
+                        <a href="/privacy" target="_blank">Privacy Policy</a>
+                      </span>
+                    </label>
+                  </div>
+                )}
+
+                {mode === 'login' && (
+                  <div className="form-options">
+                    <label className="remember-me">
+                      <input type="checkbox" name="rememberMe" />
+                      <span className="checkmark">
+                        <CheckCircleIcon />
+                      </span>
+                      <span>Remember me</span>
+                    </label>
+                    <button 
+                      type="button"
+                      className="forgot-password"
+                      onClick={() => {
+                        setMode('forgot');
+                        setError('');
+                        setSuccess('');
+                      }}
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                )}
+
+                <button 
+                  type="submit" 
+                  className="submit-btn"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <div className="loading-container">
+                      <div className="loading-spinner"></div>
+                      <span>{mode === 'login' ? 'Signing In...' : 'Creating Account...'}</span>
+                    </div>
+                  ) : (
+                    <span>{mode === 'login' ? 'Sign In' : 'Create Account'}</span>
+                  )}
+                </button>
+              </>
+            )}
+          </form>
+        )}
 
         {/* Footer */}
         <div className="auth-footer">
           <p>
-            {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
+            {mode === 'login' ? "Don't have an account? " : mode === 'signup' ? "Already have an account? " : "Remember your password? "}
             <button 
               className="switch-mode"
-              onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+              onClick={() => setMode(mode === 'login' ? 'signup' : mode === 'signup' ? 'login' : 'login')}
             >
-              {mode === 'login' ? 'Create one' : 'Sign in'}
+              {mode === 'login' ? 'Create one' : mode === 'signup' ? 'Sign in' : 'Sign in'}
             </button>
           </p>
         </div>

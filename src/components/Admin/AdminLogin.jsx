@@ -103,7 +103,7 @@ const AdminLogin = ({ isOpen, onClose, onSuccess }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="admin@princevibe.com"
+                placeholder="Princevibe.store@gmail.com"
                 required
                 autoComplete="email"
               />
@@ -164,7 +164,7 @@ const AdminLogin = ({ isOpen, onClose, onSuccess }) => {
         {/* Demo Credentials (for testing) */}
         <div className="demo-info">
           <p><strong>Demo Credentials:</strong></p>
-          <p>Email: admin@princevibe.com</p>
+          <p>Email: Princevibe.store@gmail.com</p>
           <p>Password: admin123</p>
         </div>
       </div>

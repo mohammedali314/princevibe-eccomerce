@@ -21,6 +21,8 @@ import AdminDashboard from './components/Admin/AdminDashboard';
 import UserProfile from './components/UserProfile/UserProfile';
 import UserOrders from './components/UserOrders/UserOrders';
 import UserHelp from './components/UserHelp/UserHelp';
+import ForgotPassword from './components/Auth/ForgotPassword';
+import ResetPassword from './components/Auth/ResetPassword';
 import AdminApi from './services/adminApi';
 import './App.css';
 
@@ -280,6 +282,28 @@ const AppContent = () => {
                 <>
                   <Navbar onLogoClick={triggerLoading} />
                   <TrackOrder />
+                  <Footer onLogoClick={triggerLoading} />
+                </>
+              } 
+            />
+
+            {/* Password Reset Routes */}
+            <Route 
+              path="/forgot-password" 
+              element={
+                <>
+                  <Navbar onLogoClick={triggerLoading} />
+                  <ForgotPassword />
+                  <Footer onLogoClick={triggerLoading} />
+                </>
+              } 
+            />
+            <Route 
+              path="/reset-password/:token" 
+              element={
+                <>
+                  <Navbar onLogoClick={triggerLoading} />
+                  <ResetPassword />
                   <Footer onLogoClick={triggerLoading} />
                 </>
               } 

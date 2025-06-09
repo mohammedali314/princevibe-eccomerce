@@ -133,21 +133,21 @@ const Contact = () => {
     {
       icon: PhoneIcon,
       title: 'Phone',
-      details: ['+92 300 1234567', '+92 321 9876543'],
-      action: 'tel:+923001234567',
+      details: ['03089747141', '03325122666'],
+      action: 'tel:03089747141',
       gradient: 'black'
     },
     {
       icon: EnvelopeIcon,
       title: 'Email',
-      details: ['info@princevibe.com', 'support@princevibe.com'],
-      action: 'mailto:info@princevibe.com',
+      details: ['Princevibe.store@gmail.com'],
+      action: 'mailto:Princevibe.store@gmail.com',
       gradient: 'black'
     },
     {
       icon: MapPinIcon,
       title: 'Address',
-      details: ['123 Watch Street', 'Karachi, Pakistan'],
+      details: ['Butt Palaza, Near HBL Bank', 'Karianwala, Gujrat'],
       action: 'https://maps.google.com',
       gradient: 'black'
     },
@@ -161,11 +161,11 @@ const Contact = () => {
   ];
 
   const socialLinks = [
-    { name: 'Facebook', icon: '📘', url: '#', color: '#1877F2' },
-    { name: 'Instagram', icon: '📷', url: '#', color: '#E4405F' },
-    { name: 'Twitter', icon: '🐦', url: '#', color: '#1DA1F2' },
-    { name: 'WhatsApp', icon: '💬', url: '#', color: '#25D366' },
-    { name: 'LinkedIn', icon: '💼', url: '#', color: '#0A66C2' }
+    { name: 'Facebook', icon: '📘', url: 'https://www.facebook.com/profile.php?id=61576899232165', color: '#1877F2' },
+    { name: 'Instagram', icon: '📷', url: 'https://www.instagram.com/princevibe_official/', color: '#E4405F' },
+    { name: 'YouTube', icon: '📺', url: 'https://www.youtube.com/channel/UCxAd5CkpTkule-P7rgdevjQ', color: '#FF0000' },
+    { name: 'TikTok', icon: '🎵', url: 'https://www.tiktok.com/@princevibe_official', color: '#000000' },
+    { name: 'WhatsApp', icon: '💬', url: '#', color: '#25D366' }
   ];
 
   return (

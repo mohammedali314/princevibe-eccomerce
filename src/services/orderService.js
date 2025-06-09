@@ -70,6 +70,11 @@ class OrderService {
         },
         notes: {
           customer: orderData.specialInstructions || ''
+        },
+        orderConfirmation: {
+          message: `Thank you for your order! Your order has been placed successfully and will be processed within 24 hours. You'll receive updates via SMS/WhatsApp.`,
+          supportEmail: 'Princevibe.store@gmail.com',
+          supportPhone: '03089747141 • 03325122666'
         }
       };
 
@@ -390,8 +395,8 @@ class OrderService {
         shippingAddress: order.shipping,
         estimatedDelivery: new Date(order.estimatedDelivery).toLocaleDateString('en-PK'),
         paymentMethod: 'Cash on Delivery',
-        supportEmail: 'support@princevibe.com',
-        supportPhone: '+92-300-1234567'
+        supportEmail: 'Princevibe.store@gmail.com',
+        supportPhone: '03089747141 • 03325122666'
       }
     };
 

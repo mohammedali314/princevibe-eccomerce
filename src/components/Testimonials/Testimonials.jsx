@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StarIcon } from '@heroicons/react/24/solid';
 import './Testimonials.scss';
+import { useNavigate } from 'react-router-dom';
 
 const Testimonials = () => {
+  const navigate = useNavigate();
   const [hoveredCard, setHoveredCard] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const testimonialRef = useRef(null);
@@ -237,7 +239,7 @@ const Testimonials = () => {
             <div className="cta-buttons">
               <button 
                 className="cta-btn primary" 
-                onClick={() => enhancedScrollToSection('home')}
+                onClick={() => scrollToSection('home')}
               >
                 Explore Our Collection
               </button>

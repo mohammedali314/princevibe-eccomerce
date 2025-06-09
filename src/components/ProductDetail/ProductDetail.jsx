@@ -323,18 +323,14 @@ const ProductDetail = () => {
     let shareUrl = '';
     
     switch (platform) {
-      case 'whatsapp':
-        shareUrl = `https://wa.me/?text=${encodeURIComponent(`${productTitle}\n${productDescription}\n${productUrl}`)}`;
-        break;
       case 'facebook':
         shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}&quote=${encodeURIComponent(productDescription)}`;
         break;
-      case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(productTitle)}&url=${encodeURIComponent(productUrl)}`;
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(`${productTitle} - ${productUrl}`)}`;
         break;
-      case 'email':
-        shareUrl = `mailto:?subject=${encodeURIComponent(productTitle)}&body=${encodeURIComponent(`${productDescription}\n\nView product: ${productUrl}`)}`;
-        break;
+      default:
+        shareUrl = productUrl;
     }
     
     if (shareUrl) {

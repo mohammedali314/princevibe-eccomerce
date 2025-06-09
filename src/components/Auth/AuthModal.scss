@@ -617,4 +617,251 @@ svg {
       user-select: none;
     }
   }
+}
+
+/* ====================================
+   Password Reset Success Message
+   ==================================== */
+.password-reset-success {
+  text-align: center;
+  padding: 2rem 1rem;
+  
+  .success-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: bounceIn 0.8s ease-out;
+  }
+  
+  h3 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+  
+  p {
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+  
+  .reset-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    border-left: 4px solid #007bff;
+    
+    p {
+      margin: 0.5rem 0;
+      font-size: 0.9rem;
+      
+      &:first-child {
+        font-weight: 600;
+        color: #007bff;
+      }
+    }
+  }
+  
+  .back-to-login {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: #5a6268;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+/* ====================================
+   Forgot Password Form Styles
+   ==================================== */
+.forgot-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  
+  h3 {
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+  }
+  
+  p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+.forgot-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  
+  .back-link {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+    
+    &:hover {
+      color: #0056b3;
+    }
+  }
+}
+
+/* ====================================
+   Update form options to handle button instead of link
+   ==================================== */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+  
+  .remember-me {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    
+    input[type="checkbox"] {
+      margin: 0;
+    }
+    
+    .checkmark {
+      color: transparent;
+      transition: color 0.3s ease;
+      
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+    
+    input:checked + .checkmark {
+      color: #007bff;
+    }
+  }
+  
+  .forgot-password {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+    
+    &:hover {
+      color: #0056b3;
+    }
+  }
+}
+
+/* ====================================
+   Password strength and requirements styles
+   ==================================== */
+.password-strength {
+  margin-top: 0.5rem;
+  
+  .strength-bar {
+    height: 4px;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    margin-bottom: 0.25rem;
+  }
+  
+  .strength-text {
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: capitalize;
+  }
+}
+
+.password-match {
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  
+  &.match {
+    color: #28a745;
+  }
+  
+  &.no-match {
+    color: #dc3545;
+  }
+}
+
+.password-requirements {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+  border-left: 4px solid #6c757d;
+  
+  p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    
+    li {
+      font-size: 0.8rem;
+      color: #666;
+      margin: 0.25rem 0;
+      padding-left: 1rem;
+      position: relative;
+      
+      &:before {
+        content: '○';
+        position: absolute;
+        left: 0;
+        color: #ccc;
+      }
+      
+      &.requirement-met {
+        color: #28a745;
+        
+        &:before {
+          content: '✓';
+          color: #28a745;
+        }
+      }
+    }
+  }
+}
+
+/* ====================================
+   Animations
+   ==================================== */
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 } 
