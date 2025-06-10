@@ -62,8 +62,8 @@ const Features = () => {
     {
       id: 5,
       icon: CreditCardIcon,
-      title: "Secure Payment",
-      description: "Multiple payment options with bank-level security and fraud protection.",
+      title: "Cash on Delivery (COD)",
+      description: "Convenient COD payment across Pakistan with secure order processing and verification.",
       color: "orange"
     },
     {
@@ -84,7 +84,7 @@ const Features = () => {
     },
     {
       id: 2,
-      number: "5+",
+      number: "4+",
       label: "Years Experience",
       icon: ClockIcon
     },

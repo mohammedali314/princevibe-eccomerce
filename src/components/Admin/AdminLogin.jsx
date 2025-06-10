@@ -85,7 +85,7 @@ const AdminLogin = ({ isOpen, onClose, onSuccess }) => {
         </div>
 
         {/* Form */}
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="admin-login-form">
           {error && (
             <div className="error-message">
               <ExclamationTriangleIcon />
@@ -94,44 +94,29 @@ const AdminLogin = ({ isOpen, onClose, onSuccess }) => {
           )}
 
           <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <div className="input-container">
-              <UserIcon className="input-icon" />
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Princevibe.store@gmail.com"
-                required
-                autoComplete="email"
-              />
-            </div>
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="Enter admin email"
+              required
+            />
           </div>
 
           <div className="form-group">
             <label htmlFor="password">Password</label>
-            <div className="input-container">
-              <LockClosedIcon className="input-icon" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                placeholder="Enter your password"
-                required
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeSlashIcon /> : <EyeIcon />}
-              </button>
-            </div>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              placeholder="Enter password"
+              required
+            />
           </div>
 
           <button 
@@ -159,13 +144,6 @@ const AdminLogin = ({ isOpen, onClose, onSuccess }) => {
             <LockClosedIcon />
             <span>This is a secure admin area. All actions are logged and monitored.</span>
           </div>
-        </div>
-
-        {/* Demo Credentials (for testing) */}
-        <div className="demo-info">
-          <p><strong>Demo Credentials:</strong></p>
-          <p>Email: Princevibe.store@gmail.com</p>
-          <p>Password: admin123</p>
         </div>
       </div>
     </div>

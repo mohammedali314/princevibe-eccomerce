@@ -27,7 +27,7 @@ const About = () => {
       name: 'Mohammed Ali',
       role: 'Founder & CEO',
       image: Princeimage,
-      description: 'Visionary leader with 5+ years in luxury timepieces',
+      description: 'Visionary leader with 4+ years in luxury timepieces',
       social: { linkedin: '#', youtube: 'https://www.youtube.com/channel/UCxAd5CkpTkule-P7rgdevjQ', tiktok: 'https://www.tiktok.com/@princevibe_official' }
     },
     {

@@ -80,6 +80,7 @@ const AddProductForm = ({ isOpen, onClose, onProductAdded }) => {
     description: '',
     shortDescription: '',
     rating: 0,
+    reviews: 0,
     specifications: {
       movement: '',
       caseMaterial: '',
@@ -388,6 +389,7 @@ const AddProductForm = ({ isOpen, onClose, onProductAdded }) => {
         description: '',
         shortDescription: '',
         rating: 0,
+        reviews: 0,
         specifications: {
           movement: '',
           caseMaterial: '',
@@ -583,6 +585,21 @@ const AddProductForm = ({ isOpen, onClose, onProductAdded }) => {
                     />
                   </div>
                   <small className="form-help">Rating from 0 to 5 stars (e.g., 4.5)</small>
+                </div>
+
+                <div className="form-group">
+                  <label>Number of Reviews</label>
+                  <div className="input-with-icon">
+                    <StarIcon />
+                    <input
+                      type="number"
+                      value={formData.reviews}
+                      onChange={(e) => handleInputChange('reviews', Math.max(0, parseInt(e.target.value) || 0))}
+                      placeholder="0"
+                      min="0"
+                    />
+                  </div>
+                  <small className="form-help">Total number of customer reviews (e.g., 25)</small>
                 </div>
               </div>
 

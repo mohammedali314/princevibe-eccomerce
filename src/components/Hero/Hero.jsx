@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { 
   PlayIcon,
   ArrowRightIcon,
@@ -13,7 +12,6 @@ const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const videoRefs = useRef([]);
-  const navigate = useNavigate();
 
   const slides = [
     {
@@ -87,9 +85,6 @@ const Hero = () => {
         behavior: 'smooth', 
         block: 'start' 
       });
-    } else {
-      // If products section doesn't exist, navigate to home with products scroll
-      navigate('/?scrollTo=products');
     }
   };
 

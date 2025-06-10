@@ -8,6 +8,9 @@ class AdminApiService {
   // Helper method for making authenticated requests
   async makeRequest(url, options = {}) {
     try {
+      // Always get the latest token from localStorage
+      this.token = localStorage.getItem('adminToken');
+      
       const headers = {
         'Content-Type': 'application/json',
         ...options.headers,
@@ -72,6 +75,17 @@ class AdminApiService {
   // Dashboard Analytics
   async getDashboardStats() {
     return this.makeRequest('/analytics/dashboard');
+  }
+
+  // Admin Activity Logs
+  async getRecentActions(limit = 10) {
+    return this.makeRequest(`/logs/recent?limit=${limit}`);
+  }
+
+  async getAdminLogs(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const url = `/logs${queryString ? `?${queryString}` : ''}`;
+    return this.makeRequest(url);
   }
 
   // Product Management

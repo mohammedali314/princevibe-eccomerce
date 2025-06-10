@@ -167,7 +167,7 @@ const Products = () => {
 
     try {
       const currentCartQuantity = getItemQuantity(product.id);
-      const maxQuantity = product?.stock || 10;
+      const maxQuantity = product?.quantity || 0; // Use quantity instead of stock
       const availableToAdd = maxQuantity - currentCartQuantity;
       
       if (availableToAdd <= 0) {

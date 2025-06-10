@@ -13,63 +13,69 @@ const Testimonials = () => {
   const testimonials = [
     {
       id: 1,
-      name: "Ahmed Hassan",
-      location: "Karachi, Pakistan",
+      name: "Ahmed Hassan Khan",
+      title: "Business Owner",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face&auto=format&q=80",
       rating: 5,
-      text: "Excellent service! Received my Rolex Submariner in perfect condition. The delivery was fast and the packaging was premium. Highly recommend Prince Vibe for luxury watches.",
+      text: "Prince Vibe ne mere expectations se kahin zyada behtareen service di. Quality aur customer care dono outstanding hai. Highly recommended for luxury watches in Pakistan!",
+      location: "Lahore, Pakistan",
       product: "Rolex Submariner",
-      purchaseDate: "Nov 2024",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face&q=80"
+      purchaseDate: "December 2023"
     },
     {
       id: 2,
-      name: "Fatima Ali",
-      location: "Lahore, Pakistan",
+      name: "Fatima Malik",
+      title: "Fashion Designer",
+      image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop&crop=face&auto=format&q=80",
       rating: 5,
-      text: "Amazing collection! Bought an Omega Speedmaster for my husband's birthday. The quality is outstanding and the customer service was exceptional. Will buy again!",
-      product: "Omega Speedmaster",
-      purchaseDate: "Oct 2024",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=64&h=64&fit=crop&crop=face&q=80"
+      text: "Bohat hi professional service aur quality bilkul authentic hai. Packaging bhi itni elegant thi ke gift ke liye perfect. Prince Vibe is the best choice for luxury watches!",
+      location: "Karachi, Pakistan",
+      product: "Apple Watch Ultra",
+      purchaseDate: "November 2023"
     },
     {
       id: 3,
-      name: "Muhammad Imran",
-      location: "Islamabad, Pakistan",
+      name: "Muhammad Bilal Sheikh",
+      title: "Software Engineer",
+      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face&auto=format&q=80",
       rating: 5,
-      text: "Perfect experience from ordering to delivery. The TAG Heuer Formula 1 exceeded my expectations. Great quality watches with authentic warranty. Prince Vibe is the best!",
-      product: "TAG Heuer Formula 1",
-      purchaseDate: "Dec 2024",
-      image: "https://images.unsplash.com/photo-1472099645058-36a1b6b88b8e?w=64&h=64&fit=crop&crop=face&q=80"
+      text: "Amazing experience! Fast delivery across Pakistan and the watch quality is exactly as shown. Customer support is very responsive. Definitely buying again!",
+      location: "Islamabad, Pakistan",
+      product: "Omega Speedmaster",
+      purchaseDate: "October 2023"
     },
     {
       id: 4,
-      name: "Ayesha Khan",
-      location: "Gujranwala, Pakistan",
+      name: "Ayesha Rehman",
+      title: "Doctor",
+      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face&auto=format&q=80",
       rating: 5,
-      text: "Bought a Cartier Tank for my collection. The authenticity certificate and premium packaging made the experience luxurious. Fast delivery to Gujranwala. Highly satisfied!",
-      product: "Cartier Tank",
-      purchaseDate: "Nov 2024",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=64&h=64&fit=crop&crop=face&q=80"
+      text: "Mera pehla luxury watch purchase tha aur Prince Vibe ne bilkul perfect experience diya. COD facility bhi available hai jo very convenient hai. Excellent service!",
+      location: "Faisalabad, Pakistan",
+      product: "TAG Heuer Monaco",
+      purchaseDate: "September 2023"
     },
     {
       id: 5,
-      name: "Syed Usman",
-      location: "Faisalabad, Pakistan",
+      name: "Usman Ali Qureshi",
+      title: "Marketing Director",
+      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face&auto=format&q=80",
       rating: 5,
-      text: "Outstanding service! The Patek Philippe Calatrava arrived exactly as described. Professional packaging and quick delivery. Prince Vibe has earned a loyal customer.",
-      product: "Patek Philippe Calatrava",
-      purchaseDate: "Jan 2024",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=64&h=64&fit=crop&crop=face&q=80"
+      text: "Prince Vibe ka collection bohat diverse hai aur prices bhi reasonable. Delivery time bhi committed ke according thi. Best platform for authentic luxury watches in Pakistan!",
+      location: "Rawalpindi, Pakistan",
+      product: "Smart Watch Collection",
+      purchaseDate: "August 2023"
     },
     {
       id: 6,
-      name: "Zara Sheikh",
-      location: "Multan, Pakistan",
+      name: "Zara Khan",
+      title: "Entrepreneur",
+      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face&auto=format&q=80",
       rating: 5,
-      text: "Incredible collection of luxury watches! Purchased a Breitling Navitimer and it's absolutely perfect. The team was very helpful throughout the process. Definitely recommend!",
-      product: "Breitling Navitimer",
-      purchaseDate: "Oct 2024",
-      image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=64&h=64&fit=crop&crop=face&q=80"
+      text: "Outstanding quality aur customer service! Mere husband ke liye gift liya tha aur wo bohat khush hue. Prince Vibe truly delivers premium luxury experience in Pakistan.",
+      location: "Multan, Pakistan",
+      product: "Diamond Collection",
+      purchaseDate: "July 2023"
     }
   ];
 
@@ -115,39 +121,38 @@ const Testimonials = () => {
 
   // Enhanced navigation with smooth transitions
   const enhancedScrollToSection = (sectionId) => {
-    if (sectionId === 'contact') {
-      navigate('/contact');
-    } else if (sectionId === 'home') {
-      navigate('/');
-      setTimeout(() => {
-        const productsSection = document.getElementById('products');
-        if (productsSection) {
-          productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-    } else {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerOffset = 80; // Account for fixed header
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
   };
 
-  const scrollToSection = (sectionId) => {
-    if (sectionId === 'home') {
-      navigate('/');
-      setTimeout(() => {
-        const productsSection = document.getElementById('products');
-        if (productsSection) {
-          productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-    } else {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
+  // Navigation functions for CTA buttons
+  const handleProductsNavigation = () => {
+    navigate('/');
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }, 300);
+  };
+
+  const handleContactNavigation = () => {
+    navigate('/contact');
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }, 100);
   };
 
   return (
@@ -215,7 +220,8 @@ const Testimonials = () => {
                     </div>
                     <div className="author-details">
                       <h4>{testimonial.name}</h4>
-                      <p>{testimonial.location}</p>
+                      <p>{testimonial.title}</p>
+                      <span className="location">📍 {testimonial.location}</span>
                     </div>
                   </div>
                   
@@ -254,13 +260,13 @@ const Testimonials = () => {
             <div className="cta-buttons">
               <button 
                 className="cta-btn primary" 
-                onClick={() => scrollToSection('home')}
+                onClick={handleProductsNavigation}
               >
                 Explore Our Collection
               </button>
               <button 
                 className="cta-btn secondary" 
-                onClick={() => enhancedScrollToSection('contact')}
+                onClick={handleContactNavigation}
               >
                 Contact Us Today
               </button>

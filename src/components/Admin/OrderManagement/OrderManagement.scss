@@ -275,6 +275,15 @@
             background: #dc2626;
           }
         }
+
+        &.btn-warning {
+          background: #f59e0b;
+          color: white;
+
+          &:hover {
+            background: #d97706;
+          }
+        }
       }
     }
   }
@@ -581,6 +590,29 @@
                 font-size: 0.75rem;
               }
             }
+
+            .deletable-tag {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 24px;
+              height: 24px;
+              background: rgba(239, 68, 68, 0.1);
+              border: 1px solid rgba(239, 68, 68, 0.3);
+              border-radius: 50%;
+              font-size: 0.7rem;
+              margin-left: 0.5rem;
+              cursor: pointer;
+              transition: all 0.2s ease;
+              animation: pulse 2s infinite;
+
+              &:hover {
+                background: rgba(239, 68, 68, 0.2);
+                border-color: rgba(239, 68, 68, 0.5);
+                transform: scale(1.1);
+                animation: none;
+              }
+            }
           }
         }
 
@@ -767,11 +799,14 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0.75rem 1.25rem;
+          padding: 0.75rem 1rem;
           background: #f8fafc;
           border-top: 1px solid #f1f5f9;
+          gap: 1rem;
 
           .action-left {
+            flex: 0 0 auto;
+
             .status-select {
               background: white;
               border: 1px solid #d1d5db;
@@ -792,12 +827,57 @@
                 border-color: #3b82f6;
                 box-shadow: 0 0 0 1px #3b82f6;
               }
+
+              option {
+                padding: 0.5rem;
+                
+                &:disabled {
+                  color: #9ca3af !important;
+                  background: #f9fafb !important;
+                  font-style: italic;
+                  cursor: not-allowed;
+                }
+                
+                &:not(:disabled):hover {
+                  background: #f3f4f6;
+                }
+              }
+
+              &[data-current-status="pending"] {
+                border-left: 4px solid #f59e0b;
+              }
+              
+              &[data-current-status="confirmed"] {
+                border-left: 4px solid #3b82f6;
+              }
+              
+              &[data-current-status="processing"] {
+                border-left: 4px solid #8b5cf6;
+              }
+              
+              &[data-current-status="shipped"] {
+                border-left: 4px solid #06b6d4;
+              }
+              
+              &[data-current-status="delivered"] {
+                border-left: 4px solid #10b981;
+              }
+              
+              &[data-current-status="cancelled"] {
+                border-left: 4px solid #ef4444;
+              }
+              
+              &[data-current-status="returned"] {
+                border-left: 4px solid #f97316;
+              }
             }
           }
 
           .action-right {
             display: flex;
             gap: 0.5rem;
+            flex: 0 0 auto;
+            align-items: center;
 
             .action-btn {
               display: flex;
@@ -811,16 +891,25 @@
               cursor: pointer;
               transition: all 0.2s ease;
               color: #64748b;
+              position: relative;
 
               svg, .action-icon {
                 width: 16px;
                 height: 16px;
+                flex-shrink: 0;
               }
 
               &:hover {
                 background: #f3f4f6;
                 border-color: #9ca3af;
                 color: #374151;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              }
+
+              &:active {
+                transform: translateY(0);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
               }
 
               &.expand {
@@ -847,6 +936,37 @@
                 background: #6366f1;
                 border-color: #6366f1;
                 color: white;
+              }
+
+              &.delete:hover {
+                background: #ef4444;
+                border-color: #ef4444;
+                color: white;
+                transform: translateY(-1px) scale(1.05);
+              }
+
+              // Tooltip on hover
+              &::after {
+                content: attr(title);
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 0.25rem 0.5rem;
+                border-radius: 4px;
+                font-size: 0.75rem;
+                white-space: nowrap;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.2s;
+                z-index: 10;
+                margin-bottom: 4px;
+              }
+
+              &:hover::after {
+                opacity: 1;
               }
             }
           }
@@ -1337,10 +1457,16 @@
               .action-right {
                 justify-content: center;
                 width: 100%;
+                flex-wrap: wrap;
 
                 .action-btn {
-                  flex: 1;
-                  max-width: 3rem;
+                  flex: 0 0 auto;
+                  min-width: 40px;
+                  
+                  // Hide tooltips on mobile
+                  &::after {
+                    display: none;
+                  }
                 }
               }
             }
@@ -1438,6 +1564,16 @@
           }
         }
       }
+    }
+  }
+
+  // Subtle pulse animation for deletable tag
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
     }
   }
 } 

@@ -263,7 +263,7 @@ const Footer = ({ onLogoClick }) => {
                 />
               </div>
               <p className="brand-description">
-                Crafting exceptional timepieces since 2008. PrinceVibe represents the pinnacle of 
+                Crafting exceptional timepieces since 2020. PrinceVibe represents the pinnacle of 
                 luxury, precision, and timeless elegance in watchmaking.
               </p>
               

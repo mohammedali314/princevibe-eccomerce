@@ -38,9 +38,24 @@ const Cart = ({ isOpen, onClose }) => {
   }, [isOpen]);
 
   const handleQuantityChange = (productId, newQuantity) => {
+    // Find the cart item to get product stock information
+    const cartItem = safeCart.find(item => item.id === productId);
+    
     if (newQuantity < 1) {
       removeFromCart(productId);
     } else {
+      // Check if new quantity exceeds available stock
+      const availableStock = cartItem?.availableStock || cartItem?.quantity || 0;
+      
+      if (cartItem && availableStock > 0) {
+        // If we have stock information, validate against it
+        if (newQuantity > availableStock) {
+          // Show a user-friendly message
+          alert(`Sorry! Only ${availableStock} units available in stock for ${cartItem.name}.`);
+          return;
+        }
+      }
+      
       updateQuantity(productId, newQuantity);
     }
   };
@@ -108,6 +123,18 @@ const Cart = ({ isOpen, onClose }) => {
                       <h4>{item.name}</h4>
                       <p className="item-price">{formatPrice(item.price)}</p>
                       
+                      {/* Stock indicator */}
+                      {item.availableStock && (
+                        <div className="stock-info">
+                          <span className="stock-text">
+                            {item.availableStock - item.quantity > 0 
+                              ? `${item.availableStock - item.quantity} more available` 
+                              : 'Maximum quantity reached'
+                            }
+                          </span>
+                        </div>
+                      )}
+                      
                       <div className="quantity-controls">
                         <button
                           className="qty-btn minus-btn"
@@ -122,8 +149,11 @@ const Cart = ({ isOpen, onClose }) => {
                         <button
                           className="qty-btn plus-btn"
                           onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                          disabled={item.availableStock && item.quantity >= item.availableStock}
                           aria-label="Increase quantity"
-                          title="Increase quantity"
+                          title={item.availableStock && item.quantity >= item.availableStock 
+                            ? `Maximum stock (${item.availableStock}) reached` 
+                            : "Increase quantity"}
                         >
                           <PlusIcon className="qty-icon" />
                           <span className="qty-text">+</span>

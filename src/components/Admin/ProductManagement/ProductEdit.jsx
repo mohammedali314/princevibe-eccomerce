@@ -54,6 +54,7 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
     sku: '',
     quantity: '',
     rating: 0,
+    reviews: 0,
     inStock: true,
     isFeatured: false,
     isActive: true,
@@ -98,6 +99,7 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
           sku: product.sku || '',
           quantity: product.quantity || '',
           rating: product.rating || 0,
+          reviews: product.reviews?.count || 0,
           inStock: product.inStock || false,
           isFeatured: product.isFeatured || false,
           isActive: product.isActive || true,
@@ -417,6 +419,28 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
               </div>
               <small style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
                 Rating from 0 to 5 stars (e.g., 4.5)
+              </small>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="reviews">Number of Reviews</label>
+              <div className="input-with-icon">
+                <StarIcon />
+                <input
+                  type="number"
+                  id="reviews"
+                  name="reviews"
+                  value={formData.reviews}
+                  onChange={(e) => {
+                    const value = Math.max(0, parseInt(e.target.value) || 0);
+                    setFormData(prev => ({ ...prev, reviews: value }));
+                  }}
+                  min="0"
+                  placeholder="0"
+                />
+              </div>
+              <small style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                Total number of customer reviews (e.g., 25)
               </small>
             </div>
             

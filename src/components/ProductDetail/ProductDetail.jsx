@@ -166,7 +166,7 @@ const ProductDetail = () => {
   const handleQuantityChange = (change) => {
     setQuantity(prev => {
       const newQuantity = prev + change;
-      const maxQuantity = product?.stock || 10;
+      const maxQuantity = product?.quantity || 0;
       return Math.max(1, Math.min(newQuantity, maxQuantity));
     });
   };
@@ -179,7 +179,7 @@ const ProductDetail = () => {
     
     if (isAddingToCart) return; // Prevent multiple clicks
     
-    if (!product.inStock) {
+    if (!product.inStock || product.quantity <= 0) {
       showLuxuryToast('Product is currently out of stock', 'error');
       return;
     }
@@ -195,7 +195,7 @@ const ProductDetail = () => {
       
       try {
         const currentCartQuantity = getItemQuantity(product.id);
-        const maxQuantity = product?.stock || 10;
+        const maxQuantity = product?.quantity || 0;
         const availableToAdd = maxQuantity - currentCartQuantity;
         
         if (availableToAdd <= 0) {
@@ -221,7 +221,7 @@ const ProductDetail = () => {
   };
 
   const handleBuyNow = () => {
-    if (!product.inStock) {
+    if (!product.inStock || product.quantity <= 0) {
       showLuxuryToast('Product is currently out of stock', 'error');
       return;
     }
@@ -381,8 +381,8 @@ const ProductDetail = () => {
     if (product.price > 150000) return '💫 Luxury';
     
     // Check if it's a trending/popular item based on rating and reviews
-    if (product.rating >= 4.8 && product.reviews > 50) return '🔥 Best Seller';
-    if (product.rating >= 4.5 && product.reviews > 20) return '⭐ Featured';
+    if (product.rating >= 4.8 && product.reviews?.count > 50) return '🔥 Best Seller';
+    if (product.rating >= 4.5 && product.reviews?.count > 20) return '⭐ Featured';
     if (product.rating >= 4.0) return '👍 Popular';
     
     // Check brand for classification
@@ -529,7 +529,7 @@ const ProductDetail = () => {
                   {renderStars(product.rating)}
                   </div>
                   <span className="rating-score">{product.rating}</span>
-                  <span className="reviews-count">({product.reviews} reviews)</span>
+                  <span className="reviews-count">({product.reviews?.count || 0} reviews)</span>
                 </div>
               </div>
 
@@ -547,8 +547,13 @@ const ProductDetail = () => {
                 <div className="section-header">
                   <label>Quantity</label>
                   <div className="stock-indicator">
-                    <div className={`stock-dot ${product.inStock ? 'in-stock' : 'out-stock'}`}></div>
-                    <span>{product?.stock || 10} pieces available</span>
+                    <div className={`stock-dot ${product.inStock && product.quantity > 0 ? 'in-stock' : 'out-stock'}`}></div>
+                    <span>
+                      {product.quantity > 0 
+                        ? `${product.quantity} pieces available` 
+                        : 'Out of stock'
+                      }
+                    </span>
                   </div>
                 </div>
                 
@@ -566,7 +571,7 @@ const ProductDetail = () => {
                   <button 
                     className="qty-btn plus"
                     onClick={() => handleQuantityChange(1)}
-                    disabled={quantity >= (product?.stock || 10)}
+                    disabled={quantity >= product.quantity || product.quantity <= 0}
                   >
                     <PlusIcon />
                   </button>
@@ -586,23 +591,25 @@ const ProductDetail = () => {
                 <button 
                     className="luxury-btn primary-gold buy-now"
                     onClick={handleBuyNow}
-                    disabled={!product.inStock}
+                    disabled={!product.inStock || product.quantity <= 0}
                 >
-                    <span>Buy Now</span>
+                    <span>{product.quantity <= 0 ? 'Out of Stock' : 'Buy Now'}</span>
                 </button>
                   
                 <button 
                     className={`luxury-btn secondary add-to-cart ${isAddingToCart ? 'loading' : ''}`}
                     onClick={handleAddToCart}
-                    disabled={!product.inStock || isItemInCart(product.id) || isAddingToCart}
+                    disabled={!product.inStock || product.quantity <= 0 || isItemInCart(product.id) || isAddingToCart}
                   >
                     <ShoppingBagIcon />
                     <span>
-                      {isAddingToCart 
-                        ? 'Adding...' 
-                        : isItemInCart(product.id) 
-                          ? 'Already in Cart' 
-                          : 'Add to Cart'
+                      {product.quantity <= 0 
+                        ? 'Out of Stock'
+                        : isAddingToCart 
+                          ? 'Adding...' 
+                          : isItemInCart(product.id) 
+                            ? 'Already in Cart' 
+                            : 'Add to Cart'
                       }
                     </span>
                     {isItemInCart(product.id) && !isAddingToCart && (
@@ -701,62 +708,88 @@ const ProductDetail = () => {
                 Shipping & Returns
               </button>
             </div>
-
+            
             <div className="tab-content">
               {activeTab === 'description' && (
                 <div className="tab-pane description">
-                  <h3>About this Timepiece</h3>
-                  <p className="description-text">{product.description}</p>
-                  
-                  <div className="features-detailed">
-                    <h4>Craftsmanship Details</h4>
-                    <ul className="features-list">
-                    {product.features.map((feature, index) => (
-                        <li key={index}>
-                          <CheckBadgeIcon />
-                          <span>{feature}</span>
-                        </li>
-                    ))}
-                  </ul>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'specifications' && (
-                <div className="tab-pane specifications">
-                  <h3>Technical Specifications</h3>
-                  <div className="specs-grid">
-                      {Object.entries(product.specifications).map(([key, value]) => (
-                      <div key={key} className="spec-row">
-                        <span className="spec-label">{key}</span>
-                        <span className="spec-value">{value}</span>
+                  <div className="description-content">
+                    <h3>About This Timepiece</h3>
+                    <p>{product.description}</p>
+                    
+                    {product.longDescription && (
+                      <div className="extended-description">
+                        <p>{product.longDescription}</p>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'shipping' && (
-                <div className="tab-pane shipping">
-                  <div className="shipping-grid">
-                    <div className="shipping-section">
-                  <h4>Shipping Information</h4>
+                    )}
+                    
+                    <div className="description-features">
+                      <h4>What Makes It Special</h4>
                       <ul>
-                        <li><strong>Free Shipping in Pakistan:</strong> On all orders</li>
-                        <li><strong>Express Delivery:</strong> 1-3 business days</li>
-                        <li><strong>Standard Delivery:</strong> 3-7 business days</li>
-                        <li><strong>White Glove Service:</strong> Available in major cities</li>
+                        {product.features.map((feature, index) => (
+                          <li key={index}>
+                            <CheckCircleIcon />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
                       </ul>
                     </div>
+                  </div>
+                </div>
+              )}
+              
+              {activeTab === 'specifications' && (
+                <div className="tab-pane specifications">
+                  <div className="specs-content">
+                    <h3>Technical Specifications</h3>
+                    <div className="specs-grid">
+                      {product.specifications && Object.entries(product.specifications).map(([key, value]) => (
+                        <div key={key} className="spec-item">
+                          <dt>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</dt>
+                          <dd>{value}</dd>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {activeTab === 'shipping' && (
+                <div className="tab-pane shipping">
+                  <div className="shipping-content">
+                    <h3>Shipping & Returns</h3>
                     
-                    <div className="shipping-section">
-                  <h4>Return Policy</h4>
-                      <ul>
-                        <li><strong>30-Day Returns:</strong> Full refund guarantee</li>
-                        <li><strong>Original Condition:</strong> Items must be unworn</li>
-                        <li><strong>Free Returns:</strong> We cover return shipping</li>
-                        <li><strong>Exchange Policy:</strong> Size exchanges available</li>
-                      </ul>
+                    <div className="shipping-info">
+                      <div className="shipping-section">
+                        <h4><TruckIcon /> Shipping Information</h4>
+                        <ul>
+                          <li><strong>Free shipping</strong> on all orders within Pakistan</li>
+                          <li><strong>2-3 business days</strong> for major cities (Karachi, Lahore, Islamabad)</li>
+                          <li><strong>3-5 business days</strong> for other cities</li>
+                          <li><strong>Express delivery</strong> available (additional charges apply)</li>
+                          <li>All items are <strong>insured</strong> during transit</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="returns-section">
+                        <h4><ArrowPathIcon /> Returns Policy</h4>
+                        <ul>
+                          <li><strong>30-day return</strong> window from delivery date</li>
+                          <li>Items must be in <strong>original condition</strong> with tags attached</li>
+                          <li><strong>Free return pickup</strong> for defective items</li>
+                          <li>Customer pays return shipping for change of mind</li>
+                          <li>Refund processed within <strong>5-7 business days</strong></li>
+                        </ul>
+                      </div>
+                      
+                      <div className="warranty-section">
+                        <h4><ShieldCheckIcon /> Warranty</h4>
+                        <ul>
+                          <li><strong>2-year international warranty</strong> included</li>
+                          <li>Covers manufacturing defects</li>
+                          <li>Authorized service centers nationwide</li>
+                          <li>Water damage not covered under warranty</li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -764,37 +797,6 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Luxury Toasts */}
-      <div className="luxury-toast-container">
-        {toasts.map(toast => (
-          <div 
-            key={toast.id}
-            className={`luxury-toast ${toast.type}`}
-            onClick={() => removeToast(toast.id)}
-          >
-            <div className="toast-icon">
-              {toast.type === 'success' && <CheckCircleIcon />}
-              {toast.type === 'error' && <ExclamationTriangleIcon />}
-              {toast.type === 'info' && <ShoppingBagIcon />}
-              {toast.type === 'wishlist' && <HeartSolid />}
-              {toast.type === 'remove' && <HeartIcon />}
-            </div>
-            <div className="toast-content">
-              <span className="toast-message">{toast.message}</span>
-            </div>
-            <button 
-              className="toast-close"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeToast(toast.id);
-              }}
-            >
-              ×
-            </button>
-          </div>
-        ))}
       </div>
 
       {/* Share Modal */}
@@ -802,52 +804,60 @@ const ProductDetail = () => {
         <div className="share-modal-overlay" onClick={closeShareModal}>
           <div className="share-modal" onClick={(e) => e.stopPropagation()}>
             <div className="share-modal-header">
-              <h3>Share this Product</h3>
-              <button className="close-modal-btn" onClick={closeShareModal}>
-                ×
-              </button>
+              <h3>Share This Product</h3>
+              <button className="close-btn" onClick={closeShareModal}>×</button>
             </div>
             
             <div className="share-modal-content">
               <div className="product-preview">
                 <img src={product.images[0]} alt={product.name} />
-                <div className="product-info">
+                <div>
                   <h4>{product.name}</h4>
-                  <p className="product-price">{formatPrice(product.price)}</p>
+                  <p>{formatPrice(product.price)}</p>
                 </div>
               </div>
               
               <div className="share-options">
-                <button className="share-option copy-link" onClick={handleCopyLink}>
+                <button className="share-option copy" onClick={handleCopyLink}>
                   <div className="share-icon">🔗</div>
-                  <div className="share-text">
-                    <span className="share-title">Copy Link</span>
-                    <span className="share-description">Share via link</span>
-                  </div>
+                  <span>Copy Link</span>
                 </button>
                 
                 <button className="share-option whatsapp" onClick={() => handleSocialShare('whatsapp')}>
                   <div className="share-icon">📱</div>
-                  <div className="share-text">
-                    <span className="share-title">WhatsApp</span>
-                    <span className="share-description">Share on WhatsApp</span>
-                  </div>
+                  <span>WhatsApp</span>
                 </button>
                 
                 <button className="share-option facebook" onClick={() => handleSocialShare('facebook')}>
                   <div className="share-icon">📘</div>
-                  <div className="share-text">
-                    <span className="share-title">Facebook</span>
-                    <span className="share-description">Share on Facebook</span>
-                  </div>
+                  <span>Facebook</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Toast Notifications */}
+      <div className="luxury-toasts">
+        {toasts.map((toast) => (
+          <div key={toast.id} className={`luxury-toast ${toast.type}`}>
+            <div className="toast-content">
+              <div className="toast-icon">
+                {toast.type === 'success' && <CheckCircleIcon />}
+                {toast.type === 'error' && <ExclamationTriangleIcon />}
+                {toast.type === 'wishlist' && <HeartSolid />}
+                {toast.type === 'remove' && <HeartIcon />}
+                {toast.type === 'info' && <ShoppingBagIcon />}
+              </div>
+              <span>{toast.message}</span>
+            </div>
+            <button className="toast-close" onClick={() => removeToast(toast.id)}>×</button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default ProductDetail; 
+export default ProductDetail;

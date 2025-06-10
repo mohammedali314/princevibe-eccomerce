@@ -492,6 +492,8 @@ class OrderService {
       delivered: 0,
       cancelled: 0,
       totalRevenue: 0,
+      confirmedRevenue: 0,
+      pendingRevenue: 0,
       averageOrderValue: 0,
       topCities: {},
       paymentMethods: { cod: 0 }
@@ -499,6 +501,7 @@ class OrderService {
 
     this.orders.forEach(order => {
       const orderDate = new Date(order.createdAt);
+      const orderTotal = order.payment.amount || order.summary?.total || 0;
       
       // Date-based counts
       if (orderDate >= today) stats.today++;
@@ -509,16 +512,25 @@ class OrderService {
       stats[order.status] = (stats[order.status] || 0) + 1;
 
       // Revenue calculation
-      if (order.status !== 'cancelled') {
-        stats.totalRevenue += order.payment.amount;
+      if (!['cancelled', 'returned'].includes(order.status)) {
+        stats.totalRevenue += orderTotal;
+        
+        if (['shipped', 'delivered'].includes(order.status)) {
+          stats.confirmedRevenue += orderTotal;
+        }
+        
+        if (['confirmed', 'processing'].includes(order.status)) {
+          stats.pendingRevenue += orderTotal;
+        }
       }
 
       // Top cities
-      const city = order.shipping.city.toLowerCase();
+      const city = order.shipping?.city?.toLowerCase() || 'unknown';
       stats.topCities[city] = (stats.topCities[city] || 0) + 1;
 
       // Payment methods
-      stats.paymentMethods[order.payment.method] = (stats.paymentMethods[order.payment.method] || 0) + 1;
+      const paymentMethod = order.payment?.method || 'cod';
+      stats.paymentMethods[paymentMethod] = (stats.paymentMethods[paymentMethod] || 0) + 1;
     });
 
     stats.averageOrderValue = stats.total > 0 ? Math.round(stats.totalRevenue / stats.total) : 0;

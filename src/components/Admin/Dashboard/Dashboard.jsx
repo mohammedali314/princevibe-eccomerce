@@ -20,7 +20,8 @@ import './Dashboard.scss';
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddProductForm, setShowAddProductForm] = useState(false);
 
@@ -31,17 +32,45 @@ const Dashboard = () => {
 
   const loadDashboardData = async () => {
     try {
-      setLoading(true);
-      const response = await AdminApi.getDashboardStats();
+      setIsLoading(true);
+      setError(null);
+
+      // Check if admin is authenticated
+      const token = localStorage.getItem('adminToken');
+      const adminData = localStorage.getItem('adminData');
       
-      if (response.success) {
-        setDashboardData(response.data);
+      console.log('Dashboard loading - Token exists:', !!token);
+      console.log('Dashboard loading - Admin data exists:', !!adminData);
+      
+      if (!token || !adminData) {
+        setError('You are not logged in. Please log in to access the dashboard.');
+        return;
       }
-    } catch (err) {
-      console.error('Error loading dashboard data:', err);
-      setError(err.message);
+
+      // Fetch dashboard stats using AdminApi
+      const statsResponse = await AdminApi.getDashboardStats();
+      if (statsResponse.success) {
+        setDashboardData(statsResponse.data);
+      }
+
+      // Fetch recent activity using AdminApi
+      const activityResponse = await AdminApi.getRecentActions(10);
+      if (activityResponse.success) {
+        setRecentActivity(activityResponse.data || []);
+      }
+
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      if (error.message.includes('Token expired') || error.message.includes('Invalid token') || error.message.includes('401')) {
+        setError('Your session has expired. Please log in again.');
+        // Clear invalid token
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminData');
+      } else {
+        setError('Failed to load dashboard data. Please try again.');
+      }
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -60,7 +89,7 @@ const Dashboard = () => {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="dashboard-loading">
         <div className="loading-spinner"></div>
@@ -87,7 +116,79 @@ const Dashboard = () => {
     totalOrders: 0,
     recentOrders: 0,
     totalRevenue: 0,
+    confirmedRevenue: 0,
+    pendingRevenue: 0,
     lowStockProducts: []
+  };
+
+  // Helper function to format activity description
+  const formatActivityDescription = (activity) => {
+    switch (activity.action) {
+      case 'admin_login':
+        return `Admin ${activity.adminName} logged in`;
+      case 'product_created':
+        return `Created product: ${activity.targetName}`;
+      case 'product_updated':
+        return `Updated product: ${activity.targetName}`;
+      case 'product_deleted':
+        return `Deleted product: ${activity.targetName}`;
+      case 'inventory_updated':
+        return `Updated inventory for: ${activity.targetName}`;
+      case 'order_status_update':
+        return `Updated order status: ${activity.targetName}`;
+      case 'order_created':
+        return `New order received: ${activity.targetName}`;
+      case 'order_deleted':
+        return `Deleted order: ${activity.targetName}`;
+      case 'stock_added':
+        return `Added stock to: ${activity.targetName}`;
+      case 'stock_removed':
+        return `Removed stock from: ${activity.targetName}`;
+      default:
+        return activity.description || `${activity.action} performed`;
+    }
+  };
+
+  // Helper function to get activity icon type
+  const getActivityIconType = (activity) => {
+    switch (activity.action) {
+      case 'admin_login':
+      case 'admin_logout':
+        return 'info';
+      case 'product_created':
+      case 'order_created':
+      case 'stock_added':
+        return 'new';
+      case 'product_updated':
+      case 'product_deleted':
+      case 'inventory_updated':
+      case 'order_status_update':
+      case 'order_deleted':
+      case 'stock_removed':
+        return 'update';
+      default:
+        return 'info';
+    }
+  };
+
+  // Helper function to format time ago
+  const formatTimeAgo = (timestamp) => {
+    const now = new Date();
+    const activityTime = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - activityTime) / 1000);
+
+    if (diffInSeconds < 60) {
+      return `${diffInSeconds} seconds ago`;
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `${days} day${days > 1 ? 's' : ''} ago`;
+    }
   };
 
   return (
@@ -127,11 +228,11 @@ const Dashboard = () => {
             <CurrencyDollarIcon />
           </div>
           <div className="stat-content">
-            <h3>Total Revenue</h3>
-            <p className="stat-number">PKR {stats.totalRevenue.toLocaleString()}</p>
+            <h3>Confirmed Revenue</h3>
+            <p className="stat-number">PKR {(stats.confirmedRevenue || 0).toLocaleString()}</p>
             <div className="stat-change positive">
               <ArrowUpIcon />
-              <span>All time</span>
+              <span>Shipped & Delivered</span>
             </div>
           </div>
         </div>
@@ -141,11 +242,11 @@ const Dashboard = () => {
             <ChartBarIcon />
           </div>
           <div className="stat-content">
-            <h3>Analytics</h3>
-            <p className="stat-number">Active</p>
-            <div className="stat-change positive">
-              <EyeIcon />
-              <span>Real-time tracking</span>
+            <h3>Pending Revenue</h3>
+            <p className="stat-number">PKR {(stats.pendingRevenue || 0).toLocaleString()}</p>
+            <div className="stat-change">
+              <ClockIcon />
+              <span>Awaiting Fulfillment</span>
             </div>
           </div>
         </div>
@@ -230,35 +331,38 @@ const Dashboard = () => {
       <div className="activity-section">
         <h2>Recent Activity</h2>
         <div className="activity-list">
-          <div className="activity-item">
-            <div className="activity-icon new">
-              <ShoppingBagIcon />
+          {recentActivity.length > 0 ? (
+            recentActivity.map((activity) => (
+              <div key={activity._id} className="activity-item">
+                <div className={`activity-icon ${getActivityIconType(activity)}`}>
+                  {activity.action.includes('product') ? (
+                    <CubeIcon />
+                  ) : activity.action.includes('order') ? (
+                    <ShoppingBagIcon />
+                  ) : (
+                    <UsersIcon />
+                  )}
+                </div>
+                <div className="activity-content">
+                  <p><strong>{formatActivityDescription(activity)}</strong></p>
+                  <span className="activity-time">{formatTimeAgo(activity.timestamp || activity.createdAt)}</span>
+                  {activity.adminName && (
+                    <span className="activity-admin">by {activity.adminName}</span>
+                  )}
+                </div>
+                {activity.severity && (
+                  <div className={`activity-severity ${activity.severity}`}>
+                    {activity.severity}
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="no-activity">
+              <p>No recent activity to display.</p>
+              <p className="activity-help">Activity will appear here when admin actions are performed.</p>
             </div>
-            <div className="activity-content">
-              <p><strong>New order received</strong></p>
-              <span className="activity-time">2 minutes ago</span>
-            </div>
-          </div>
-
-          <div className="activity-item">
-            <div className="activity-icon update">
-              <CubeIcon />
-            </div>
-            <div className="activity-content">
-              <p><strong>Product inventory updated</strong></p>
-              <span className="activity-time">15 minutes ago</span>
-            </div>
-          </div>
-
-          <div className="activity-item">
-            <div className="activity-icon info">
-              <UsersIcon />
-            </div>
-            <div className="activity-content">
-              <p><strong>Admin logged in</strong></p>
-              <span className="activity-time">1 hour ago</span>
-            </div>
-          </div>
+          )}
         </div>
       </div>
 

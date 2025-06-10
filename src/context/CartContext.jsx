@@ -20,18 +20,31 @@ const cartReducer = (state, action) => {
       const existingItemIndex = state.items.findIndex(item => item.id === product.id);
       
       if (existingItemIndex >= 0) {
-        // Update existing item quantity
+        // Update existing item quantity while preserving stock info
         const updatedItems = [...state.items];
-        updatedItems[existingItemIndex].quantity += quantity;
+        const existingItem = updatedItems[existingItemIndex];
+        updatedItems[existingItemIndex] = {
+          ...existingItem,
+          quantity: existingItem.quantity + quantity,
+          // Update stock info if new product data has it
+          availableStock: product.quantity || existingItem.availableStock,
+          inStock: product.inStock !== undefined ? product.inStock : existingItem.inStock
+        };
         return {
           ...state,
           items: updatedItems
         };
       } else {
-        // Add new item
+        // Add new item - preserve original stock info as availableStock
+        const cartItem = { 
+          ...product, 
+          quantity, // This becomes the cart quantity
+          availableStock: product.quantity, // Preserve original stock
+          inStock: product.inStock // Preserve stock status
+        };
         return {
           ...state,
-          items: [...state.items, { ...product, quantity }]
+          items: [...state.items, cartItem]
         };
       }
     }
@@ -123,6 +136,20 @@ export const CartProvider = ({ children }) => {
     dispatch({ type: CART_ACTIONS.CLEAR_CART });
   };
 
+  // Helper function to ensure cart items have stock information
+  const getEnhancedCart = () => {
+    return state.items.map(item => {
+      // If item doesn't have availableStock, use the quantity field as fallback
+      if (!item.availableStock && item.quantity) {
+        return {
+          ...item,
+          availableStock: item.inStock ? Math.max(item.quantity, 10) : 0 // Fallback logic
+        };
+      }
+      return item;
+    });
+  };
+
   // Cart calculations
   const cartTotal = state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
   const cartItemsCount = state.items.reduce((count, item) => count + item.quantity, 0);
@@ -133,7 +160,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const value = {
-    cart: state.items,
+    cart: getEnhancedCart(),
     addToCart,
     removeFromCart,
     updateQuantity,

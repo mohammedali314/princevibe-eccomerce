@@ -165,7 +165,7 @@ const Contact = () => {
     { name: 'Instagram', icon: '📷', url: 'https://www.instagram.com/princevibe_official/', color: '#E4405F' },
     { name: 'YouTube', icon: '📺', url: 'https://www.youtube.com/channel/UCxAd5CkpTkule-P7rgdevjQ', color: '#FF0000' },
     { name: 'TikTok', icon: '🎵', url: 'https://www.tiktok.com/@princevibe_official', color: '#000000' },
-    { name: 'WhatsApp', icon: '💬', url: '#', color: '#25D366' }
+    { name: 'WhatsApp', icon: '💬', url: 'https://wa.me/923089747141?text=Hi%20Prince%20Vibe!%20I%20want%20to%20inquire%20about%20your%20watches', color: '#25D366' }
   ];
 
   return (
@@ -346,6 +346,7 @@ const Contact = () => {
                 <label htmlFor="message">Message *</label>
                 <textarea
                   id="message"
+                  style={{ color: 'black' }}
                   name="message"
                   value={formData.message}
                   onChange={handleInputChange}
