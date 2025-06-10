@@ -112,8 +112,8 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
         return false;
       }
 
-      if (formData.phone && !/^\+?[\d\s-()]+$/.test(formData.phone)) {
-        setError('Please enter a valid phone number');
+      if (formData.phone && !/^(\+92|92|0)?[\d\s-()]{10,13}$/.test(formData.phone.replace(/[\s-()]/g, ''))) {
+        setError('Please enter a valid Pakistani phone number (e.g., +92 XXX XXXXXXX)');
         return false;
       }
     }
@@ -420,7 +420,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
                         <input
                           type="tel"
                           name="phone"
-                          placeholder="Phone number"
+                          placeholder="+92 XXX XXXXXXX"
                           value={formData.phone}
                           onChange={handleInputChange}
                         />

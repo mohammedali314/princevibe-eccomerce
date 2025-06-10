@@ -65,6 +65,20 @@ const UserHelp = () => {
       id: 8,
       question: "Is my personal information secure?",
       answer: "Yes, we use industry-standard encryption and security measures to protect your personal and payment information."
+    },
+    {
+      id: 9,
+      question: "How can I contact customer support?",
+      answer: "You can reach us through multiple channels:",
+      details: [
+        "📞 Phone: Call us directly for immediate assistance",
+        "📧 Email: Send detailed inquiries to our support team", 
+        "💬 Live Chat: Use our website chat for quick questions",
+        "📱 WhatsApp: Message us for convenient communication"
+      ],
+      contact: "+92 308 9747141 • +92 332 5122666",
+      action: "Contact Now",
+      href: "tel:+923089747141"
     }
   ];
 
@@ -81,9 +95,9 @@ const UserHelp = () => {
       icon: PhoneIcon,
       title: "Phone Support", 
       description: "Call our support team",
-      contact: "03089747141 • 03325122666",
+      contact: "+92 308 9747141 • +92 332 5122666",
       availability: "Mon-Fri, 9AM-6PM",
-      href: "tel:03089747141"
+      href: "tel:+923089747141"
     },
     {
       icon: ChatBubbleLeftRightIcon,

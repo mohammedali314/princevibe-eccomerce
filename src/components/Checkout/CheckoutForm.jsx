@@ -127,8 +127,8 @@ const CheckoutForm = ({ onOrderComplete }) => {
     }
         if (!formData.phone.trim()) {
           newErrors.phone = 'Phone number is required';
-        } else if (!/^(\+92|0)?[0-9]{10,11}$/.test(formData.phone.replace(/[\s-]/g, ''))) {
-          newErrors.phone = 'Please enter a valid Pakistani phone number';
+        } else if (!/^(\+92|92|0)?[0-9]{10,11}$/.test(formData.phone.replace(/[\s-]/g, ''))) {
+          newErrors.phone = 'Please enter a valid Pakistani phone number (e.g., +92 XXX XXXXXXX)';
         }
         break;
 
@@ -350,7 +350,7 @@ const CheckoutForm = ({ onOrderComplete }) => {
                     value={formData.phone}
                     onChange={handleInputChange}
                     className={errors.phone ? 'error' : ''}
-                    placeholder="03089747141 or 03325122666"
+                    placeholder="+92 308 9747141 or +92 332 5122666"
                   />
                   {errors.phone && <span className="error-message">{errors.phone}</span>}
                 </div>

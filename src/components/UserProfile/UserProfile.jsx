@@ -177,7 +177,7 @@ const UserProfile = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="Enter phone number"
+                    placeholder="+92 XXX XXXXXXX"
                   />
                 ) : (
                   <div className="info-display">

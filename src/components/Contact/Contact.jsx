@@ -133,8 +133,8 @@ const Contact = () => {
     {
       icon: PhoneIcon,
       title: 'Phone',
-      details: ['03089747141', '03325122666'],
-      action: 'tel:03089747141',
+      details: ['+92 308 9747141', '+92 332 5122666'],
+      action: 'tel:+923089747141',
       gradient: 'black'
     },
     {
@@ -323,7 +323,7 @@ const Contact = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="Enter your phone number"
+                    placeholder="+92 XXX XXXXXXX"
                   />
                 </div>
 
