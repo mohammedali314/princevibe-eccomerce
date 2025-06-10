@@ -1370,34 +1370,60 @@ $font-mono: 'JetBrains Mono', 'Fira Code', monospace;
             margin: 0 0 1.5rem 0;
           }
 
-          .specs-grid {
-            display: grid;
-            gap: 0.5rem;
-
-            .spec-row {
+          .specs-content {
+            .specs-grid {
               display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 1rem;
-              padding: 1rem;
-              background: $white;
-              border: 1px solid $gray-200;
-              border-radius: 8px;
+              gap: 0.75rem;
 
-              @media (max-width: 480px) {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-              }
+              .spec-item {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem;
+                background: $white;
+                border: 1px solid $gray-200;
+                border-radius: 8px;
+                transition: all 0.3s ease;
 
-              .spec-label {
-                font-weight: 600;
-                color: $black;
-                font-size: 0.875rem;
-              }
+                &:hover {
+                  border-color: $gray-300;
+                  transform: translateX(4px);
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                }
 
-              .spec-value {
-                color: $gray-700;
-                font-size: 0.875rem;
-                font-family: $font-mono;
+                svg {
+                  width: 1.125rem !important;
+                  height: 1.125rem !important;
+                  color: $gold;
+                  flex-shrink: 0;
+                }
+
+                .spec-content {
+                  flex: 1;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  gap: 1rem;
+
+                  @media (max-width: 480px) {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 0.25rem;
+                  }
+
+                  .spec-label {
+                    font-weight: 600;
+                    color: $black;
+                    font-size: 0.875rem;
+                  }
+
+                  .spec-value {
+                    color: $gray-700;
+                    font-size: 0.875rem;
+                    font-family: $font-mono;
+                    font-weight: 500;
+                  }
+                }
               }
             }
           }
@@ -1426,21 +1452,167 @@ $font-mono: 'JetBrains Mono', 'Fira Code', monospace;
                 list-style: none;
                 padding: 0;
                 margin: 0;
+                display: grid;
+                gap: 0.75rem;
 
                 li {
-                  padding: 0.75rem 0;
-                  border-bottom: 1px solid $gray-200;
+                  display: flex;
+                  align-items: center;
+                  gap: 0.75rem;
+                  padding: 0.75rem;
+                  background: $white;
+                  border: 1px solid $gray-200;
+                  border-radius: 8px;
+                  transition: all 0.3s ease;
+
+                  &:hover {
+                    border-color: $gray-300;
+                    transform: translateX(4px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                  }
+
+                  svg {
+                    width: 1rem !important;
+                    height: 1rem !important;
+                    color: $gold;
+                    flex-shrink: 0;
+                  }
+
+                  span {
+                    color: $gray-700;
+                    line-height: 1.5;
+                    font-size: 0.875rem;
+                    font-weight: 500;
+
+                    strong {
+                      color: $black;
+                      font-weight: 600;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          // Single column layout for better mobile experience
+          .shipping-content {
+            .shipping-info {
+              display: grid;
+              gap: 2rem;
+
+              @media (min-width: 768px) {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+
+                .warranty-section {
+                  grid-column: 1 / -1;
+                }
+              }
+
+              .shipping-section,
+              .returns-section,
+              .warranty-section {
+                h4 {
+                  font-size: 1.25rem;
+                  font-weight: 600;
+                  color: $black;
+                  margin: 0 0 1rem 0;
+                }
+
+                ul {
+                  list-style: none;
+                  padding: 0;
+                  margin: 0;
+                  display: grid;
+                  gap: 0.75rem;
+
+                  li {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    padding: 0.75rem;
+                    background: $white;
+                    border: 1px solid $gray-200;
+                    border-radius: 8px;
+                    transition: all 0.3s ease;
+
+                    &:hover {
+                      border-color: $gray-300;
+                      transform: translateX(4px);
+                      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                    }
+
+                    svg {
+                      width: 1rem !important;
+                      height: 1rem !important;
+                      color: $gold;
+                      flex-shrink: 0;
+                    }
+
+                    span {
+                      color: $gray-700;
+                      line-height: 1.5;
+                      font-size: 0.875rem;
+                      font-weight: 500;
+
+                      strong {
+                        color: $black;
+                        font-weight: 600;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // Description features styling to fix oversized icons
+        .description-content {
+          .description-features {
+            margin-top: 2rem;
+
+            h4 {
+              font-size: 1.25rem;
+              font-weight: 600;
+              color: $black;
+              margin: 0 0 1rem 0;
+            }
+
+            ul {
+              list-style: none;
+              padding: 0;
+              margin: 0;
+              display: grid;
+              gap: 0.75rem;
+
+              li {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem;
+                background: $white;
+                border: 1px solid $gray-200;
+                border-radius: 8px;
+                transition: all 0.2s ease;
+
+                &:hover {
+                  border-color: $gold;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                }
+
+                svg {
+                  width: 1.25rem !important;
+                  height: 1.25rem !important;
+                  color: $gold;
+                  flex-shrink: 0;
+                }
+
+                span {
                   color: $gray-700;
-                  line-height: 1.5;
-
-          &:last-child {
-            border-bottom: none;
-                  }
-
-                  strong {
-                    color: $black;
-                    font-weight: 600;
-                  }
+                  font-weight: 500;
+                  font-size: 0.95rem;
+                  line-height: 1.4;
                 }
               }
             }
@@ -1671,10 +1843,6 @@ $font-mono: 'JetBrains Mono', 'Fira Code', monospace;
           }
         }
       }
-    }
-
-    .luxury-tabs-section {
-      padding: 3rem 0;
     }
   }
 
@@ -2065,9 +2233,6 @@ $font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   100% { transform: scale(1); }
 }
 
-/* =============================================================================
- * URGENT FIX: Remove underlines from toast messages
- * ============================================================================= */
 
 .product-detail-luxury .luxury-toast-container .luxury-toast .toast-content .toast-message,
 .product-detail-luxury .luxury-toast-container .luxury-toast .toast-content span.toast-message,

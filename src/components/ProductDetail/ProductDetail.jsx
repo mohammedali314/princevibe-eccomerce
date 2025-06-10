@@ -744,8 +744,11 @@ const ProductDetail = () => {
                     <div className="specs-grid">
                       {product.specifications && Object.entries(product.specifications).map(([key, value]) => (
                         <div key={key} className="spec-item">
-                          <dt>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</dt>
-                          <dd>{value}</dd>
+                          <CheckCircleIcon />
+                          <div className="spec-content">
+                            <span className="spec-label">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
+                            <span className="spec-value">{value}</span>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -760,34 +763,76 @@ const ProductDetail = () => {
                     
                     <div className="shipping-info">
                       <div className="shipping-section">
-                        <h4><TruckIcon /> Shipping Information</h4>
+                        <h4>Shipping Information</h4>
                         <ul>
-                          <li><strong>Free shipping</strong> on all orders within Pakistan</li>
-                          <li><strong>2-3 business days</strong> for major cities (Karachi, Lahore, Islamabad)</li>
-                          <li><strong>3-5 business days</strong> for other cities</li>
-                          <li><strong>Express delivery</strong> available (additional charges apply)</li>
-                          <li>All items are <strong>insured</strong> during transit</li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span><strong>Free shipping</strong> on all orders within Pakistan</span>
+                          </li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span><strong>2-3 business days</strong> for major cities (Karachi, Lahore, Islamabad)</span>
+                          </li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span><strong>3-5 business days</strong> for other cities</span>
+                          </li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span><strong>Express delivery</strong> available (additional charges apply)</span>
+                          </li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span>All items are <strong>insured</strong> during transit</span>
+                          </li>
                         </ul>
                       </div>
                       
                       <div className="returns-section">
-                        <h4><ArrowPathIcon /> Returns Policy</h4>
+                        <h4>Returns Policy</h4>
                         <ul>
-                          <li><strong>30-day return</strong> window from delivery date</li>
-                          <li>Items must be in <strong>original condition</strong> with tags attached</li>
-                          <li><strong>Free return pickup</strong> for defective items</li>
-                          <li>Customer pays return shipping for change of mind</li>
-                          <li>Refund processed within <strong>5-7 business days</strong></li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span><strong>30-day return</strong> window from delivery date</span>
+                          </li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span>Items must be in <strong>original condition</strong> with tags attached</span>
+                          </li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span><strong>Free return pickup</strong> for defective items</span>
+                          </li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span>Customer pays return shipping for change of mind</span>
+                          </li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span>Refund processed within <strong>5-7 business days</strong></span>
+                          </li>
                         </ul>
                       </div>
                       
                       <div className="warranty-section">
-                        <h4><ShieldCheckIcon /> Warranty</h4>
+                        <h4>Warranty</h4>
                         <ul>
-                          <li><strong>2-year international warranty</strong> included</li>
-                          <li>Covers manufacturing defects</li>
-                          <li>Authorized service centers nationwide</li>
-                          <li>Water damage not covered under warranty</li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span><strong>2-year international warranty</strong> included</span>
+                          </li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span>Covers manufacturing defects</span>
+                          </li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span>Authorized service centers nationwide</span>
+                          </li>
+                          <li>
+                            <CheckCircleIcon />
+                            <span>Water damage not covered under warranty</span>
+                          </li>
                         </ul>
                       </div>
                     </div>
