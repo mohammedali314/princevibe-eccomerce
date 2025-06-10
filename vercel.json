@@ -1,7 +1,18 @@
 {
-  "buildCommand": "npm run build",
+  "version": 2,
+  "buildCommand": "npm ci && npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "functions": {
+    "app/api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "build": {
+    "env": {
+      "NODE_VERSION": "18"
+    }
+  },
   "rewrites": [
     {
       "source": "/(.*)",
