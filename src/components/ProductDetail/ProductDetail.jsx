@@ -329,6 +329,12 @@ const ProductDetail = () => {
       case 'whatsapp':
         shareUrl = `https://wa.me/?text=${encodeURIComponent(`${productTitle} - ${productUrl}`)}`;
         break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(productTitle)}%20${encodeURIComponent(productDescription)}%20${encodeURIComponent(productUrl)}`;
+        break;
+      case 'email':
+        shareUrl = `mailto:?subject=${encodeURIComponent(productTitle)}&body=${encodeURIComponent(productDescription)}%20${encodeURIComponent(productUrl)}`;
+        break;
       default:
         shareUrl = productUrl;
     }
@@ -850,32 +856,57 @@ const ProductDetail = () => {
           <div className="share-modal" onClick={(e) => e.stopPropagation()}>
             <div className="share-modal-header">
               <h3>Share This Product</h3>
-              <button className="close-btn" onClick={closeShareModal}>×</button>
+              <button className="close-modal-btn" onClick={closeShareModal}>×</button>
             </div>
             
             <div className="share-modal-content">
               <div className="product-preview">
                 <img src={product.images[0]} alt={product.name} />
-                <div>
+                <div className="product-info">
                   <h4>{product.name}</h4>
-                  <p>{formatPrice(product.price)}</p>
+                  <p className="product-price">{formatPrice(product.price)}</p>
                 </div>
               </div>
               
               <div className="share-options">
-                <button className="share-option copy" onClick={handleCopyLink}>
+                <button className="share-option copy-link" onClick={handleCopyLink}>
                   <div className="share-icon">🔗</div>
-                  <span>Copy Link</span>
+                  <div className="share-text">
+                    <span className="share-title">Copy Link</span>
+                    <span className="share-description">Copy product link to clipboard</span>
+                  </div>
                 </button>
                 
                 <button className="share-option whatsapp" onClick={() => handleSocialShare('whatsapp')}>
                   <div className="share-icon">📱</div>
-                  <span>WhatsApp</span>
+                  <div className="share-text">
+                    <span className="share-title">WhatsApp</span>
+                    <span className="share-description">Share via WhatsApp message</span>
+                  </div>
                 </button>
                 
                 <button className="share-option facebook" onClick={() => handleSocialShare('facebook')}>
                   <div className="share-icon">📘</div>
-                  <span>Facebook</span>
+                  <div className="share-text">
+                    <span className="share-title">Facebook</span>
+                    <span className="share-description">Share on Facebook timeline</span>
+                  </div>
+                </button>
+
+                <button className="share-option twitter" onClick={() => handleSocialShare('twitter')}>
+                  <div className="share-icon">🐦</div>
+                  <div className="share-text">
+                    <span className="share-title">Twitter</span>
+                    <span className="share-description">Tweet this product</span>
+                  </div>
+                </button>
+
+                <button className="share-option email" onClick={() => handleSocialShare('email')}>
+                  <div className="share-icon">📧</div>
+                  <div className="share-text">
+                    <span className="share-title">Email</span>
+                    <span className="share-description">Share via email</span>
+                  </div>
                 </button>
               </div>
             </div>

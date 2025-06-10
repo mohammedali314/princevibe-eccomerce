@@ -397,6 +397,24 @@ const Navbar = ({ onLogoClick }) => {
     }
   };
 
+  const handleQuickNavigation = (category) => {
+    closeSearch(); // Close the search popup first
+    
+    if (location.pathname === '/') {
+      // If we're already on homepage, navigate with category and scroll
+      navigate(`/?category=${category}`);
+      setTimeout(() => {
+        scrollToProducts();
+      }, 100);
+    } else {
+      // If we're on a different page, navigate to home with category first
+      navigate(`/?category=${category}`);
+      setTimeout(() => {
+        scrollToProducts();
+      }, 300); // Allow page to load then scroll
+    }
+  };
+
   return (
     <>
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
@@ -640,32 +658,32 @@ const Navbar = ({ onLogoClick }) => {
                       <div className="quick-actions">
                         <button
                           className="quick-action-item"
-                          onClick={() => navigate('/?category=luxury')}
+                          onClick={() => handleQuickNavigation('luxury')}
                         >
                           <span className="action-icon">💎</span>
                           <span>Luxury Watches</span>
                         </button>
                         <button
                           className="quick-action-item"
-                          onClick={() => navigate('/?category=smart')}
+                          onClick={() => handleQuickNavigation('smart')}
                         >
                           <span className="action-icon">📱</span>
                           <span>Smart Watches</span>
                         </button>
                         <button
                           className="quick-action-item"
-                          onClick={() => navigate('/?category=sports')}
+                          onClick={() => handleQuickNavigation('sport')}
                         >
                           <span className="action-icon">⚡</span>
                           <span>Sports Watches</span>
-          </button>
+                        </button>
                         <button
                           className="quick-action-item"
-                          onClick={() => navigate('/?featured=true')}
+                          onClick={() => handleQuickNavigation('featured')}
                         >
                           <span className="action-icon">🌟</span>
                           <span>Featured Products</span>
-          </button>
+                        </button>
                       </div>
                     </div>
                   )}

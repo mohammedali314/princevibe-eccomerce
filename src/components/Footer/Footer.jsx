@@ -91,18 +91,17 @@ const Footer = ({ onLogoClick }) => {
 
   const handleCategoryNavigation = (category) => {
     if (location.pathname === '/') {
-      // If on homepage, scroll to products and set category
-      scrollToProducts();
-      // Trigger category change after scroll
-      setTimeout(() => {
-        // Dispatch custom event to Products component
-        window.dispatchEvent(new CustomEvent('categoryChange', { 
-          detail: { category } 
-        }));
-      }, 500);
-    } else {
-      // Navigate to home with category parameter
+      // If we're already on homepage, navigate with category and scroll
       navigate(`/?category=${category}`);
+      setTimeout(() => {
+        scrollToProducts();
+      }, 100);
+    } else {
+      // If we're on a different page, navigate to home with category first
+      navigate(`/?category=${category}`);
+      setTimeout(() => {
+        scrollToProducts();
+      }, 300); // Allow page to load then scroll
     }
   };
 
