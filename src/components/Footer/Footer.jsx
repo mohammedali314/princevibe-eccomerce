@@ -53,24 +53,30 @@ const Footer = ({ onLogoClick }) => {
     setEmail('');
   };
 
-  // Navigation Functions (copied from Navbar)
+  // Enhanced scroll function for production environments
   const scrollToProducts = () => {
-    const maxAttempts = 10;
+    const maxAttempts = 20; // Increased attempts for production
     let attempts = 0;
     
     const tryScroll = () => {
       const target = document.getElementById('products');
       if (target) {
-        target.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-        return true;
+        // Additional check to ensure element is actually visible
+        const rect = target.getBoundingClientRect();
+        if (rect.height > 0) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+          return true;
+        }
       }
       
       attempts++;
       if (attempts < maxAttempts) {
-        setTimeout(tryScroll, 200);
+        setTimeout(tryScroll, 300); // Increased timeout for production
+      } else {
+        console.warn('Could not find products section after', maxAttempts, 'attempts');
       }
       return false;
     };
@@ -78,14 +84,25 @@ const Footer = ({ onLogoClick }) => {
     tryScroll();
   };
 
+  // Enhanced navigation with better page load detection
   const handleProductsNavigation = () => {
     if (location.pathname === '/') {
       scrollToProducts();
     } else {
       navigate('/');
-      setTimeout(() => {
-        scrollToProducts();
-      }, 300);
+      
+      // Wait for route change to complete and page to load
+      const checkPageLoad = () => {
+        if (document.readyState === 'complete') {
+          setTimeout(() => {
+            scrollToProducts();
+          }, 500); // Extra delay for production environments
+        } else {
+          setTimeout(checkPageLoad, 100);
+        }
+      };
+      
+      setTimeout(checkPageLoad, 200);
     }
   };
 
@@ -95,13 +112,23 @@ const Footer = ({ onLogoClick }) => {
       navigate(`/?category=${category}`);
       setTimeout(() => {
         scrollToProducts();
-      }, 100);
+      }, 300); // Increased timeout for production
     } else {
       // If we're on a different page, navigate to home with category first
       navigate(`/?category=${category}`);
-      setTimeout(() => {
-        scrollToProducts();
-      }, 300); // Allow page to load then scroll
+      
+      // Wait for page to fully load before scrolling
+      const waitForPageLoad = () => {
+        if (document.readyState === 'complete') {
+          setTimeout(() => {
+            scrollToProducts();
+          }, 800); // Increased timeout for production page loads
+        } else {
+          setTimeout(waitForPageLoad, 100);
+        }
+      };
+      
+      setTimeout(waitForPageLoad, 300);
     }
   };
 
