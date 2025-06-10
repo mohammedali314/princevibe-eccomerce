@@ -272,8 +272,8 @@ const Footer = ({ onLogoClick }) => {
                 <div className="contact-item">
                   <PhoneIcon />
                   <div>
-                    <strong>Phone</strong>
-                    <span>+92 308 9747141 • +92 332 5122666</span>
+                    {/* <strong>Phone </strong> */}
+                    <span> +92 308 9747141 • +92 332 5122666</span>
                   </div>
                 </div>
                 <div className="contact-item">
