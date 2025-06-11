@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { PixelHelper } from '../utils/pixelHelper';
 
 // Cart context
 const CartContext = createContext();
@@ -122,6 +123,7 @@ export const CartProvider = ({ children }) => {
   // Cart actions
   const addToCart = (product, quantity = 1) => {
     dispatch({ type: CART_ACTIONS.ADD_ITEM, payload: { product, quantity } });
+    PixelHelper.trackAddToCart(product);
   };
 
   const removeFromCart = (productId) => {
