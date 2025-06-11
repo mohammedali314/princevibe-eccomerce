@@ -247,11 +247,7 @@ const Footer = ({ onLogoClick }) => {
   ];
 
   const paymentMethods = [
-    { name: "Visa", image: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" },
-    { name: "Mastercard", image: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" },
-    { name: "Google Pay", image: "https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" },
-    { name: "JazzCash", image: "/photos/jazzcash.png" },
-    { name: "EasyPaisa", image: "/photos/easypaisa.png" }
+    { name: "Cash on Delivery", image: "/photos/cod-icon.png" }
   ];
 
   const certifications = [
@@ -392,32 +388,12 @@ const Footer = ({ onLogoClick }) => {
           <div className="bottom-content">
             {/* Payment Methods */}
             <div className="payment-methods">
-              <span className="payment-label">We Accept:</span>
+              <span className="payment-label">Payment Method:</span>
               <div className="payment-icons">
-                {paymentMethods.map((method) => (
-                  <img 
-                    key={method.name} 
-                    src={method.image} 
-                    alt={method.name}
-                    className="payment-icon"
-                    onLoad={() => console.log(`✅ ${method.name} logo loaded successfully`)}
-                    onError={(e) => {
-                      console.error(`❌ Failed to load ${method.name} logo from: ${method.image}`);
-                      // Show fallback text with neutral styling
-                      e.target.style.background = 'transparent';
-                      e.target.style.color = '#94a3b8';
-                      e.target.style.display = 'flex';
-                      e.target.style.alignItems = 'center';
-                      e.target.style.justifyContent = 'center';
-                      e.target.style.fontSize = '10px';
-                      e.target.style.minWidth = '60px';
-                      e.target.style.height = '32px';
-                      e.target.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-                      e.target.style.borderRadius = '4px';
-                      e.target.innerHTML = method.name;
-                    }}
-                  />
-                ))}
+                <div className="cod-display">
+                  <span className="cod-icon">💰</span>
+                  <span className="cod-text">Cash on Delivery</span>
+                </div>
               </div>
             </div>
 

@@ -190,18 +190,59 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
         body: JSON.stringify({ email }),
       });
 
-      const data = await response.json();
+      // Parse response JSON first
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Failed to parse forgot password response:', parseError);
+        setError('Server error. Please try again later.');
+        return;
+      }
 
-      if (data.success) {
+      if (response.ok && data.success) {
         setPasswordResetSent(true);
         setSuccess('Password reset email sent! Please check your inbox.');
         setFormData(prev => ({ ...prev, email: '' }));
       } else {
-        setError(data.message || 'Failed to send reset email');
+        // Extract user-friendly error message
+        let errorMessage = 'Unable to send reset email. Please try again.';
+        
+        if (data && data.message) {
+          errorMessage = data.message;
+        } else if (data && data.error) {
+          errorMessage = data.error;
+        } else {
+          // Provide user-friendly messages for common HTTP status codes
+          switch (response.status) {
+            case 400:
+              errorMessage = 'Please enter a valid email address.';
+              break;
+            case 404:
+              errorMessage = 'No account found with this email address.';
+              break;
+            case 429:
+              errorMessage = 'Too many reset attempts. Please wait a few minutes and try again.';
+              break;
+            case 500:
+              errorMessage = 'Server error. Please try again later.';
+              break;
+            default:
+              errorMessage = 'Unable to send reset email. Please try again.';
+          }
+        }
+        
+        setError(errorMessage);
       }
     } catch (error) {
       console.error('Forgot password error:', error);
-      setError('Something went wrong. Please try again.');
+      
+      // Handle network errors
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        setError('Unable to connect to server. Please check your internet connection and try again.');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

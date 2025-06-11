@@ -576,6 +576,33 @@
           white-space: nowrap;
         }
 
+        .cod-display {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 8px 16px;
+          border-radius: 8px;
+          transition: all 0.3s ease;
+
+          .cod-icon {
+            font-size: 18px;
+          }
+
+          .cod-text {
+            font-size: 0.9rem;
+            color: #fff;
+            font-weight: 500;
+          }
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+          }
+        }
+
         .payment-icons {
           display: flex;
           gap: 12px;

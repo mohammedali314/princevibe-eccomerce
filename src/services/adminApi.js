@@ -26,15 +26,71 @@ class AdminApiService {
         ...options,
       });
 
-      const data = await response.json();
+      // Parse response JSON first
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Failed to parse admin API response JSON:', parseError);
+        throw new Error('Server error: Invalid response format');
+      }
 
       if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        // Extract user-friendly error message from server response
+        let errorMessage = 'An error occurred. Please try again.';
+        
+        if (data && data.message) {
+          errorMessage = data.message;
+        } else if (data && data.error) {
+          errorMessage = data.error;
+        } else {
+          // Provide user-friendly messages for common HTTP status codes
+          switch (response.status) {
+            case 400:
+              errorMessage = 'Invalid request. Please check your information and try again.';
+              break;
+            case 401:
+              errorMessage = 'Invalid admin credentials. Please check your email and password.';
+              break;
+            case 403:
+              errorMessage = 'Access denied. Admin privileges required.';
+              break;
+            case 404:
+              errorMessage = 'The requested resource was not found.';
+              break;
+            case 422:
+              errorMessage = 'Please check your information and try again.';
+              break;
+            case 423:
+              errorMessage = 'Account is temporarily locked. Please try again later.';
+              break;
+            case 429:
+              errorMessage = 'Too many requests. Please wait a moment and try again.';
+              break;
+            case 500:
+              errorMessage = 'Server error. Please try again later.';
+              break;
+            case 503:
+              errorMessage = 'Service temporarily unavailable. Please try again later.';
+              break;
+            default:
+              errorMessage = 'Something went wrong. Please try again.';
+          }
+        }
+        
+        throw new Error(errorMessage);
       }
 
       return data;
     } catch (error) {
       console.error('Admin API Request failed:', error);
+      
+      // If it's a network error or fetch failed
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Unable to connect to server. Please check your internet connection and try again.');
+      }
+      
+      // Re-throw our custom error messages
       throw error;
     }
   }
@@ -117,15 +173,65 @@ class AdminApiService {
           body: productData,
         });
 
-        const data = await response.json();
+        // Parse response JSON first
+        let data;
+        try {
+          data = await response.json();
+        } catch (parseError) {
+          console.error('Failed to parse product creation response JSON:', parseError);
+          throw new Error('Server error: Invalid response format');
+        }
 
         if (!response.ok) {
-          throw new Error(data.message || `HTTP error! status: ${response.status}`);
+          // Extract user-friendly error message from server response
+          let errorMessage = 'Failed to create product. Please try again.';
+          
+          if (data && data.message) {
+            errorMessage = data.message;
+          } else if (data && data.error) {
+            errorMessage = data.error;
+          } else {
+            // Provide user-friendly messages for common HTTP status codes
+            switch (response.status) {
+              case 400:
+                errorMessage = 'Invalid product data. Please check all fields and try again.';
+                break;
+              case 401:
+                errorMessage = 'Authentication required. Please log in again.';
+                break;
+              case 403:
+                errorMessage = 'Access denied. Admin privileges required.';
+                break;
+              case 413:
+                errorMessage = 'Images are too large. Please use smaller images and try again.';
+                break;
+              case 422:
+                errorMessage = 'Please check all product information and try again.';
+                break;
+              case 429:
+                errorMessage = 'Too many requests. Please wait a moment and try again.';
+                break;
+              case 500:
+                errorMessage = 'Server error. Please try again later.';
+                break;
+              default:
+                errorMessage = 'Failed to create product. Please try again.';
+            }
+          }
+          
+          throw new Error(errorMessage);
         }
 
         return data;
       } catch (error) {
         console.error('Admin API Request failed:', error);
+        
+        // If it's a network error or fetch failed
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+          throw new Error('Unable to connect to server. Please check your internet connection and try again.');
+        }
+        
+        // Re-throw our custom error messages
         throw error;
       }
     } else {

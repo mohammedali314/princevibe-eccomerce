@@ -12,13 +12,71 @@ class ApiService {
         ...options,
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Parse response JSON first
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Failed to parse response JSON:', parseError);
+        throw new Error('Server error: Invalid response format');
       }
 
-      return await response.json();
+      if (!response.ok) {
+        // Extract user-friendly error message from server response
+        let errorMessage = 'An error occurred. Please try again.';
+        
+        if (data && data.message) {
+          errorMessage = data.message;
+        } else if (data && data.error) {
+          errorMessage = data.error;
+        } else {
+          // Provide user-friendly messages for common HTTP status codes
+          switch (response.status) {
+            case 400:
+              errorMessage = 'Invalid request. Please check your information and try again.';
+              break;
+            case 401:
+              errorMessage = 'Invalid email or password. Please check your credentials.';
+              break;
+            case 403:
+              errorMessage = 'Access denied. You don\'t have permission to perform this action.';
+              break;
+            case 404:
+              errorMessage = 'The requested resource was not found.';
+              break;
+            case 422:
+              errorMessage = 'Please check your information and try again.';
+              break;
+            case 423:
+              errorMessage = 'Account is temporarily locked. Please try again later.';
+              break;
+            case 429:
+              errorMessage = 'Too many requests. Please wait a moment and try again.';
+              break;
+            case 500:
+              errorMessage = 'Server error. Please try again later.';
+              break;
+            case 503:
+              errorMessage = 'Service temporarily unavailable. Please try again later.';
+              break;
+            default:
+              errorMessage = 'Something went wrong. Please try again.';
+          }
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      return data;
     } catch (error) {
       console.error('API Request failed:', error);
+      
+      // If it's a network error or fetch failed
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Unable to connect to server. Please check your internet connection and try again.');
+      }
+      
+      // Re-throw our custom error messages
       throw error;
     }
   }

@@ -105,20 +105,20 @@ const CheckoutTutorial = ({ isOpen, onClose }) => {
       icon: CreditCardIcon,
       content: (
         <div className="tutorial-content">
-          <h3>💳 Choose Payment Method</h3>
-          <p>We currently offer Cash on Delivery for your convenience and security.</p>
+          <h3>💰 Payment Method - Cash on Delivery</h3>
+          <p>We accept Cash on Delivery (COD) only for your convenience and security.</p>
           <div className="payment-method-demo">
             <div className="payment-option">
               <div className="payment-icon">💰</div>
               <div className="payment-info">
-                <h4>Cash on Delivery</h4>
-                <p>Pay when you receive your order</p>
-                <span className="payment-badge">Recommended</span>
+                <h4>Cash on Delivery (COD)</h4>
+                <p>Pay cash when you receive your order at your doorstep</p>
+                <span className="payment-badge">Only Payment Method</span>
               </div>
             </div>
           </div>
           <div className="tutorial-tip">
-            🔒 <strong>Secure:</strong> No online payment needed - pay cash when your order arrives!
+            🔒 <strong>Secure & Convenient:</strong> No online payment needed - simply pay cash when your order arrives safely at your door!
           </div>
         </div>
       )
