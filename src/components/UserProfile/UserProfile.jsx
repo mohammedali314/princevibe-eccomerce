@@ -157,14 +157,16 @@ const UserProfile = () => {
               </div>
 
               <div className="form-group">
-                <label>Email Address</label>
-                <div className="info-display email-verified">
-                  <EnvelopeIcon className="info-icon" />
-                  <span>{user?.email || 'Not provided'}</span>
+                <div className="label-with-badge">
+                  <label>Email Address</label>
                   <div className="verification-badge">
                     <CheckBadgeIcon className="verified-icon" />
                     <span>Verified</span>
                   </div>
+                </div>
+                <div className="info-display">
+                  <EnvelopeIcon className="info-icon" />
+                  <span>{user?.email || 'Not provided'}</span>
                 </div>
                 <p className="field-note">Email cannot be changed for security reasons</p>
               </div>

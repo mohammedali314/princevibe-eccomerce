@@ -254,6 +254,48 @@ $font-luxury: 'Playfair Display', Georgia, serif;
               grid-column: 1 / -1;
             }
 
+            .label-with-badge {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 0.75rem;
+              min-height: 1.8rem;
+              
+              label {
+                display: block;
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: $gray-600;
+                margin: 0;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+              }
+              
+              .verification-badge {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                background: rgba(16, 185, 129, 0.1);
+                padding: 0.4rem 0.8rem;
+                border-radius: 25px;
+                
+                .verified-icon {
+                  width: 1rem;
+                  height: 1rem;
+                  color: #10b981;
+                }
+                
+                span {
+                  font-size: 0.8rem;
+                  font-weight: 500;
+                  color: #10b981;
+                  text-transform: uppercase;
+                  letter-spacing: 0.05em;
+                  white-space: nowrap;
+                }
+              }
+            }
+
             label {
               display: block;
               font-size: 0.9rem;
@@ -262,6 +304,8 @@ $font-luxury: 'Playfair Display', Georgia, serif;
               margin-bottom: 0.75rem;
               text-transform: uppercase;
               letter-spacing: 0.05em;
+              min-height: 1.8rem;
+              line-height: 1.8rem;
             }
 
             input, select {
@@ -306,40 +350,11 @@ $font-luxury: 'Playfair Display', Georgia, serif;
 
               span {
                 color: $black;
-                font-size: 1rem;
+                font-size: 0.95rem;
                 font-weight: 400;
                 flex: 1;
-              }
-
-              &.email-verified {
-                gap: 1rem;
-                flex-wrap: wrap;
-                
-                .verification-badge {
-                  display: flex;
-                  align-items: center;
-                  gap: 0.5rem;
-                  background: rgba(16, 185, 129, 0.1);
-                  padding: 0.5rem 1rem;
-                  border-radius: 25px;
-                  flex-shrink: 0;
-                  margin-left: auto;
-                  
-                  .verified-icon {
-                    width: 1rem;
-                    height: 1rem;
-                    color: #10b981;
-                  }
-                  
-                  span {
-                    font-size: 0.85rem;
-                    font-weight: 500;
-                    color: #10b981;
-                    text-transform: uppercase;
-                    letter-spacing: 0.05em;
-                    flex: none;
-                  }
-                }
+                word-break: break-all;
+                line-height: 1.4;
               }
             }
 
@@ -470,15 +485,28 @@ $font-luxury: 'Playfair Display', Georgia, serif;
 
           .form-grid {
             .form-group {
-              .info-display {
-                &.email-verified {
-                  flex-direction: column;
-                  align-items: flex-start;
-                  gap: 0.75rem;
+              .label-with-badge {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                min-height: auto;
+                margin-bottom: 0.75rem;
+                
+                label {
+                  line-height: normal;
+                }
+                
+                .verification-badge {
+                  align-self: flex-end;
+                  padding: 0.3rem 0.6rem;
                   
-                  .verification-badge {
-                    margin-left: 0;
-                    align-self: flex-end;
+                  .verified-icon {
+                    width: 0.9rem;
+                    height: 0.9rem;
+                  }
+                  
+                  span {
+                    font-size: 0.75rem;
                   }
                 }
               }
