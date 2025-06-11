@@ -350,7 +350,7 @@ const CheckoutForm = ({ onOrderComplete }) => {
                     value={formData.phone}
                     onChange={handleInputChange}
                     className={errors.phone ? 'error' : ''}
-                    placeholder="+92 308 9747141 or +92 332 5122666"
+                    placeholder="+92XXXXXXX"
                   />
                   {errors.phone && <span className="error-message">{errors.phone}</span>}
                 </div>
