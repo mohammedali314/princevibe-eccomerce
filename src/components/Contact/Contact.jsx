@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import emailjs from '@emailjs/browser';
 import { 
   PhoneIcon,
   EnvelopeIcon,
@@ -29,6 +30,13 @@ const Contact = () => {
   const heroRef = useRef(null);
   const contactRef = useRef(null);
   const formRef = useRef(null);
+
+  // Initialize EmailJS
+  useEffect(() => {
+    // Initialize EmailJS with your public key from environment variables
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+    emailjs.init(publicKey);
+  }, []);
 
   useEffect(() => {
     // Scroll to top when component mounts
@@ -110,10 +118,27 @@ const Contact = () => {
     setFormStatus(null);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Get EmailJS configuration from environment variables
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || "service_0f5t198";
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "template_fn64fqr";
+      const toEmail = import.meta.env.VITE_EMAILJS_TO_EMAIL || "princevibe.store@gmail.com";
+
+      // Send email using EmailJS
+      const templateParams = {
+        title: formData.subject,
+        name: formData.name,
+        message: formData.message,
+        email: formData.email,
+        phone: formData.phone || 'Not provided',
+        to_email: toEmail
+      };
+
+      const result = await emailjs.send(
+        serviceId,
+        templateId,
+        templateParams
+      );
       
-      // For now, just simulate success
       setFormStatus('success');
       setFormData({
         name: '',
@@ -122,8 +147,19 @@ const Contact = () => {
         subject: '',
         message: ''
       });
+
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => {
+        setFormStatus(null);
+      }, 5000);
+
     } catch (error) {
       setFormStatus('error');
+      
+      // Auto-hide error message after 5 seconds
+      setTimeout(() => {
+        setFormStatus(null);
+      }, 5000);
     } finally {
       setIsSubmitting(false);
     }
@@ -274,14 +310,14 @@ const Contact = () => {
             {formStatus === 'success' && (
               <div className="status-message success">
                 <CheckCircleIcon />
-                <span>Message sent successfully! We'll get back to you soon.</span>
+                <span>✅ Email sent successfully to princevibe.store@gmail.com! We'll get back to you soon.</span>
               </div>
             )}
 
             {formStatus === 'error' && (
               <div className="status-message error">
                 <ExclamationCircleIcon />
-                <span>Failed to send message. Please try again or contact us directly.</span>
+                <span>❌ Failed to send email. Please check your internet connection and try again, or contact us directly at princevibe.store@gmail.com</span>
               </div>
             )}
 
