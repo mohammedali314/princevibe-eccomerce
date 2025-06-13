@@ -1,5 +1,6 @@
 // Meta Pixel Service
 const PIXEL_ID = '1675994553051015';
+const TEST_EVENT_CODE = 'TEST85191';
 
 let isInitialized = false;
 let initializationAttempted = false;
@@ -30,6 +31,9 @@ export const initMetaPixel = () => {
   script.onload = () => {
     // Initialize pixel after script loads
     window.fbq('init', PIXEL_ID);
+    // Set test event code
+    window.fbq('set', 'autoConfig', false, PIXEL_ID);
+    window.fbq('trackSingleCustom', PIXEL_ID, 'test_event_code', { test_event_code: TEST_EVENT_CODE });
     window.fbq('track', 'PageView');
     isInitialized = true;
   };
@@ -43,7 +47,8 @@ export const trackEvent = (eventName, data = {}) => {
   const eventData = {
     ...data,
     currency: data.currency || 'PKR',
-    content_type: data.content_type || 'product'
+    content_type: data.content_type || 'product',
+    test_event_code: TEST_EVENT_CODE // Include test event code in all events
   };
 
   // Track the event
