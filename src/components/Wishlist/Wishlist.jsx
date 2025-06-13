@@ -51,14 +51,6 @@ const Wishlist = ({ isOpen, onClose }) => {
 
     // Add to cart with explicit quantity of 1
     addToCart(item, 1);
-    
-    // Show success message
-    const successMessage = `${item.name} has been added to your cart!`;
-    // You can replace this with a toast notification if available
-    console.log(successMessage);
-    
-    // Optional: Remove from wishlist after adding to cart
-    // removeFromWishlist(item.id);
   };
 
   const formatPrice = (price) => {

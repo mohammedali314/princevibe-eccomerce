@@ -45,16 +45,6 @@ const ProductDetail = () => {
   const { addToCart, isItemInCart, getItemQuantity } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
-  // Debug logging
-  useEffect(() => {
-    if (product) {
-      console.log('Product ID:', product.id);
-      console.log('Is in cart:', isItemInCart(product.id));
-      console.log('Cart quantity:', getItemQuantity(product.id));
-      console.log('Is in wishlist:', isInWishlist(product.id));
-    }
-  }, [product, isItemInCart, getItemQuantity, isInWishlist]);
-
   // Animate content on mount
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
@@ -174,12 +164,7 @@ const ProductDetail = () => {
     });
   };
 
-  const handleAddToCart = () => {
-    console.log('Add to cart clicked');
-    console.log('isAddingToCart:', isAddingToCart);
-    console.log('product.inStock:', product.inStock);
-    console.log('isItemInCart:', isItemInCart(product.id));
-    
+  const handleAddToCart = () => {    
     if (isAddingToCart) return; // Prevent multiple clicks
     
     if (!product.inStock || product.quantity <= 0) {

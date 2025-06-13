@@ -580,7 +580,6 @@ export const saveNewOrder = async (userToken, orderData) => {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        console.log('Order saved to database successfully');
         return { success: true, order: result.data };
       } else {
         throw new Error(result.message || 'Failed to save order to database');

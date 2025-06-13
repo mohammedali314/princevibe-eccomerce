@@ -8,19 +8,12 @@ export class PixelHelper {
   }
 
   // Test pixel connection
-  static testPixelConnection() {
-    console.log('🔍 Meta Pixel Debug Info:');
-    console.log('Domain:', window.location.hostname);
-    console.log('Pixel ID:', this.pixelId);
-    console.log('fbq function exists:', this.isPixelLoaded());
+  static testPixelConnection() {  
     
     if (this.isPixelLoaded()) {
-      console.log('✅ Meta Pixel is loaded successfully');
-      
-      // Test if we can track events
+
       try {
         window.fbq('track', 'PageView');
-        console.log('✅ PageView event tracked successfully');
         
         // Test custom event
         window.fbq('trackCustom', 'PixelTest', {
@@ -28,7 +21,6 @@ export class PixelHelper {
           domain: window.location.hostname,
           timestamp: new Date().toISOString()
         });
-        console.log('✅ Custom test event sent');
         
       } catch (error) {
         console.error('❌ Error tracking events:', error);
@@ -41,11 +33,9 @@ export class PixelHelper {
 
   // Diagnose common issues
   static diagnoseIssues() {
-    console.log('🔧 Diagnosing Pixel Issues:');
     
     // Check if script is loaded
     const pixelScript = document.querySelector('script[src*="fbevents.js"]');
-    console.log('Pixel script found:', !!pixelScript);
     
     // Check for ad blockers
     if (window.navigator && window.navigator.userAgent.includes('Adblock')) {
@@ -58,7 +48,6 @@ export class PixelHelper {
     }
     
     // Check domain
-    console.log('Current domain:', window.location.hostname);
     if (window.location.hostname === 'localhost') {
       console.warn('⚠️ Testing on localhost - Facebook may not track development domains');
     }
@@ -79,7 +68,6 @@ export class PixelHelper {
         content_type: 'product',
         num_items: orderData.quantity
       });
-      console.log('✅ Purchase event tracked:', orderData);
     } catch (error) {
       console.error('❌ Error tracking purchase:', error);
     }
@@ -100,7 +88,6 @@ export class PixelHelper {
         content_name: productData.name,
         content_type: 'product'
       });
-      console.log('✅ AddToCart event tracked:', productData);
     } catch (error) {
       console.error('❌ Error tracking add to cart:', error);
     }
@@ -121,7 +108,6 @@ export class PixelHelper {
         content_name: productData.name,
         content_type: 'product'
       });
-      console.log('✅ ViewContent event tracked:', productData);
     } catch (error) {
       console.error('❌ Error tracking view content:', error);
     }
@@ -137,7 +123,6 @@ export class PixelHelper {
 
       // Make testing functions available globally for debugging
       window.pixelHelper = this;
-      console.log('🧪 Pixel Helper loaded. Use window.pixelHelper to test pixel functions.');
     }
   }
 }

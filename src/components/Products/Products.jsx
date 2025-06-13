@@ -143,9 +143,7 @@ const Products = () => {
   const handleAddToCart = (product, e) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    console.log('Add to cart clicked for:', product.name);
-    
+        
     // Check if already loading
     if (loadingItems.cart.has(product.id)) return;
     
@@ -193,10 +191,7 @@ const Products = () => {
   // Enhanced Wishlist Toggle functionality from ProductDetail
   const handleWishlistToggle = (product, e) => {
     e.preventDefault();
-    e.stopPropagation();
-    
-    console.log('Wishlist toggle clicked for:', product.name);
-    
+    e.stopPropagation();    
     // Check if already loading
     if (loadingItems.wishlist.has(product.id)) return;
 
