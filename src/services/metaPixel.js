@@ -31,7 +31,7 @@ export const initMetaPixel = () => {
   script.src = 'https://connect.facebook.net/en_US/fbevents.js';
   script.onload = () => {
     // Initialize pixel after script loads
-    window.fbq('init', PIXEL_ID);
+    // window.fbq('init', PIXEL_ID); // Pixel initialization moved to index.html
     // Set test event code
     window.fbq('set', 'autoConfig', false, PIXEL_ID);
     window.fbq('trackSingleCustom', PIXEL_ID, 'test_event_code', { test_event_code: TEST_EVENT_CODE });

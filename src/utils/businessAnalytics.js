@@ -394,7 +394,7 @@ class BusinessAnalytics {
       s.parentNode.insertBefore(t,s)}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
 
-      fbq('init', pixelId);
+      // fbq('init', pixelId); // Pixel initialization moved to index.html
       fbq('track', 'PageView');
     }
   }

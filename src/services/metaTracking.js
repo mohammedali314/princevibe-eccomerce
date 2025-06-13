@@ -20,11 +20,11 @@ export const initMetaPixel = () => {
     document.head.appendChild(script);
     
     // Initialize the pixel
-    window.fbq('init', PIXEL_ID, {
-      debug: true, // Enable debug mode for testing
-      autoConfig: true,
-      useExistingPixel: false
-    });
+    // window.fbq('init', PIXEL_ID, {
+    //   debug: true, // Enable debug mode for testing
+    //   autoConfig: true,
+    //   useExistingPixel: false
+    // });
 
     // Track page view
     window.fbq('track', 'PageView', {
