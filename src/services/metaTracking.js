@@ -1,7 +1,5 @@
 // Meta Pixel and CAPI tracking service
-const PIXEL_ID = '1675994553051015';
-const ACCESS_TOKEN = 'EAARLuyywfgcBO2YGEMwbwyjNq7LwSAMrSpAQ6tTMwr4rje0f0QPtlbEiOACPGdHC7hyvabnZBiR6c1cUFiBtYH5In4TE9t1x5GJDnIiNRV4uAlfCrhMelIf5z2tFEZCnCmBb5XPez70q6bvtWPO8JxXt5pNJsu14x0jnOo3AvgN0OGjP2iw3eWsrZCSKM3W7wZDZD';
-
+const PIXEL_ID = '4037339863171134';
 // Initialize Meta Pixel
 export const initMetaPixel = () => {
   console.log('🔍 Initializing Meta Pixel...');
