@@ -167,41 +167,56 @@ const ProductDetail = () => {
   const handleAddToCart = () => {    
     if (isAddingToCart) return; // Prevent multiple clicks
     
+    console.log('🛒 Starting add to cart process...');
+    
     if (!product.inStock || product.quantity <= 0) {
+      console.log('❌ Product out of stock');
       showLuxuryToast('Product is currently out of stock', 'error');
       return;
     }
 
     if (isItemInCart(product.id)) {
+      console.log('⚠️ Product already in cart');
       showLuxuryToast('Product is already in your cart', 'info');
       return;
     }
 
     if (product && quantity > 0) {
-      setIsAddingToCart(true);
-      console.log('Setting isAddingToCart to true');
-      
+      console.log('🔄 Setting isAddingToCart to true');
+      setIsAddingToCart(true);      
       try {
         const currentCartQuantity = getItemQuantity(product.id);
         const maxQuantity = product?.quantity || 0;
         const availableToAdd = maxQuantity - currentCartQuantity;
         
+        console.log('📊 Cart quantities:', {
+          currentCartQuantity,
+          maxQuantity,
+          availableToAdd,
+          requestedQuantity: quantity
+        });
+        
         if (availableToAdd <= 0) {
+          console.log('❌ Maximum quantity already in cart');
           showLuxuryToast('Maximum quantity already in cart', 'error');
           return;
         }
         
         const quantityToAdd = Math.min(quantity, availableToAdd);
-        console.log('Adding to cart:', quantityToAdd);
+        console.log('➕ Adding to cart:', quantityToAdd);
+        
+        // Add to cart first
         addToCart(product, quantityToAdd);
+        
+        // Then show success message
         showLuxuryToast(`Added ${quantityToAdd} ${quantityToAdd === 1 ? 'piece' : 'pieces'} to cart`, 'success');
         setQuantity(1);
       } catch (error) {
-        console.error('Error adding to cart:', error);
+        console.error('❌ Error adding to cart:', error);
         showLuxuryToast('Failed to add item to cart', 'error');
       } finally {
+        console.log('🔄 Setting isAddingToCart to false');
         setTimeout(() => {
-          console.log('Setting isAddingToCart to false');
           setIsAddingToCart(false);
         }, 500);
       }
@@ -233,21 +248,15 @@ const ProductDetail = () => {
   };
 
   const handleWishlistToggle = () => {
-    console.log('Wishlist toggle clicked');
-    console.log('isTogglingWishlist:', isTogglingWishlist);
-    console.log('isInWishlist before:', isInWishlist(product.id));
     
     if (isTogglingWishlist) return; // Prevent multiple clicks
     
     if (product) {
       setIsTogglingWishlist(true);
-      console.log('Setting isTogglingWishlist to true');
-      
+
       try {
         const wasInWishlist = isInWishlist(product.id);
-        console.log('Was in wishlist:', wasInWishlist);
         toggleWishlist(product);
-        console.log('isInWishlist after:', isInWishlist(product.id));
         
         if (wasInWishlist) {
           showLuxuryToast('Removed from wishlist', 'remove');
@@ -259,7 +268,6 @@ const ProductDetail = () => {
         showLuxuryToast('Failed to update wishlist', 'error');
       } finally {
         setTimeout(() => {
-          console.log('Setting isTogglingWishlist to false');
           setIsTogglingWishlist(false);
         }, 500);
       }

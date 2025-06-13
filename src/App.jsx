@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'r
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { PixelHelper } from './utils/pixelHelper';
+import { initMetaPixel } from './services/metaPixel';
 import Navbar from './components/Navbar/Navbar';
 import Hero from './components/Hero/Hero';
 import Categories from './components/Categories/Categories';
@@ -66,6 +66,11 @@ const AppContent = () => {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [currentAdmin, setCurrentAdmin] = useState(null);
 
+  // Initialize Meta Pixel once when component mounts
+  useEffect(() => {
+    initMetaPixel();
+  }, []);
+
   // Show loading on initial page load
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -74,14 +79,6 @@ const AppContent = () => {
 
     return () => clearTimeout(timer);
   }, []);
-
-  // Initialize Meta Pixel testing after loading
-  useEffect(() => {
-    if (!isLoading) {
-      // Initialize pixel testing after app loads
-      PixelHelper.initPixelTesting();
-    }
-  }, [isLoading]);
 
   // Check for existing admin session
   useEffect(() => {

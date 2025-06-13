@@ -1,56 +1,27 @@
-// Meta Pixel Testing and Debug Helper
+import { trackEvent, isPixelReady } from '../services/metaPixel';
+
+// Meta Pixel Helper
 export class PixelHelper {
   static pixelId = '1675994553051015';
+  static eventDebounce = new Map();
 
   // Test if Facebook Pixel is loaded
   static isPixelLoaded() {
-    return typeof window !== 'undefined' && window.fbq && typeof window.fbq === 'function';
+    return isPixelReady();
   }
 
-  // Test pixel connection
-  static testPixelConnection() {  
+  // Debounce helper to prevent duplicate events
+  static debounceEvent(eventName, data, delay = 1000) {
+    const key = `${eventName}-${JSON.stringify(data)}`;
+    const now = Date.now();
     
-    if (this.isPixelLoaded()) {
-
-      try {
-        window.fbq('track', 'PageView');
-        
-        // Test custom event
-        window.fbq('trackCustom', 'PixelTest', {
-          test: true,
-          domain: window.location.hostname,
-          timestamp: new Date().toISOString()
-        });
-        
-      } catch (error) {
-        console.error('❌ Error tracking events:', error);
-      }
-    } else {
-      console.error('❌ Meta Pixel not loaded properly');
-      this.diagnoseIssues();
-    }
-  }
-
-  // Diagnose common issues
-  static diagnoseIssues() {
-    
-    // Check if script is loaded
-    const pixelScript = document.querySelector('script[src*="fbevents.js"]');
-    
-    // Check for ad blockers
-    if (window.navigator && window.navigator.userAgent.includes('Adblock')) {
-      console.warn('⚠️ Ad blocker detected - this may block pixel');
+    if (this.eventDebounce.has(key)) {
+      const lastTime = this.eventDebounce.get(key);
+      if (now - lastTime < delay) return false;
     }
     
-    // Check for HTTPS
-    if (window.location.protocol !== 'https:') {
-      console.warn('⚠️ Site not using HTTPS - pixels work better with HTTPS');
-    }
-    
-    // Check domain
-    if (window.location.hostname === 'localhost') {
-      console.warn('⚠️ Testing on localhost - Facebook may not track development domains');
-    }
+    this.eventDebounce.set(key, now);
+    return true;
   }
 
   // Track e-commerce events
@@ -60,16 +31,16 @@ export class PixelHelper {
       return;
     }
 
-    try {
-      window.fbq('track', 'Purchase', {
-        value: orderData.total,
-        currency: 'PKR',
-        content_ids: orderData.productIds,
-        content_type: 'product',
-        num_items: orderData.quantity
-      });
-    } catch (error) {
-      console.error('❌ Error tracking purchase:', error);
+    const eventData = {
+      value: orderData.total,
+      currency: 'PKR',
+      content_ids: orderData.productIds,
+      content_type: 'product',
+      num_items: orderData.quantity
+    };
+
+    if (this.debounceEvent('Purchase', eventData)) {
+      trackEvent('Purchase', eventData);
     }
   }
 
@@ -80,16 +51,16 @@ export class PixelHelper {
       return;
     }
 
-    try {
-      window.fbq('track', 'AddToCart', {
-        value: productData.price,
-        currency: 'PKR',
-        content_ids: [productData.id],
-        content_name: productData.name,
-        content_type: 'product'
-      });
-    } catch (error) {
-      console.error('❌ Error tracking add to cart:', error);
+    const eventData = {
+      value: productData.price,
+      currency: 'PKR',
+      content_ids: [productData.id],
+      content_name: productData.name,
+      content_type: 'product'
+    };
+
+    if (this.debounceEvent('AddToCart', eventData)) {
+      trackEvent('AddToCart', eventData);
     }
   }
 
@@ -100,34 +71,21 @@ export class PixelHelper {
       return;
     }
 
-    try {
-      window.fbq('track', 'ViewContent', {
-        value: productData.price,
-        currency: 'PKR',
-        content_ids: [productData.id],
-        content_name: productData.name,
-        content_type: 'product'
-      });
-    } catch (error) {
-      console.error('❌ Error tracking view content:', error);
-    }
-  }
+    const eventData = {
+      value: productData.price,
+      currency: 'PKR',
+      content_ids: [productData.id],
+      content_name: productData.name,
+      content_type: 'product'
+    };
 
-  // Initialize pixel testing on page load
-  static initPixelTesting() {
-    if (typeof window !== 'undefined') {
-      // Test pixel after a short delay to ensure it's loaded
-      setTimeout(() => {
-        this.testPixelConnection();
-      }, 2000);
-
-      // Make testing functions available globally for debugging
-      window.pixelHelper = this;
+    if (this.debounceEvent('ViewContent', eventData)) {
+      trackEvent('ViewContent', eventData);
     }
   }
 }
 
-// Auto-initialize in development
+// Only initialize testing in development
 if (process.env.NODE_ENV === 'development') {
-  PixelHelper.initPixelTesting();
+  // Development-only code removed for production
 } 
