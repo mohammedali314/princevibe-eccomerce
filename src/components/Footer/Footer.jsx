@@ -64,11 +64,11 @@ const Footer = ({ onLogoClick }) => {
         // Additional check to ensure element is actually visible
         const rect = target.getBoundingClientRect();
         if (rect.height > 0) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-          return true;
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+        return true;
         }
       }
       
@@ -94,8 +94,8 @@ const Footer = ({ onLogoClick }) => {
       // Wait for route change to complete and page to load
       const checkPageLoad = () => {
         if (document.readyState === 'complete') {
-          setTimeout(() => {
-            scrollToProducts();
+      setTimeout(() => {
+        scrollToProducts();
           }, 500); // Extra delay for production environments
         } else {
           setTimeout(checkPageLoad, 100);

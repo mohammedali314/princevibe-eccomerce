@@ -14,6 +14,7 @@ export const initMetaPixel = () => {
   
   if (window.fbq) {
     isInitialized = true;
+    console.log('[MetaPixel] fbq already exists.');
     return;
   }
 
@@ -36,6 +37,7 @@ export const initMetaPixel = () => {
     window.fbq('trackSingleCustom', PIXEL_ID, 'test_event_code', { test_event_code: TEST_EVENT_CODE });
     window.fbq('track', 'PageView');
     isInitialized = true;
+    console.log('[MetaPixel] Initialized and PageView tracked.');
   };
   document.head.appendChild(script);
 };
@@ -53,6 +55,7 @@ export const trackEvent = (eventName, data = {}) => {
 
   // Track the event
   window.fbq('track', eventName, eventData);
+  console.log(`[MetaPixel] Event tracked: ${eventName}`, eventData);
 };
 
 // Helper function to check if pixel is ready

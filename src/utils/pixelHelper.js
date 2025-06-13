@@ -2,7 +2,7 @@ import { trackEvent, isPixelReady } from '../services/metaPixel';
 
 // Meta Pixel Helper
 export class PixelHelper {
-  static pixelId = '1675994553051015';
+  static pixelId = '4037339863171134';
   static eventDebounce = new Map();
 
   // Test if Facebook Pixel is loaded
