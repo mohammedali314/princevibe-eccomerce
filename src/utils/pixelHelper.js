@@ -84,8 +84,3 @@ export class PixelHelper {
     }
   }
 }
-
-// Only initialize testing in development
-if (process.env.NODE_ENV === 'development') {
-  // Development-only code removed for production
-} 
