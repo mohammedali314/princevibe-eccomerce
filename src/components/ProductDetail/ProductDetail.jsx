@@ -21,7 +21,6 @@ import {
 import { HeartIcon as HeartSolid, StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
-import { PixelHelper } from '../../utils/pixelHelper';
 import ApiService from '../../services/api';
 import './ProductDetail.scss';
 
@@ -83,8 +82,6 @@ const ProductDetail = () => {
         
         if (transformedResponse.data) {
           setProduct(transformedResponse.data);
-          // Track product view for Meta Pixel
-          PixelHelper.trackViewContent(transformedResponse.data);
         } else {
           setError('Product not found');
         }

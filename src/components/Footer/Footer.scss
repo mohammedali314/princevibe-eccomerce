@@ -846,28 +846,27 @@
 
           .brand-logo {
             text-align: center;
-            
             .logo-image {
               height: 96px;
             }
-
             .logo-text {
               font-size: 2.5rem;
             }
           }
-
           .brand-description {
             text-align: center;
             max-width: none;
           }
-
           .contact-info .contact-item {
             justify-content: center;
           }
         }
 
         .footer-section {
-          text-align: center;
+          text-align: center !important;
+          margin-left: auto;
+          margin-right: auto;
+          width: 100%;
 
           .section-header {
             justify-content: space-between;
@@ -881,18 +880,15 @@
             &:hover {
               background: rgba(255, 255, 255, 0.08);
             }
-
             .section-title {
               text-align: left;
               font-size: 1.1rem;
               flex: 1;
-
               &::after {
                 left: 0;
                 transform: none;
               }
             }
-
             .dropdown-icon {
               display: none;
             }
@@ -906,7 +902,6 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-
             &.open {
               max-height: 400px;
             }
@@ -915,28 +910,23 @@
           .section-links li {
             opacity: 0;
             transform: translateY(-10px);
-
             a {
               padding: 10px 16px;
               text-align: center;
               margin: 4px 0;
               border-radius: 8px;
-
               &:hover {
                 padding-left: 16px;
                 background: rgba(255, 255, 255, 0.08);
-
                 &::before {
                   display: none;
                 }
               }
             }
           }
-
           .section-content.open .section-links li {
             opacity: 1;
             transform: translateY(0);
-            
             @for $i from 1 through 10 {
               &:nth-child(#{$i}) {
                 transition-delay: #{$i * 0.05}s;
@@ -947,32 +937,26 @@
 
         .footer-newsletter {
           padding: 24px;
-
           .newsletter-form .input-group {
             flex-direction: column;
-
             input {
               padding: 16px;
               text-align: center;
             }
-
             .subscribe-btn {
               padding: 16px;
               justify-content: center;
               min-width: 100%;
-
               svg {
                 width: 18px;
                 height: 18px;
               }
             }
           }
-
           .trust-badges {
             flex-direction: column;
             align-items: center;
             gap: 12px;
-
             .trust-item {
               flex-direction: row;
               justify-content: center;
@@ -980,21 +964,16 @@
           }
         }
       }
-
       .footer-social-center {
         padding: 28px 0;
-
         h4 {
           font-size: 1.125rem;
         }
-
         .social-links {
           gap: 14px;
-
           .social-link {
             width: 48px;
             height: 48px;
-
             svg {
               width: 20px;
               height: 20px;
@@ -1002,34 +981,26 @@
           }
         }
       }
-
       .app-download-section,
       .certifications-section {
         padding: 24px;
-
         h4 {
           font-size: 1.125rem;
         }
       }
     }
-
     .footer-bottom {
       padding: 24px 0;
-
       .footer-container {
         padding: 0 16px;
       }
-
       .bottom-content {
         gap: 20px;
-
         .payment-methods {
           justify-content: center;
-          
           .payment-icons {
             justify-content: center;
             max-width: 300px;
-            
             .payment-icon {
               height: 24px;
               min-width: 35px;
@@ -1037,9 +1008,19 @@
             }
           }
         }
-
         .language-selector {
           justify-self: center;
+        }
+      }
+      .legal-section {
+        text-align: center;
+        .copyright,
+        .legal-links {
+          justify-content: center;
+        }
+        .legal-links {
+          flex-wrap: wrap;
+          gap: 16px;
         }
       }
     }
@@ -1191,5 +1172,19 @@
     &::before {
       width: 12px;
     }
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-section .section-links a,
+  .footer-section .section-links .footer-link-button {
+    text-align: center !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+    display: flex !important;
   }
 } 

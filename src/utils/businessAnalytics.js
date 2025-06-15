@@ -48,11 +48,6 @@ class BusinessAnalytics {
         page_location: window.location.href
       });
     }
-
-    // Facebook Pixel (if available)
-    if (typeof fbq !== 'undefined') {
-      fbq('track', 'PageView');
-    }
   }
 
   // Track product views (crucial for retargeting)
@@ -71,18 +66,6 @@ class BusinessAnalytics {
     };
 
     this.sendEvent(eventData);
-
-    // Facebook Pixel - ViewContent (essential for ads)
-    if (typeof fbq !== 'undefined') {
-      fbq('track', 'ViewContent', {
-        content_type: 'product',
-        content_ids: [product.id],
-        content_name: product.name,
-        content_category: product.category,
-        value: product.price,
-        currency: 'PKR'
-      });
-    }
 
     // Google Analytics 4
     if (typeof gtag !== 'undefined') {
@@ -116,17 +99,6 @@ class BusinessAnalytics {
     };
 
     this.sendEvent(eventData);
-
-    // Facebook Pixel - AddToCart
-    if (typeof fbq !== 'undefined') {
-      fbq('track', 'AddToCart', {
-        content_type: 'product',
-        content_ids: [product.id],
-        content_name: product.name,
-        value: product.price * quantity,
-        currency: 'PKR'
-      });
-    }
 
     // Google Analytics 4
     if (typeof gtag !== 'undefined') {
@@ -162,17 +134,6 @@ class BusinessAnalytics {
     };
 
     this.sendEvent(eventData);
-
-    // Facebook Pixel - InitiateCheckout
-    if (typeof fbq !== 'undefined') {
-      fbq('track', 'InitiateCheckout', {
-        content_type: 'product',
-        content_ids: cartItems.map(item => item.id),
-        value: cartTotal,
-        currency: 'PKR',
-        num_items: cartItems.length
-      });
-    }
 
     // Google Analytics 4
     if (typeof gtag !== 'undefined') {
@@ -212,17 +173,6 @@ class BusinessAnalytics {
 
     this.sendEvent(eventData);
 
-    // Facebook Pixel - Purchase (most important for ROAS)
-    if (typeof fbq !== 'undefined') {
-      fbq('track', 'Purchase', {
-        content_type: 'product',
-        content_ids: order.items?.map(item => item.productId || item.id) || [],
-        value: order.summary?.total || order.payment?.amount,
-        currency: 'PKR',
-        num_items: order.items?.length || 0
-      });
-    }
-
     // Google Analytics 4
     if (typeof gtag !== 'undefined') {
       gtag('event', 'purchase', {
@@ -251,13 +201,6 @@ class BusinessAnalytics {
     };
 
     this.sendEvent(eventData);
-
-    // Custom Facebook event
-    if (typeof fbq !== 'undefined') {
-      fbq('trackCustom', 'WhatsAppContact', {
-        source: source
-      });
-    }
   }
 
   // Track form submissions
@@ -272,10 +215,6 @@ class BusinessAnalytics {
     };
 
     this.sendEvent(eventData);
-
-    if (typeof fbq !== 'undefined') {
-      fbq('track', 'SubmitApplication');
-    }
   }
 
   // Track search queries
@@ -380,23 +319,6 @@ class BusinessAnalytics {
     );
     
     return sessions.size > 0 ? (purchaseSessions.size / sessions.size * 100).toFixed(2) : 0;
-  }
-
-  // Initialize Facebook Pixel (call this in your main app)
-  initializeFacebookPixel(pixelId) {
-    if (typeof fbq === 'undefined' && this.isProduction) {
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-
-      // fbq('init', pixelId); // Pixel initialization moved to index.html
-      fbq('track', 'PageView');
-    }
   }
 
   // Initialize Google Analytics (call this in your main app)

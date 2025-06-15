@@ -167,36 +167,12 @@ const Footer = ({ onLogoClick }) => {
     products: {
       title: "Products",
       links: [
-        { 
-          name: "All Watches", 
-          action: () => handleProductsNavigation(),
-          type: "function"
-        },
-        { 
-          name: "Featured Watches", 
-          action: () => handleCategoryNavigation('featured'),
-          type: "function"
-        },
-        { 
-          name: "Best Sellers", 
-          action: () => handleCategoryNavigation('popular'),
-          type: "function"
-        },
-        { 
-          name: "New Arrivals", 
-          action: () => handleCategoryNavigation('new'),
-          type: "function"
-        },
-        { 
-          name: "Smart Watches", 
-          action: () => handleCategoryNavigation('smart'),
-          type: "function"
-        },
-        { 
-          name: "Luxury Collection", 
-          action: () => handleCategoryNavigation('luxury'),
-          type: "function"
-        }
+        { name: "All Watches", action: () => handleProductsNavigation(), type: "function" },
+        { name: "Featured Watches", action: () => handleCategoryNavigation('featured'), type: "function" },
+        { name: "Best Sellers", action: () => handleCategoryNavigation('popular'), type: "function" },
+        { name: "New Arrivals", action: () => handleCategoryNavigation('new'), type: "function" },
+        { name: "Smart Watches", action: () => handleCategoryNavigation('smart'), type: "function" },
+        { name: "Luxury Collection", action: () => handleCategoryNavigation('luxury'), type: "function" }
       ]
     },
     services: {
@@ -205,16 +181,6 @@ const Footer = ({ onLogoClick }) => {
         { name: "Contact Us", href: "/contact", type: "link" },
         { name: "Track Your Order", href: "/track-order", type: "link" },
         { name: "Help & Support", href: "/help", type: "link" },
-        { 
-          name: "My Orders", 
-          action: () => handleAuthRequired('orders'),
-          type: "function"
-        },
-        { 
-          name: "My Profile", 
-          action: () => handleAuthRequired('profile'),
-          type: "function"
-        },
         { name: "Customer Reviews", href: "/testimonials", type: "link" }
       ]
     },
@@ -223,18 +189,16 @@ const Footer = ({ onLogoClick }) => {
       links: [
         { name: "Help Center", href: "/help", type: "link" },
         { name: "About PrinceVibe", href: "/about", type: "link" },
-        { name: "Order Tracking", href: "/track-order", type: "link" },
-        { name: "FAQ & Support", href: "/help", type: "link" },
-        { 
-          name: "User Account", 
-          action: () => handleAuthRequired('profile'),
-          type: "function"
-        },
-        { 
-          name: "Checkout Process", 
-          action: () => handleCheckoutTutorial(),
-          type: "function"
-        }
+        { name: "FAQ & Support", href: "/help", type: "link" }
+      ]
+    },
+    account: {
+      title: "Account",
+      links: [
+        { name: "My Orders", action: () => handleAuthRequired('orders'), type: "function" },
+        { name: "My Profile", action: () => handleAuthRequired('profile'), type: "function" },
+        { name: "User Account", action: () => handleAuthRequired('profile'), type: "function" },
+        { name: "Checkout Process", action: () => handleCheckoutTutorial(), type: "function" }
       ]
     }
   };
