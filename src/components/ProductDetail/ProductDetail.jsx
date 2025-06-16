@@ -22,6 +22,7 @@ import { HeartIcon as HeartSolid, StarIcon as StarSolid } from '@heroicons/react
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import ApiService from '../../services/api';
+import { trackEvent } from '../../services/metaPixel';
 import './ProductDetail.scss';
 
 const ProductDetail = () => {
@@ -82,6 +83,13 @@ const ProductDetail = () => {
         
         if (transformedResponse.data) {
           setProduct(transformedResponse.data);
+          trackEvent('ViewContent', {
+            content_name: transformedResponse.data.name,
+            content_ids: [transformedResponse.data.id],
+            content_type: 'product',
+            value: transformedResponse.data.price,
+            currency: 'PKR'
+          });
         } else {
           setError('Product not found');
         }
@@ -208,6 +216,15 @@ const ProductDetail = () => {
         // Then show success message
         showLuxuryToast(`Added ${quantityToAdd} ${quantityToAdd === 1 ? 'piece' : 'pieces'} to cart`, 'success');
         setQuantity(1);
+
+        trackEvent('AddToCart', {
+          content_name: product.name,
+          content_ids: [product.id],
+          content_type: 'product',
+          value: product.price * quantityToAdd,
+          currency: 'PKR',
+          quantity: quantityToAdd
+        });
       } catch (error) {
         console.error('❌ Error adding to cart:', error);
         showLuxuryToast('Failed to add item to cart', 'error');

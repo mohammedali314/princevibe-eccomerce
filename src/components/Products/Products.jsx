@@ -15,6 +15,7 @@ import { HeartIcon as HeartSolid, StarIcon as StarSolid } from '@heroicons/react
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
 import ApiService from '../../services/api';
+import { trackEvent } from '../../services/metaPixel';
 import './Products.scss';
 
 const Products = () => {
@@ -174,6 +175,14 @@ const Products = () => {
       }
       
       addToCart(product, 1);
+      trackEvent('AddToCart', {
+        content_name: product.name,
+        content_ids: [product.id],
+        content_type: 'product',
+        value: product.price,
+        currency: 'PKR',
+        quantity: 1
+      });
       showLuxuryToast(`Added ${product.name} to cart`, 'success');
     } catch (error) {
       console.error('Error adding to cart:', error);
