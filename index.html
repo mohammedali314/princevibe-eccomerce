@@ -1,6 +1,28 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    
+    // Add error handling and logging
+    try {
+      fbq('init', '4037339863171134');
+      console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ Pixel initialized successfully');
+      fbq('track', 'PageView');
+      console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ PageView tracked');
+    } catch (error) {
+      console.error('%c[MetaPixel]', 'background: #FF0000; color: white; padding: 2px 5px; border-radius: 3px;', '❌ Error initializing pixel:', error);
+    }
+    </script>
+    <!-- End Meta Pixel Code -->
     <meta charset="UTF-8" />
     
     <!-- Comprehensive Favicon Setup -->
@@ -206,6 +228,11 @@
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
   </head>
   <body>
+    <!-- Meta Pixel NoScript -->
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=4037339863171134&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel NoScript -->
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

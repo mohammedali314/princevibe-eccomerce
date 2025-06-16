@@ -1,69 +1,55 @@
 // Meta Pixel Service
 const PIXEL_ID = '4037339863171134';
-const TEST_EVENT_CODE = 'TEST20508';
 
-let isInitialized = false;
-let initializationAttempted = false;
+// Debug logging function with more visible output
+const debugLog = (message, data = null) => {
+  // Always log in development, regardless of NODE_ENV
+  console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', message, data || '');
+};
 
-export const initMetaPixel = () => {
-  if (typeof window === 'undefined') return;
-  if (isInitialized) return;
-  if (initializationAttempted) return;
-  
-  initializationAttempted = true;
-  
-  if (window.fbq) {
-    isInitialized = true;
-    console.log('[MetaPixel] fbq already exists.');
-    return;
+// Check if Meta Pixel is loaded
+const checkPixelLoaded = () => {
+  if (typeof window === 'undefined') {
+    debugLog('❌ Window is undefined');
+    return false;
   }
 
-  // Initialize fbq
-  window.fbq = function() {
-    window.fbq.queue.push(arguments);
-  };
-  window.fbq.queue = [];
-  window.fbq.version = '2.0';
+  if (!window.fbq) {
+    debugLog('❌ Meta Pixel not loaded (fbq is undefined)');
+    return false;
+  }
 
-  // Add Meta Pixel script
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = 'https://connect.facebook.net/en_US/fbevents.js';
-  script.onload = () => {
-    // Initialize pixel after script loads
-    // window.fbq('init', PIXEL_ID); // Pixel initialization moved to index.html
-    // Set test event code
-    window.fbq('set', 'autoConfig', false, PIXEL_ID);
-    window.fbq('trackSingleCustom', PIXEL_ID, 'test_event_code', { test_event_code: TEST_EVENT_CODE });
-    window.fbq('track', 'PageView');
-    isInitialized = true;
-    console.log('[MetaPixel] Initialized and PageView tracked.');
-  };
-  document.head.appendChild(script);
+  debugLog('✅ Meta Pixel is loaded and ready');
+  return true;
 };
 
 export const trackEvent = (eventName, data = {}) => {
-  if (typeof window === 'undefined' || !window.fbq) return;
+  debugLog(`Attempting to track event: ${eventName}`, data);
 
-  // Ensure all required fields are present
-  const eventData = {
-    ...data,
-    currency: data.currency || 'PKR',
-    content_type: data.content_type || 'product',
-    test_event_code: TEST_EVENT_CODE // Include test event code in all events
-  };
+  if (!checkPixelLoaded()) {
+    debugLog('❌ Cannot track event - Meta Pixel not loaded');
+    return;
+  }
 
-  // Track the event
-  window.fbq('track', eventName, eventData);
-  console.log(`[MetaPixel] Event tracked: ${eventName}`, eventData);
+  try {
+    window.fbq('track', eventName, data);
+    debugLog(`✅ Successfully tracked event: ${eventName}`, data);
+  } catch (error) {
+    debugLog(`❌ Error tracking event: ${eventName}`, error);
+  }
 };
 
 // Helper function to check if pixel is ready
 export const isPixelReady = () => {
-  return typeof window !== 'undefined' && window.fbq && isInitialized;
+  const ready = checkPixelLoaded();
+  debugLog(`Pixel ready status: ${ready ? '✅ Ready' : '❌ Not Ready'}`);
+  return ready;
 };
 
-// Initialize on load
+// Log initialization status on load
 if (typeof window !== 'undefined') {
-  initMetaPixel();
+  debugLog('🔍 Checking Meta Pixel status...');
+  setTimeout(() => {
+    checkPixelLoaded();
+  }, 1000); // Check after 1 second to ensure script has time to load
 } 
