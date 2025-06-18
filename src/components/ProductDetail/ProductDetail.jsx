@@ -24,6 +24,7 @@ import { useWishlist } from '../../context/WishlistContext';
 import ApiService from '../../services/api';
 import { trackEvent } from '../../services/metaPixel';
 import './ProductDetail.scss';
+import ReviewSection from './ReviewSection';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -942,6 +943,8 @@ const ProductDetail = () => {
           </div>
         ))}
       </div>
+
+      <ReviewSection productId={id} />
     </div>
   );
 };
