@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   HeartIcon,
   ShoppingBagIcon,
   StarIcon,
-  MinusIcon,
-  PlusIcon,
   ArrowLeftIcon,
   ChevronRightIcon,
   ShieldCheckIcon,
@@ -16,9 +14,17 @@ import {
   ShareIcon,
   PhotoIcon,
   CheckCircleIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  MagnifyingGlassIcon,
+  MinusIcon as MinusIconOutline,
+  PlusIcon as PlusIconOutline
 } from '@heroicons/react/24/outline';
-import { HeartIcon as HeartSolid, StarIcon as StarSolid } from '@heroicons/react/24/solid';
+import { 
+  HeartIcon as HeartSolid, 
+  StarIcon as StarSolid,
+  PlusIcon as PlusIconSolid,
+  MinusIcon as MinusIconSolid
+} from '@heroicons/react/24/solid';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import ApiService from '../../services/api';
@@ -26,9 +32,37 @@ import { trackEvent } from '../../services/metaPixel';
 import './ProductDetail.scss';
 import ReviewSection from './ReviewSection';
 
+// Custom hook for throttled mouse movement
+const useThrottledMousePosition = (delay = 16) => {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const lastUpdate = useRef(0);
+  const throttleTimer = useRef(null);
+
+  const updateMousePosition = useCallback((x, y) => {
+    const now = Date.now();
+    if (now - lastUpdate.current >= delay) {
+      setMousePosition({ x, y });
+      lastUpdate.current = now;
+    }
+  }, [delay]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (throttleTimer.current) {
+        cancelAnimationFrame(throttleTimer.current);
+      }
+    };
+  }, []);
+
+  return [mousePosition, updateMousePosition, throttleTimer];
+};
+
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  
+  // All hooks must be called at the top level in the same order every time
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState('description');
@@ -36,15 +70,67 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imageZoom, setImageZoom] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(2.0);
+  const [isZoomActive, setIsZoomActive] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
+  const imageRef = useRef(null);
+  const zoomContainerRef = useRef(null);
+  
+  // Use throttled mouse position for better performance - must be called consistently
+  const [mousePosition, updateMousePosition, throttleTimer] = useThrottledMousePosition(16); // ~60fps
+
   // Get cart and wishlist context
   const { addToCart, isItemInCart, getItemQuantity } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+
+  // Memoize the image style to prevent unnecessary re-renders
+  const imageStyle = useMemo(() => ({
+    transform: isZoomActive ? `scale(${zoomLevel})` : 'scale(1)',
+    transformOrigin: isZoomActive ? `${mousePosition.x}% ${mousePosition.y}%` : 'center',
+    transition: isZoomActive ? 'transform 0.05s ease-out' : 'transform 0.3s ease'
+  }), [isZoomActive, zoomLevel, mousePosition.x, mousePosition.y]);
+
+  // All useCallback hooks must be called at the top level
+  const handleImageMouseMove = useCallback((e) => {
+    if (!imageRef.current || !isZoomActive) return;
+
+    // Throttle the mouse movement for better performance
+    if (!throttleTimer.current) {
+      throttleTimer.current = requestAnimationFrame(() => {
+        const rect = imageRef.current.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+        updateMousePosition(x, y);
+        throttleTimer.current = null;
+      });
+    }
+  }, [isZoomActive, updateMousePosition, throttleTimer]);
+
+  const handleImageMouseEnter = useCallback(() => {
+    if (imageZoom) {
+      setIsZoomActive(true);
+    }
+  }, [imageZoom]);
+
+  const handleImageMouseLeave = useCallback(() => {
+    setIsZoomActive(false);
+  }, []);
+
+  const toggleZoom = useCallback(() => {
+    const newZoomState = !imageZoom;
+    setImageZoom(newZoomState);
+    setIsZoomActive(newZoomState);
+  }, [imageZoom]);
+
+  const handleZoomLevelChange = useCallback((newLevel) => {
+    setZoomLevel(Math.max(1.5, Math.min(4, newLevel)));
+  }, []);
 
   // Animate content on mount
   useEffect(() => {
@@ -492,23 +578,31 @@ const ProductDetail = () => {
             {/* Product Gallery */}
             <div className="product-gallery">
               <div className="main-image-container">
-                <div className={`main-image ${imageZoom ? 'zoomed' : ''}`}>
-                <img 
-                  src={product.images[selectedImage]} 
-                  alt={product.name}
-                    onClick={() => setImageZoom(!imageZoom)}
-                />
-                {product.badge && (
+                <div 
+                  className={`main-image ${imageZoom ? 'zoomed' : ''} ${isZoomActive ? 'zoom-active' : ''}`}
+                  ref={zoomContainerRef}
+                >
+                  <img 
+                    ref={imageRef}
+                    src={product.images[selectedImage]} 
+                    alt={product.name}
+                    onMouseMove={handleImageMouseMove}
+                    onMouseEnter={handleImageMouseEnter}
+                    onMouseLeave={handleImageMouseLeave}
+                    style={imageStyle}
+                  />
+                  {product.badge && (
                     <div className="luxury-badge">
                       <span>{product.badge}</span>
                     </div>
                   )}
                   <button 
                     className="zoom-button"
-                    onClick={() => setImageZoom(!imageZoom)}
+                    onClick={toggleZoom}
                   >
-                    <EyeIcon />
+                    {imageZoom ? <EyeIcon /> : <MagnifyingGlassIcon />}
                   </button>
+              
                 </div>
               </div>
               
@@ -517,7 +611,11 @@ const ProductDetail = () => {
                   <div 
                     key={index}
                     className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
-                    onClick={() => setSelectedImage(index)}
+                    onClick={() => {
+                      setSelectedImage(index);
+                      setImageZoom(false);
+                      setIsZoomActive(false);
+                    }}
                   >
                     <img src={image} alt={`${product.name} view ${index + 1}`} />
                     <div className="thumbnail-overlay"></div>
@@ -580,7 +678,7 @@ const ProductDetail = () => {
                     onClick={() => handleQuantityChange(-1)}
                     disabled={quantity <= 1}
                   >
-                    <MinusIcon />
+                    <MinusIconSolid className="icon" />
                   </button>
                   <div className="quantity-display">
                     <span className="qty-number">{quantity}</span>
@@ -590,7 +688,7 @@ const ProductDetail = () => {
                     onClick={() => handleQuantityChange(1)}
                     disabled={quantity >= product.quantity || product.quantity <= 0}
                   >
-                    <PlusIcon />
+                    <PlusIconSolid className="icon" />
                   </button>
                 </div>
 
