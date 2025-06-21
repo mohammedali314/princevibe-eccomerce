@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useCart } from '../../context/CartContext';
 import orderService from '../../services/orderService';
-import GooglePayButton from '@google-pay/button-react';
 import { 
   CreditCardIcon,
   TruckIcon,
@@ -145,8 +144,8 @@ const CheckoutForm = ({ onOrderComplete }) => {
         break;
 
       case 3: // Order Review
-        if (formData.paymentMethod === 'googlepay') {
-          // Google Pay handles its own validation, so we can skip it here.
+        if (formData.paymentMethod === 'cod') {
+          // COD handles its own validation, so we can skip it here.
         } else if (!formData.agreeToTerms) {
           newErrors.agreeToTerms = 'You must agree to the terms and conditions';
         }
@@ -226,27 +225,6 @@ const CheckoutForm = ({ onOrderComplete }) => {
     try {
       const finalTotal = getFinalTotal();
       
-      // Create a new function to handle Google Pay payments
-      const handleGooglePay = async (paymentData) => {
-        setLoading(true);
-        try {
-          const response = await orderService.processGooglePay({
-            paymentToken: paymentData.paymentMethodData.tokenizationData.token,
-          });
-
-          if (response.success) {
-            // If payment is successful, submit the order
-            handleOrderSubmit();
-          } else {
-            setErrors({ googlePay: 'Google Pay processing failed. Please try again.' });
-          }
-        } catch (error) {
-          setErrors({ googlePay: 'An error occurred while processing your payment.' });
-        } finally {
-          setLoading(false);
-        }
-      };
-
       // Prepare order data for orderService
       const orderData = {
         customer: {
@@ -537,7 +515,7 @@ const CheckoutForm = ({ onOrderComplete }) => {
                     onClick={() => handleInputChange({ target: { name: 'paymentMethod', value: 'cod' }})}
                   >
                     <div className="payment-icon">
-                      <BanknotesIcon />
+                      <BanknotesIcon style={{ width: '80px', height: '80px' }} />
                     </div>
                     <div className="payment-details">
                       <h4>Cash on Delivery</h4>
@@ -545,51 +523,9 @@ const CheckoutForm = ({ onOrderComplete }) => {
                     </div>
                     {formData.paymentMethod === 'cod' && (
                       <div className="selected-indicator">
-                        <CheckCircleIcon />
+                        <CheckCircleIcon style={{ width: '40px', height: '40px' }} />
                       </div>
                     )}
-                  </div>
-                  <div className={`payment-option ${formData.paymentMethod === 'googlepay' ? 'selected' : ''}`}>
-                    <GooglePayButton
-                      environment="TEST"
-                      paymentRequest={{
-                        apiVersion: 2,
-                        apiVersionMinor: 0,
-                        allowedPaymentMethods: [
-                          {
-                            type: 'CARD',
-                            parameters: {
-                              allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
-                              allowedCardNetworks: ['MASTERCARD', 'VISA'],
-                            },
-                            tokenizationSpecification: {
-                              type: 'PAYMENT_GATEWAY',
-                              parameters: {
-                                gateway: 'example',
-                                gatewayMerchantId: 'exampleGatewayMerchantId',
-                              },
-                            },
-                          },
-                        ],
-                        merchantInfo: {
-                          merchantId: '12345678901234567890',
-                          merchantName: 'Demo Merchant',
-                        },
-                        transactionInfo: {
-                          totalPriceStatus: 'FINAL',
-                          totalPriceLabel: 'Total',
-                          totalPrice: String(getFinalTotal()),
-                          currencyCode: 'PKR',
-                          countryCode: 'PK',
-                        },
-                      }}
-                      onLoadPaymentData={paymentRequest => {
-                        console.log('load payment data', paymentRequest);
-                        handleInputChange({ target: { name: 'paymentMethod', value: 'googlepay' }});
-                        // Send the payment token to the backend for processing
-                        handleGooglePay(paymentRequest);
-                      }}
-                    />
                   </div>
                 </div>
               </div>

@@ -1032,7 +1032,6 @@ const OrderManagement = () => {
                             {order.payment?.method === 'cod' ? 'COD' : 
                              order.payment?.method === 'card' ? 'Card' : 
                              order.payment?.method === 'mastercard' ? 'Mastercard' :
-                             order.payment?.method === 'googlepay' ? 'Google Pay' : 
                              'Bank'}
                           </span>
                         </div>

@@ -605,29 +605,6 @@ class OrderService {
     }
   }
 
-  async processGooglePay(paymentData) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/payments/process-google-pay`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(paymentData)
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Failed to process Google Pay payment');
-      }
-
-      return result.data;
-    } catch (error) {
-      console.error('Error processing Google Pay payment:', error);
-      throw error;
-    }
-  }
-
   async getOrder(orderId) {
     try {
       const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
