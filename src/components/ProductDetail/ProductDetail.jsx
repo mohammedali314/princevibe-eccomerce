@@ -836,18 +836,6 @@ const ProductDetail = () => {
                         <p>{product.longDescription}</p>
                       </div>
                     )}
-                    
-                    <div className="description-features">
-                      <h4>What Makes It Special</h4>
-                      <ul>
-                        {product.features.map((feature, index) => (
-                          <li key={index}>
-                            <CheckCircleIcon />
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
                   </div>
                 </div>
               )}
@@ -857,15 +845,44 @@ const ProductDetail = () => {
                   <div className="specs-content">
                     <h3>Technical Specifications</h3>
                     <div className="specs-grid">
-                      {product.specifications && Object.entries(product.specifications).map(([key, value]) => (
-                        <div key={key} className="spec-item">
-                          <CheckCircleIcon />
-                          <div className="spec-content">
-                            <span className="spec-label">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
-                            <span className="spec-value">{value}</span>
+                      {product.specifications && Object.entries(product.specifications).map(([key, value]) => {
+                        // Skip customFields as it's handled separately
+                        if (key === 'customFields') return null;
+                        
+                        // Skip if value is null, undefined, or empty string
+                        if (!value || (typeof value === 'string' && value.trim() === '')) return null;
+                        
+                        // Handle different value types
+                        let displayValue = value;
+                        if (Array.isArray(value)) {
+                          displayValue = value.join(', ');
+                        } else if (typeof value === 'object') {
+                          displayValue = JSON.stringify(value);
+                        }
+                        
+                        return (
+                          <div key={key} className="spec-item">
+                            <CheckCircleIcon />
+                            <div className="spec-content">
+                              <span className="spec-label">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
+                              <span className="spec-value">{displayValue}</span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
+                      
+                      {/* Render custom fields separately */}
+                      {product.specifications?.customFields && product.specifications.customFields.length > 0 && 
+                        product.specifications.customFields.map((field, index) => (
+                          <div key={`custom-${index}`} className="spec-item">
+                            <CheckCircleIcon />
+                            <div className="spec-content">
+                              <span className="spec-label">{field.key}</span>
+                              <span className="spec-value">{field.value}</span>
+                            </div>
+                          </div>
+                        ))
+                      }
                     </div>
                   </div>
                 </div>

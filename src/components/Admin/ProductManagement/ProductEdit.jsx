@@ -97,7 +97,7 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
           comparePrice: product.comparePrice || '',
           category: product.category || '',
           sku: product.sku || '',
-          quantity: product.quantity || '',
+          quantity: product.quantity !== undefined ? product.quantity : '',
           rating: product.rating || 0,
           reviews: product.reviews?.count || 0,
           inStock: product.inStock || false,
@@ -137,10 +137,25 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    
+    // Debug quantity changes specifically
+    if (name === 'quantity') {
+      console.log('Quantity change detected:', { name, value, type });
+    }
+    
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      };
+      
+      // Debug quantity in state
+      if (name === 'quantity') {
+        console.log('Quantity in state after change:', newData.quantity);
+      }
+      
+      return newData;
+    });
   };
 
   // Handle nested object changes
@@ -192,7 +207,7 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
   // Mark existing image for deletion
   const removeExistingImage = (imageId) => {
     setImagesToDelete(prev => [...prev, imageId]);
-    setExistingImages(prev => prev.filter(img => img.public_id !== imageId));
+    setExistingImages(prev => prev.filter(img => img.publicId !== imageId));
   };
 
   // Handle form submission
@@ -235,7 +250,7 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
       }
       
       // Add existing images to keep
-      const existingImageIds = existingImages.map(img => img.public_id);
+      const existingImageIds = existingImages.map(img => img.publicId);
       productFormData.append('existingImages', JSON.stringify(existingImageIds));
       
       // Debug FormData contents
@@ -490,11 +505,11 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
               <h3>Current Images</h3>
               <div className="image-grid">
                 {existingImages.map((image, index) => (
-                  <div key={image.public_id} className="image-preview">
+                  <div key={image.publicId} className="image-preview">
                     <img src={image.url} alt={`Product ${index + 1}`} />
                     <button
                       type="button"
-                      onClick={() => removeExistingImage(image.public_id)}
+                      onClick={() => removeExistingImage(image.publicId)}
                       className="remove-image"
                     >
                       <TrashIcon />

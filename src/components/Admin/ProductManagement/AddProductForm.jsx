@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AdminApi from '../../../services/adminApi';
+import AdminApiService from '../../../services/adminApi';
 import './AddProductForm.scss';
 
 // Custom SVG Icons
@@ -288,11 +288,12 @@ const AddProductForm = ({ isOpen, onClose, onProductAdded }) => {
   };
 
   const removeImage = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
-    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    console.log('Removing image at index:', index);
+    const newImageFiles = imageFiles.filter((_, i) => i !== index);
+    const newImages = formData.images.filter((_, i) => i !== index);
+    
+    setImageFiles(newImageFiles);
+    handleInputChange('images', newImages);
   };
 
   const setMainImage = (index) => {
@@ -351,82 +352,96 @@ const AddProductForm = ({ isOpen, onClose, onProductAdded }) => {
     
     setIsSubmitting(true);
     
+    // Convert quantity to a number
+    const processedData = {
+      ...formData,
+      quantity: Number(formData.quantity) || 0,
+      price: Number(formData.price) || 0,
+      originalPrice: Number(formData.originalPrice) || 0,
+      rating: Number(formData.rating) || 0,
+      reviews: Number(formData.reviews) || 0,
+      weight: Number(formData.weight) || 0,
+    };
+
     try {
-      // Create FormData for file upload
-      const submitData = new FormData();
+      // Prepare form data for file upload
+      const productFormData = new FormData();
       
-      // Add product data
-      const productData = {
-        ...formData,
-        features: formData.features.filter(f => f.trim()),
-        tags: formData.tags.filter(t => t.trim()),
-        seo: {
-          ...formData.seo,
-          keywords: formData.seo.keywords.filter(k => k.trim())
-        }
-      };
-      
-      delete productData.images; // Remove images from JSON data
-      
-      submitData.append('productData', JSON.stringify(productData));
-      
-      // Add image files
-      imageFiles.forEach((file, index) => {
-        submitData.append('images', file);
-        if (formData.images[index]?.isMain) {
-          submitData.append('mainImageIndex', index.toString());
+      // Add basic product data
+      Object.keys(processedData).forEach(key => {
+        if (key === 'features' || key === 'tags') {
+          // Filter out empty strings
+          const filteredArray = processedData[key].filter(item => item.trim() !== '');
+          productFormData.append(key, JSON.stringify(filteredArray));
+        } else if (key === 'specifications' || key === 'seo' || key === 'dimensions') {
+          productFormData.append(key, JSON.stringify(processedData[key]));
+        } else {
+          productFormData.append(key, processedData[key]);
         }
       });
       
-      await AdminApi.createProduct(submitData);
-      
-      // Reset form
-      setFormData({
-        name: '',
-        category: 'luxury',
-        price: '',
-        originalPrice: '',
-        description: '',
-        shortDescription: '',
-        rating: 0,
-        reviews: 0,
-        specifications: {
-          movement: '',
-          caseMaterial: '',
-          waterResistance: '',
-          crystal: '',
-          bezel: '',
-          bracelet: '',
-          display: '',
-          customFields: []
-        },
-        features: [''],
-        images: [],
-        badge: '',
-        quantity: '',
-        weight: '',
-        dimensions: {
-          length: '',
-          width: '',
-          height: '',
-          unit: 'mm'
-        },
-        seo: {
-          metaTitle: '',
-          metaDescription: '',
-          keywords: [''],
-          slug: ''
-        },
-        isFeatured: false,
-        tags: ['']
+      // Add images
+      imageFiles.forEach((image, index) => {
+        productFormData.append('images', image);
       });
-      setImageFiles([]);
-      setErrors({});
-      setCurrentStep(1);
       
-      onProductAdded && onProductAdded();
-      onClose();
+      // Set main image index if there are images
+      if (imageFiles.length > 0) {
+        productFormData.append('mainImageIndex', '0');
+      }
       
+      const result = await AdminApiService.createProduct(productFormData);
+      if (result.success) {
+        // Reset form
+        setFormData({
+          name: '',
+          category: 'luxury',
+          price: '',
+          originalPrice: '',
+          description: '',
+          shortDescription: '',
+          rating: 0,
+          reviews: 0,
+          specifications: {
+            movement: '',
+            caseMaterial: '',
+            waterResistance: '',
+            crystal: '',
+            bezel: '',
+            bracelet: '',
+            display: '',
+            customFields: []
+          },
+          features: [''],
+          images: [],
+          badge: '',
+          quantity: '',
+          weight: '',
+          dimensions: {
+            length: '',
+            width: '',
+            height: '',
+            unit: 'mm'
+          },
+          seo: {
+            metaTitle: '',
+            metaDescription: '',
+            keywords: [''],
+            slug: ''
+          },
+          isFeatured: false,
+          tags: ['']
+        });
+        setImageFiles([]);
+        setErrors({});
+        setCurrentStep(1);
+        
+        onProductAdded && onProductAdded();
+        onClose();
+      } else {
+        console.error('Error creating product:', result.error);
+        setErrors({ submit: 'Failed to create product. Please try again.' });
+      }
     } catch (error) {
       console.error('Error creating product:', error);
       setErrors({ submit: 'Failed to create product. Please try again.' });
