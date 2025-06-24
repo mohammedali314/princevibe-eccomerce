@@ -57,7 +57,7 @@ const Wishlist = ({ isOpen, onClose }) => {
     return `Rs.${price.toLocaleString()}.00`;
   };
 
-  // Helper function to check if item can be added to cart
+  // Helper function to check if item can be a`dded to cart
   const canAddToCart = (item) => {
     if (!item.inStock) return false;
     

@@ -8,7 +8,7 @@ import './About.scss';
 import Aboutimage from '../../../public/photos/LOGO.jpeg';
 import Arhamimage from '../../../public/photos/Arham.png';
 import Princeimage from '../../../public/photos/Profile.jpg';
-
+import Ghafarimage from '../../../public/photos/Ghafar.jpeg';
 const About = () => {
   const navigate = useNavigate();
   const heroRef = useRef(null);
@@ -35,6 +35,13 @@ const About = () => {
       role: 'Founder & Social Media Manager',
       image: Arhamimage,
       description: 'Expert horologist specializing in vintage and luxury pieces',
+      social: { linkedin: '#', youtube: 'https://www.youtube.com/channel/UCxAd5CkpTkule-P7rgdevjQ', tiktok: 'https://www.tiktok.com/@princevibe_official' }
+    },
+    {
+      name: 'Ghafar Ali',
+      role: 'Logistics & Customer Support',
+      image: Ghafarimage,
+      description: 'Logistics & Customer Support',
       social: { linkedin: '#', youtube: 'https://www.youtube.com/channel/UCxAd5CkpTkule-P7rgdevjQ', tiktok: 'https://www.tiktok.com/@princevibe_official' }
     },
   ];
