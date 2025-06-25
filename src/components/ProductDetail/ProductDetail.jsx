@@ -650,7 +650,7 @@ const ProductDetail = () => {
 
               {/* Price Section */}
               <div className="price-section">
-                <div className="current-price">{formatPrice(product.price)}</div>
+                <div className="current-price" style={{ color: 'red' }}>{formatPrice(product.price)}</div>
                 {product.originalPrice && (
                   <div className="original-price">{formatPrice(product.originalPrice)}</div>
                 )}
@@ -665,7 +665,7 @@ const ProductDetail = () => {
                     <div className={`stock-dot ${product.inStock && product.quantity > 0 ? 'in-stock' : 'out-stock'}`}></div>
                     <span>
                       {product.quantity > 0 
-                        ? `${product.quantity} pieces available` 
+                        ? `${product.quantity} Pieces Left` 
                         : 'Out of stock'
                       }
                     </span>
@@ -733,7 +733,7 @@ const ProductDetail = () => {
                 </button>
                 </div>
 
-                <div className="secondary-actions">
+                {/* <div className="secondary-actions">
                 <button 
                     className={`wishlist-btn ${isInWishlist(product.id) ? 'active loved' : ''} ${isTogglingWishlist ? 'loading' : ''}`}
                     onClick={handleWishlistToggle}
@@ -754,7 +754,7 @@ const ProductDetail = () => {
                     <ShareIcon />
                     <span>Share</span>
                 </button>
-                </div>
+                </div> */}
               </div>
 
                   {/* Features */}
