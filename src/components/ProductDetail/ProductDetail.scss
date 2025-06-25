@@ -872,8 +872,8 @@ $font-mono: 'JetBrains Mono', 'Fira Code', monospace;
               border-radius: 50%;
               
               &.in-stock {
-                background: #10b981;
-                box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+                background: #b91010;
+                box-shadow: 0 0 0 2px rgba(196, 211, 206, 0.2);
                 animation: pulse 2s ease-in-out infinite;
               }
 
@@ -2426,6 +2426,33 @@ $font-mono: 'JetBrains Mono', 'Fira Code', monospace;
       }
     }
   }
+
+  @media (max-width: 768px) {
+    .luxury-product-section {
+      .product-gallery {
+        .image-thumbnails {
+          justify-content: flex-start;
+          max-width: 100vw;
+          margin: 0 auto;
+          padding-left: 8px;
+          padding-right: 8px;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .luxury-product-section {
+      .product-gallery {
+        .image-thumbnails {
+          max-width: 100vw;
+          margin: 0 auto;
+          padding-left: 4px;
+          padding-right: 4px;
+        }
+      }
+    }
+  }
 }
 
 // =============================================================================
@@ -3165,6 +3192,169 @@ $font-mono: 'JetBrains Mono', 'Fira Code', monospace;
             }
           }
         }
+      }
+    }
+  }
+}
+
+.luxury-more-products-section {
+  background: #111;
+  padding: 2.5rem 0 2rem 0;
+  margin-top: 3rem;
+  // border-radius: 0 0 32px 32px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  .luxury-section-title {
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 2rem;
+    text-align: center;
+    text-shadow: 0 2px 16px #0008;
+    border-bottom: none;
+    position: relative;
+    &::after {
+      content: '';
+      display: block;
+      margin: 1.2rem auto 0 auto;
+      width: 80px;
+      height: 3px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #fff 0%, #444 100%);
+      opacity: 0.18;
+    }
+  }
+  .luxury-products-scroll {
+    display: flex;
+    gap: 2rem;
+    overflow-x: auto;
+    padding: 0 1.5rem 0.5rem 1.5rem;
+    scroll-behavior: smooth;
+    &::-webkit-scrollbar {
+      height: 6px;
+      background: #222;
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #444;
+      border-radius: 3px;
+    }
+  }
+  .luxury-product-card {
+    min-width: 300px;
+    max-width: 300px;
+    background: linear-gradient(120deg, #181818 80%, #222 100%);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px #000a, 0 2px 16px #fff1;
+    border: 2px solid #fff2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.2rem 1rem 1.5rem 1rem;
+    transition: box-shadow 0.2s, border 0.2s, transform 0.2s;
+    position: relative;
+    color: #fff;
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    &:hover {
+      box-shadow: 0 8px 32px #fff2, 0 2px 16px #0008;
+      border: 2px solid #fff;
+      transform: translateY(-6px) scale(1.04);
+    }
+    .luxury-product-image {
+      width: 100%;
+      height: 200px;
+      background: #181818;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+        transition: transform 0.3s;
+        box-shadow: 0 2px 12px #0006;
+        filter: grayscale(1) contrast(1.1);
+      }
+    }
+    .luxury-product-info {
+      width: 100%;
+      text-align: center;
+      .luxury-product-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 1px 8px #0006;
+        min-height: 2.5em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        letter-spacing: 0.5px;
+      }
+      .luxury-product-price {
+        font-size: 1.05rem;
+        color: #fff;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-family: 'Inter', Arial, sans-serif;
+        background: #222;
+        border-radius: 8px;
+        padding: 0.25rem 0.75rem;
+        display: inline-block;
+        box-shadow: 0 1px 6px #fff1;
+      }
+      .luxury-view-btn {
+        display: inline-block;
+        background: #fff;
+        color: #181818;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 0.7rem 2.2rem;
+        font-size: 1.05rem;
+        cursor: pointer;
+        box-shadow: 0 2px 8px #fff2;
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+        letter-spacing: 0.5px;
+        text-decoration: none;
+        &:hover {
+          background: #222;
+          color: #fff;
+          box-shadow: 0 4px 16px #fff2;
+          transform: translateY(-2px) scale(1.04);
+        }
+      }
+    }
+  }
+  .no-more-products {
+    color: #fff;
+    text-align: center;
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 2rem 0;
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 600px) {
+  .luxury-more-products-section {
+    .luxury-products-scroll {
+      gap: 1rem;
+      padding: 0 0.5rem 0.5rem 0.5rem;
+    }
+    .luxury-product-card {
+      margin-top: 1rem;
+      min-width: 250px;
+      max-width: 250px;
+      padding: 0.8rem 0.5rem 1rem 0.5rem;
+      .luxury-product-image {
+        height: 140px;
       }
     }
   }

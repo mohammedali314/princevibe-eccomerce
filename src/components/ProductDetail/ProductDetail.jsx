@@ -30,7 +30,7 @@ import { useWishlist } from '../../context/WishlistContext';
 import ApiService from '../../services/api';
 import { trackEvent } from '../../services/metaPixel';
 import './ProductDetail.scss';
-import ReviewSection from './ReviewSection';
+import Products from '../Products/Products';
 
 // Custom hook for throttled mouse movement
 const useThrottledMousePosition = (delay = 16) => {
@@ -199,6 +199,25 @@ const ProductDetail = () => {
       navigate('/');
     }
   }, [product, loading, error, navigate]);
+
+  // Fix: Always call hooks at the top level
+  const [moreProducts, setMoreProducts] = useState([]);
+  useEffect(() => {
+    const fetchMoreProducts = async () => {
+      try {
+        // TEMP: Remove featured filter for testing
+        const response = await ApiService.getProducts({ limit: 6 });
+        const transformed = ApiService.transformResponse(response);
+        console.log('Fetched more products:', transformed.data); // Debug log
+        // Exclude current product
+        const filtered = (transformed.data || []).filter(p => p.id !== id).slice(0, 6);
+        setMoreProducts(filtered);
+      } catch (err) {
+        setMoreProducts([]);
+      }
+    };
+    fetchMoreProducts();
+  }, [id]);
 
   // Show loading state
   if (loading) {
@@ -1059,7 +1078,29 @@ const ProductDetail = () => {
         ))}
       </div>
 
-      <ReviewSection productId={id} />
+      <div className="luxury-more-products-section">
+        <h2 className="luxury-section-title">More Luxury Products</h2>
+        <div className="luxury-products-scroll">
+          {moreProducts.length === 0 ? (
+            <div className="no-more-products" style={{ color: '#fff', textAlign: 'center', width: '100%' }}>
+              No luxury products found.
+            </div>
+          ) : (
+            moreProducts.map((p) => (
+              <div className="luxury-product-card" key={p.id}>
+                <div className="luxury-product-image">
+                  <img src={p.image || (p.images && p.images[0])} alt={p.name} />
+                </div>
+                <div className="luxury-product-info">
+                  <div className="luxury-product-name">{p.name}</div>
+                  <div className="luxury-product-price">Rs.{p.price?.toLocaleString()}.00</div>
+                  <Link to={`/product/${p.id}`} className="luxury-view-btn">View</Link>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 };
