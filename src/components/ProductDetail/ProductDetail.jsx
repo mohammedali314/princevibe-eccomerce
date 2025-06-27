@@ -663,7 +663,9 @@ const ProductDetail = () => {
                   {renderStars(product.rating)}
                   </div>
                   <span className="rating-score">{product.rating}</span>
-                  <span className="reviews-count">({product.reviews?.count || 0} reviews)</span>
+                 { console.log(product)}
+                  
+                  <span className="reviews-count">({product?.reviews || 0} reviews)</span>
                 </div>
               </div>
 
