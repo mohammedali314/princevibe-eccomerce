@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
 
 .products-section {
     margin-top: 0;
@@ -574,9 +575,12 @@
       .product-name {
         font-size: 1.375rem;
         font-weight: 700;
+        font-family: 'Inter', sans-serif;
         color: #1e293b;
         margin-bottom: 0.75rem;
         line-height: 1.3;
+        letter-spacing: 0;
+        text-shadow: none;
       }
 
       .product-rating {
@@ -584,30 +588,26 @@
         align-items: center;
         gap: 0.75rem;
         margin-bottom: 1rem;
-
         .stars {
           display: flex;
           gap: 0.25rem;
-
           svg {
             width: 16px;
             height: 16px;
-
             &.filled {
               color: #fbbf24;
-              fill: #fbbf24;
+              filter: none;
             }
-
             &.empty {
               color: #e5e7eb;
             }
           }
         }
-
         .rating-text {
           font-size: 0.875rem;
           color: #64748b;
           font-weight: 500;
+          margin-left: 0.3em;
         }
       }
 
@@ -631,8 +631,7 @@
     .product-pricing {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
+      gap: 0.75rem;
 
       .price-section {
         display: flex;
@@ -643,13 +642,15 @@
           font-size: 1.5rem;
           font-weight: 800;
           color: #1e293b;
+          letter-spacing: 0;
+          text-shadow: none;
         }
 
         .original-price {
           font-size: 1.125rem;
-          font-weight: 500;
           color: #94a3b8;
           text-decoration: line-through;
+          margin-left: 0.2em;
         }
       }
 
@@ -986,33 +987,24 @@
     }
 
     .category-filter {
-      justify-content: center;
-      overflow-x: auto;
-      padding: 1rem 1.5rem 1rem;
-      -webkit-overflow-scrolling: touch;
-      gap: 1rem;
-      min-height: 90px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem 1rem;
+      justify-items: center;
       align-items: center;
+      padding: 1rem 1.5rem 1rem;
+      min-height: 90px;
 
       .filter-btn {
-        flex-shrink: 0;
-        padding: 1rem;
-        border-radius: 50%;
-        width: 64px;
-        height: 64px;
-        display: flex;
-        align-items: center;
+        width: 100%;
+        max-width: 220px;
+        margin: 0;
         justify-content: center;
-        margin: 0 2px;
-
-        span {
-          display: none;
-        }
-
-        svg {
-          width: 24px;
-          height: 24px;
-        }
+      }
+      // Center the last button if odd number of buttons
+      .filter-btn:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+        justify-self: center;
       }
     }
 
@@ -1043,28 +1035,32 @@
       }
       .product-info {
         .product-name {
-          font-size: 0.95rem;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          display: block;
+          font-size: 1.1rem;
+          font-weight: 800;
+          font-family: 'Playfair Display', 'Montserrat', 'Inter', Arial, sans-serif;
+          color: #18181b;
+          margin-bottom: 0.4rem;
+          letter-spacing: -0.01em;
+          text-shadow: 0 1px 6px #f8fafc, 0 0px 2px #FFD70022;
         }
         .product-rating {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
+          gap: 0.4rem;
+          margin-bottom: 0.5rem;
           .stars {
-            display: flex;
-            align-items: center;
+            gap: 0.1rem;
+            svg {
+              width: 13px;
+              height: 13px;
+              &.filled {
+                color: #FFD700;
+                filter: drop-shadow(0 0 2px #FFD70055);
+              }
+            }
           }
-          .reviews-count {
-            display: block !important;
+          .rating-text {
             font-size: 0.75rem;
-            color: #888;
-            margin-top: 2px;
-            margin-bottom: 0 !important;
-            text-align: right;
-            align-self: flex-end;
+            color: #a3a3a3;
+            font-weight: 500;
           }
         }
       }
@@ -1076,13 +1072,15 @@
           flex-direction: column;
           align-items: flex-start;
           .current-price {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #1e293b;
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #18181b;
+            letter-spacing: -0.01em;
+            text-shadow: 0 1px 8px #f8fafc, 0 0px 2px #FFD70022;
           }
           .original-price {
-            font-size: 0.75rem;
-            color: #94a3b8;
+            font-size: 0.8rem;
+            color: #bdbdbd;
             text-decoration: line-through;
           }
         }

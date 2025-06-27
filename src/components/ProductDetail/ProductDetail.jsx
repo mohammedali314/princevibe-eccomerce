@@ -31,6 +31,7 @@ import ApiService from '../../services/api';
 import { trackEvent } from '../../services/metaPixel';
 import './ProductDetail.scss';
 import Products from '../Products/Products';
+import CountdownTimer from './CountdownTimer';
 
 // Custom hook for throttled mouse movement
 const useThrottledMousePosition = (delay = 16) => {
@@ -668,6 +669,9 @@ const ProductDetail = () => {
                   <span className="reviews-count">({product?.reviews || 0} reviews)</span>
                 </div>
               </div>
+
+              {/* Luxury Countdown Timer Bar - moved here */}
+              <CountdownTimer duration={{ days: 3, hours: 0, minutes: 0, seconds: 0 }} />
 
               {/* Price Section */}
               <div className="price-section">

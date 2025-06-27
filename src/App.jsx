@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -55,6 +55,54 @@ const ProtectedUserRoute = ({ children }) => {
   }
   
   return children;
+};
+
+// Order Success Page
+const OrderSuccessPage = () => {
+  const location = useLocation();
+  const order = location.state?.order;
+
+  return (
+    <div className="order-success">
+      <div className="success-container">
+        <div className="success-header">
+          <div className="success-icon">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2l4-4"/></svg>
+          </div>
+          <h1>Order Placed Successfully!</h1>
+          <p>Thank you for your purchase. Your order has been received and is being processed.</p>
+        </div>
+        {order && (
+          <div className="order-details">
+            <div className="order-info-card">
+              <h3>Order Information</h3>
+              <div className="order-info-grid">
+                <div className="info-item">
+                  <span className="label">Order Number:</span>
+                  <span className="value">{order.orderNumber}</span>
+                </div>
+                <div className="info-item">
+                  <span className="label">Total Amount:</span>
+                  <span className="value">PKR {order.summary?.total?.toLocaleString()}</span>
+                </div>
+                <div className="info-item">
+                  <span className="label">Payment Method:</span>
+                  <span className="value">Cash on Delivery</span>
+                </div>
+                <div className="info-item">
+                  <span className="label">Estimated Delivery:</span>
+                  <span className="value">{order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleDateString('en-PK') : '3-5 business days'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="success-actions">
+          <a href="/" className="primary-btn">Continue Shopping</a>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 // Main App Content Component (inside Router)
@@ -304,6 +352,18 @@ const AppContent = () => {
                 <>
                   <Navbar onLogoClick={triggerLoading} />
                   <ResetPassword />
+                  <Footer onLogoClick={triggerLoading} />
+                </>
+              } 
+            />
+
+            {/* Order Success Route */}
+            <Route 
+              path="/order-success" 
+              element={
+                <>
+                  <Navbar onLogoClick={triggerLoading} />
+                  <OrderSuccessPage />
                   <Footer onLogoClick={triggerLoading} />
                 </>
               } 

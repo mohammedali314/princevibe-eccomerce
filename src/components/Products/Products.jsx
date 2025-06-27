@@ -250,9 +250,9 @@ const Products = () => {
   };
 
   const categories = [
-    { id: 'all', name: 'All Products', icon: SparklesIcon },
+    { id: 'all', name: 'All', icon: SparklesIcon },
     { id: 'luxury', name: 'Luxury', icon: StarIcon },
-    { id: 'smart', name: 'Smart Watches', icon: EyeIcon },
+    { id: 'smart', name: 'Smart', icon: EyeIcon },
     { id: 'sport', name: 'Sport', icon: ArrowRightIcon },
     { id: 'classic', name: 'Classic', icon: ClockIcon }
   ];

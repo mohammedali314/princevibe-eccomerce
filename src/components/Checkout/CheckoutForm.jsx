@@ -21,6 +21,7 @@ import {
   GiftIcon
 } from '@heroicons/react/24/outline';
 import './CheckoutForm.scss';
+import { useNavigate } from 'react-router-dom';
 
 const CheckoutForm = ({ onOrderComplete }) => {
   const { cart, cartTotal, clearCart } = useCart();
@@ -55,9 +56,11 @@ const CheckoutForm = ({ onOrderComplete }) => {
     specialInstructions: '',
     
     // Terms
-    agreeToTerms: false,
+    agreeToTerms: true,
     subscribeNewsletter: false
   });
+
+  const navigate = useNavigate();
 
   // Scroll to top function
   const scrollToTop = () => {
@@ -278,6 +281,9 @@ const CheckoutForm = ({ onOrderComplete }) => {
         if (onOrderComplete) {
           onOrderComplete(result.order);
         }
+        // Change the URL for better tracking
+        navigate('/order-success', { state: { order: result.order } });
+        return;
       } else {
         setErrors({ general: result.error || 'Failed to place order. Please try again.' });
       }

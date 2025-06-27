@@ -1,0 +1,74 @@
+.luxury-timer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: #000;
+  color: #fff;
+  border-radius: 0;
+  padding: 0.3rem 0.8rem;
+  font-family: 'Playfair Display', 'Inter', 'Segoe UI', Arial, serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  box-shadow: none;
+  margin: 10px 0 10px 0;
+  gap: 1.1rem;
+  letter-spacing: 0.01em;
+  min-height: 36px;
+
+  .timer-message {
+    margin-right: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    font-size: 1.05rem;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .timer-segment {
+    display: flex;
+    align-items: baseline;
+    gap: 0.12em;
+    background: transparent;
+    border-radius: 0;
+    padding: 0 0.4em;
+    margin-right: 0.2em;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1.08em;
+    color: #fff;
+    box-shadow: none;
+    min-width: 3.5ch;
+    justify-content: center;
+  }
+  .timer-value {
+    font-size: 1.13em;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.01em;
+    font-family: 'Roboto Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+    min-width: 2ch;
+    display: inline-block;
+    text-align: center;
+  }
+  .timer-label {
+    font-size: 0.82em;
+    font-weight: 400;
+    color: #bcbcbc;
+    margin-left: 0.08em;
+    font-family: inherit;
+  }
+
+  @media (max-width: 600px) {
+    flex-wrap: wrap;
+    font-size: 0.95rem;
+    padding: 0.2rem 0.3rem;
+    .timer-message {
+      margin-bottom: 0.3rem;
+      font-size: 0.98rem;
+    }
+    .timer-segment {
+      font-size: 0.98em;
+      padding: 0 0.2em;
+      margin-right: 0.1em;
+    }
+  }
+} 
