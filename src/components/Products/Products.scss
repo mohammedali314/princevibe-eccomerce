@@ -973,6 +973,8 @@
 
     .section-header {
       margin-bottom: 2.5rem;
+      margin-top: 40px;
+
 
       .section-title {
         font-size: 2rem;
@@ -1159,7 +1161,7 @@
         .product-rating {
           display: flex;
           flex-direction: column;
-          align-items: center;
+          align-items:center;
           .reviews-count {
             display: block !important;
             font-size: 0.75rem;
