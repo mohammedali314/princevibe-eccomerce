@@ -854,25 +854,11 @@ const ProductDetail = () => {
                 <div className="tab-pane description">
                   <div className="description-content">
                     <h3>About This Timepiece</h3>
-                    {(() => {
-                      if (!product.description) return null;
-                      // Split on | or ✔, keep the first part as intro if it's not a bullet
-                      const parts = product.description.split(/\s*[|✔]\s*/).map(s => s.trim()).filter(Boolean);
-                      if (parts.length <= 1) {
-                        return <p>{product.description}</p>;
-                      }
-                      // If the first part is a long intro, show as paragraph, rest as bullets
-                      return (
-                        <>
-                          <p>{parts[0]}</p>
-                          <ul className="description-bullets">
-                            {parts.slice(1).map((point, idx) => (
-                              <li key={idx}>{point}</li>
-                            ))}
-                          </ul>
-                        </>
-                      );
-                    })()}
+                    <ul className="description-bullets">
+                      {product.description && product.description.split(/\||\n/).map((point, idx) => (
+                        <li key={idx}>{point.trim()}</li>
+                      ))}
+                    </ul>
                     
                     {product.longDescription && (
                       <div className="extended-description">
