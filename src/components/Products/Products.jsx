@@ -471,11 +471,8 @@ const Products = () => {
                     <h3 className="product-name">{product.name}</h3>
                     <div className="product-rating">
                       <div className="stars">
-                        {[...Array(5)].map((_, i) => (
-                          <StarIcon 
-                            key={i} 
-                            className={i < Math.floor(product.rating) ? 'filled' : 'empty'} 
-                          />
+                        {[...Array(Math.round(product.rating))].map((_, i) => (
+                          <StarSolid key={i} className="filled" />
                         ))}
                       </div>
                       <span className="rating-text">
