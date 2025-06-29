@@ -12,12 +12,36 @@
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
     
-    // Add error handling and logging
+    // Enhanced Meta Pixel with comprehensive logging
     try {
-      fbq('init', '4037339863171134');
-      console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ Pixel initialized successfully');
+      // Initialize pixel with new ID
+      fbq('init', '1047507600841338');
+      console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ Pixel initialized successfully with ID: 1047507600841338');
+      
+      // Track PageView with logging
       fbq('track', 'PageView');
       console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ PageView tracked');
+      
+      // Override fbq function to add logging for all events
+      const originalFbq = window.fbq;
+      window.fbq = function() {
+        const args = Array.from(arguments);
+        const eventName = args[1];
+        const eventData = args[2];
+        
+        // Log the event being tracked
+        if (eventName && eventName !== 'init') {
+          console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', `📊 Tracking event: ${eventName}`, eventData || '');
+        }
+        
+        // Call the original function
+        return originalFbq.apply(this, arguments);
+      };
+      
+      // Copy properties from original function
+      Object.setPrototypeOf(window.fbq, Object.getPrototypeOf(originalFbq));
+      Object.assign(window.fbq, originalFbq);
+      
     } catch (error) {
       console.error('%c[MetaPixel]', 'background: #FF0000; color: white; padding: 2px 5px; border-radius: 3px;', '❌ Error initializing pixel:', error);
     }
@@ -233,7 +257,7 @@
   <body>
     <!-- Meta Pixel NoScript -->
     <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=4037339863171134&ev=PageView&noscript=1"
+    src="https://www.facebook.com/tr?id=1047507600841338&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel NoScript -->
     <div id="root"></div>

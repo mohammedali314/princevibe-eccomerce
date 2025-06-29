@@ -62,6 +62,34 @@ const OrderSuccessPage = () => {
   const location = useLocation();
   const order = location.state?.order;
 
+  useEffect(() => {
+    if (!order) return;
+    // Prepare order data for tracking
+    const orderData = {
+      email: order.customer?.email || 'customer@example.com',
+      value: order.summary?.total || order.payment?.amount || 0,
+      currency: 'PKR',
+      product_id: order.items?.[0]?.id || order.items?.[0]?.productId || order.items?.[0]?._id || 'UNKNOWN',
+      product_name: order.items?.[0]?.name || 'Product'
+    };
+    // Server-side tracking (CAPI)
+    fetch('http://localhost:5000/api/purchase', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    });
+    // Browser-side tracking (Pixel)
+    if (window.fbq) {
+      window.fbq('track', 'Purchase', {
+        value: Number(orderData.value),
+        currency: 'PKR',
+        content_ids: [orderData.product_id],
+        content_name: orderData.product_name,
+        content_type: 'product'
+      });
+    }
+  }, [order]);
+
   return (
     <div className="order-success">
       <div className="success-container">

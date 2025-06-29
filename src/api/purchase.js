@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
-const PIXEL_ID = '4037339863171134';
-const ACCESS_TOKEN = 'EAARLuyywfgcBO2YGEMwbwyjNq7LwSAMrSpAQ6tTMwr4rje0f0QPtlbEiOACPGdHC7hyvabnZBiR6c1cUFiBtYH5In4TE9t1x5GJDnIiNRV4uAlfCrhMelIf5z2tFEZCnCmBb5XPez70q6bvtWPO8JxXt5pNJsu14x0jnOo3AvgN0OGjP2iw3eWsrZCSKM3W7wZDZD';
+const PIXEL_ID = '1047507600841338';
+const ACCESS_TOKEN = 'EAARLuyywfgcBOxNm9LY2jCCOQ9hc5zk0oFij04dPQTmcrldagpNNg4uz6co8EjnR6RZCz4BvkqMKBp31aJGdzH1EWCZCVqSUyqTQdWDyiwLGMtVjSqhDTjZCErzXWq1GggJD6YtPLGJBu9KzgUuEllZBZAgSbooNUFZAcHPAZBQFcLTE7bQS6RSANpWJEvg7vtESQZDZD';
 
 export default async function handler(req, res) {
   console.log('📥 Received purchase tracking request:', req.body);
