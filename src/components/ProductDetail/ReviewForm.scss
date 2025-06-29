@@ -1,0 +1,197 @@
+.luxury-review-form {
+  background: #fff;
+  border-radius: 18px;
+  border: 1.5px solid #000;
+  box-shadow: 0 12px 48px rgba(30,32,38,0.22);
+  padding: 2.8rem 2.2rem 2.2rem 2.2rem;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.1rem;
+  font-family: 'Inter', Arial, sans-serif;
+  position: relative;
+
+  .form-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.1rem;
+    font-weight: 900;
+    color: #18181b;
+    letter-spacing: 0.01em;
+    text-align: center;
+    margin-bottom: 0.2rem;
+    &::after {
+      content: '';
+      display: block;
+      margin: 0.7rem auto 0 auto;
+      width: 60px;
+      height: 3px;
+      border-radius: 2px;
+      background: #FFD700;
+      opacity: 0.7;
+    }
+  }
+
+  .star-rating-input {
+    display: flex;
+    justify-content: center;
+    gap: 0.3em;
+    font-size: 2.5rem;
+    margin: 0.2rem 0 0.7rem 0;
+    .star {
+      cursor: pointer;
+      color: #e5e7eb;
+      transition: color 0.2s, transform 0.2s;
+      &.filled {
+        color: #FFD700;
+        filter: drop-shadow(0 0 8px #FFD70088);
+        transform: scale(1.18);
+      }
+      &:hover {
+        color: #FFD700;
+        transform: scale(1.22) rotate(-4deg);
+      }
+    }
+  }
+
+  .review-name-input, .review-textarea {
+    width: 100%;
+    background: transparent;
+    color: #18181b;
+    border: none;
+    border-bottom: 2px solid #ececec;
+    border-radius: 0;
+    padding: 0.7rem 0;
+    font-size: 1.15rem;
+    font-family: inherit;
+    margin-bottom: 0.2rem;
+    box-shadow: none;
+    transition: border-color 0.2s;
+    &:focus {
+      border-bottom: 2px solid #FFD700;
+      outline: none;
+      background: transparent;
+    }
+    &::placeholder {
+      color: #bbb;
+      font-weight: 400;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+  }
+  .review-textarea {
+    min-height: 90px;
+    resize: vertical;
+  }
+
+  .image-upload-section {
+    margin-bottom: 0.2rem;
+    .image-upload-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      border: 2px dashed rgb(0, 28, 128);
+      border-radius: 10px;
+      padding: 0.7em 0;
+      cursor: pointer;
+      color: #000;
+      font-weight: 700;
+      font-size: 1.08rem;
+      transition: background 0.2s, border 0.2s;
+      &:hover {
+        background: #fffbe6;
+        border-color: #18181b;
+        color: #18181b;
+      }
+      .upload-icon {
+        margin-right: 0.6em;
+        font-size: 1.3em;
+      }
+    }
+    .image-preview-list {
+      display: flex;
+      gap: 0.7em;
+      margin-top: 0.5em;
+      flex-wrap: wrap;
+      .image-preview {
+        position: relative;
+        width: 54px;
+        height: 54px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px #FFD70022;
+        border: 1.5px solid #FFD70044;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .remove-img-btn {
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          background: #fff;
+          color: #f87171;
+          border: 1.5px solid #f87171;
+          border-radius: 50%;
+          font-size: 1.1rem;
+          width: 22px;
+          height: 22px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: 0 1px 4px #FFD70022;
+          transition: background 0.2s, color 0.2s;
+          &:hover {
+            background: #f87171;
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+
+  .review-error-msg, .review-success-msg {
+    font-size: 1.08rem;
+    margin-bottom: 0.2rem;
+    text-align: center;
+  }
+  .review-error-msg { color: #f87171; }
+  .review-success-msg { color: #10b981; }
+
+  .submit-review-btn {
+    background: #fff;
+    color: #000;
+    font-weight: 900;
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 1em 2.5em;
+    font-size: 1.18rem;
+    cursor: pointer;
+    margin-top: 0.7em;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.5px;
+    font-family: 'Inter', Arial, sans-serif;
+    &:hover {
+      background: black;
+      color: #fff;
+    }
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+
+  @media (max-width: 600px) {
+    padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+    .form-title {
+      font-size: 1.25rem;
+    }
+    .submit-review-btn {
+      font-size: 1rem;
+      padding: 0.8em 1.2em;
+    }
+  }
+} 

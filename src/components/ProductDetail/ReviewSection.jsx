@@ -56,24 +56,22 @@ const ReviewSection = ({ productId }) => {
     }
 
     try {
-      const reviewData = {
-        productId,
-        name,
-        rating,
-        text,
-        date: new Date().toISOString()
-      };
+      // Create FormData for multipart/form-data submission
+      const formData = new FormData();
+      formData.append('productId', productId);
+      formData.append('name', name);
+      formData.append('rating', rating);
+      formData.append('text', text);
 
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/reviews`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reviewData)
+        body: formData
+        // Don't set Content-Type header - let the browser set it automatically for FormData
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit review');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit review');
       }
 
       await fetchReviews(); // Refresh reviews after submission
@@ -84,7 +82,7 @@ const ReviewSection = ({ productId }) => {
       setSuccess('Thank you for your review!');
     } catch (error) {
       console.error('Error submitting review:', error);
-      setError('Failed to submit review. Please try again later.');
+      setError(error.message || 'Failed to submit review. Please try again later.');
     }
   };
 

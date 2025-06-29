@@ -32,6 +32,7 @@ import { trackEvent } from '../../services/metaPixel';
 import './ProductDetail.scss';
 import Products from '../Products/Products';
 import CountdownTimer from './CountdownTimer';
+import CompactReviewSection from './CompactReviewSection';
 
 // Custom hook for throttled mouse movement
 const useThrottledMousePosition = (delay = 16) => {
@@ -823,6 +824,11 @@ const ProductDetail = () => {
               </div>
             </div>
           </div>
+
+      {/* Move review section here, above the tabs */}
+      <div className="container">
+        <CompactReviewSection productId={product.id} reviewCount={product.reviews} />
+      </div>
 
       {/* Product Details Tabs */}
       <div className="luxury-tabs-section">
