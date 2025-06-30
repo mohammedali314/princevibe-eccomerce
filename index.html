@@ -12,36 +12,48 @@
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
     
-    // Enhanced Meta Pixel with comprehensive logging
+    // Enhanced Meta Pixel with conflict prevention
     try {
-      // Initialize pixel with new ID
-      fbq('init', '1047507600841338');
-      console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ Pixel initialized successfully with ID: 1047507600841338');
-      
-      // Track PageView with logging
-      fbq('track', 'PageView');
-      console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ PageView tracked');
-      
-      // Override fbq function to add logging for all events
-      const originalFbq = window.fbq;
-      window.fbq = function() {
-        const args = Array.from(arguments);
-        const eventName = args[1];
-        const eventData = args[2];
+      // Wait for fbq to be available
+      if (typeof fbq !== 'undefined') {
+        // Initialize pixel with new ID
+        fbq('init', '1047507600841338');
+        console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ Pixel initialized successfully with ID: 1047507600841338');
         
-        // Log the event being tracked
-        if (eventName && eventName !== 'init') {
-          console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', `📊 Tracking event: ${eventName}`, eventData || '');
-        }
+        // Track PageView with logging
+        fbq('track', 'PageView');
+        console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ PageView tracked');
         
-        // Call the original function
-        return originalFbq.apply(this, arguments);
-      };
-      
-      // Copy properties from original function
-      Object.setPrototypeOf(window.fbq, Object.getPrototypeOf(originalFbq));
-      Object.assign(window.fbq, originalFbq);
-      
+        // Override fbq function to add logging for all events
+        const originalFbq = window.fbq;
+        window.fbq = function() {
+          const args = Array.from(arguments);
+          const eventName = args[1];
+          const eventData = args[2];
+          
+          // Log the event being tracked
+          if (eventName && eventName !== 'init') {
+            console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', `📊 Tracking event: ${eventName}`, eventData || '');
+          }
+          
+          // Call the original function
+          return originalFbq.apply(this, arguments);
+        };
+        
+        // Copy properties from original function
+        Object.setPrototypeOf(window.fbq, Object.getPrototypeOf(originalFbq));
+        Object.assign(window.fbq, originalFbq);
+      } else {
+        console.warn('%c[MetaPixel]', 'background: #FFA500; color: white; padding: 2px 5px; border-radius: 3px;', '⚠️ fbq not available yet, will retry...');
+        // Retry after a short delay
+        setTimeout(() => {
+          if (typeof fbq !== 'undefined') {
+            fbq('init', '1047507600841338');
+            fbq('track', 'PageView');
+            console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ Pixel initialized on retry');
+          }
+        }, 1000);
+      }
     } catch (error) {
       console.error('%c[MetaPixel]', 'background: #FF0000; color: white; padding: 2px 5px; border-radius: 3px;', '❌ Error initializing pixel:', error);
     }
@@ -250,9 +262,19 @@
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "b3bd8a98-025e-4de1-b49d-6d22266b12d4",
+          safari_web_id: "web.onesignal.auto.115f8fcb-d4e8-44f7-85e0-0f5ff0e5093f",
+          notifyButton: {
+            enable: true,
+          },
+        });
+      });
+    </script>
   </head>
   <body>
     <!-- Meta Pixel NoScript -->
