@@ -2034,4 +2034,14 @@
       font-size: 0.875rem;
     }
   }
+}
+
+.nav-link:focus, .nav-link:focus-visible,
+.action-btn:focus, .action-btn:focus-visible,
+.mobile-menu-btn:focus, .mobile-menu-btn:focus-visible {
+  outline: 2px solid #6C63FF; // Brand accent color
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #e0e7ff;
+  border-radius: 6px;
+  z-index: 2;
 } 

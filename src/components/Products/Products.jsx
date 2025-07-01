@@ -444,7 +444,7 @@ const Products = () => {
                   <div className="product-image">
                     <img src={product.image} alt={product.name} loading="lazy" onError={handleImageError} />
                     <div className="image-overlay">
-                      <button className="quick-view-btn">
+                      <button className="quick-view-btn" aria-label={`Quick view details for ${product.name}`}>
                         <EyeIcon />
                         <span>View Details</span>
                       </button>
@@ -460,6 +460,7 @@ const Products = () => {
                     className={`wishlist-btn ${isInWishlist(product.id) ? 'active loved' : ''} ${loadingItems.wishlist.has(product.id) ? 'loading' : ''}`}
                     onClick={(e) => handleWishlistToggle(product, e)}
                     disabled={loadingItems.wishlist.has(product.id)}
+                    aria-label={isInWishlist(product.id) ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
                   >
                     {isInWishlist(product.id) ? <HeartSolid /> : <HeartIcon />}
                 </button>
@@ -498,6 +499,13 @@ const Products = () => {
                       className={`add-to-cart-btn ${loadingItems.cart.has(product.id) ? 'loading' : ''} ${isItemInCart(product.id) ? 'in-cart' : ''}`}
                       onClick={(e) => handleAddToCart(product, e)}
                       disabled={!product.inStock || isItemInCart(product.id) || loadingItems.cart.has(product.id)}
+                      aria-label={
+                        !product.inStock
+                          ? `${product.name} is out of stock`
+                          : isItemInCart(product.id)
+                            ? `${product.name} is already in your cart`
+                            : `Add ${product.name} to cart`
+                      }
                   >
                     <ShoppingBagIcon />
                       <span>

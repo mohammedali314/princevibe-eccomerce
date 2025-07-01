@@ -74,12 +74,31 @@
       cursor: pointer;
       transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
       box-shadow: 0 1px 4px #FFD70011;
+      height: 44px;
+      min-width: 120px;
       &:hover {
         background: #18181b;
         color: #fff;
         border-color: #FFD700;
         box-shadow: 0 2px 8px #FFD70022;
       }
+      @media (max-width: 480px) {
+        padding: 0.25em 0.7em;
+        font-size: 0.92rem;
+        border-radius: 6px;
+        height: 34px;
+        min-width: 80px;
+        margin-right: 0.5rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    @media (max-width: 480px) {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
     }
   }
 

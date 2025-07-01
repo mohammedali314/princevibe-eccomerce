@@ -95,6 +95,18 @@ const Hero = () => {
   const handleVideoError = (index) => {
     // If video fails to load, we'll show the fallback image
     console.warn(`Video failed to load for slide ${index}, using fallback image`);
+    
+    // Hide the video and show the fallback image
+    const video = videoRefs.current[index];
+    const fallbackImage = document.querySelector(`.hero-slide:nth-child(${index + 1}) .fallback-image`);
+    
+    if (video) {
+      video.style.display = 'none';
+    }
+    
+    if (fallbackImage) {
+      fallbackImage.style.display = 'block';
+    }
   };
 
   const handleImageError = (e, slide) => {
@@ -111,41 +123,25 @@ const Hero = () => {
             className={`hero-slide ${index === currentSlide ? 'active' : ''}`}
           >
             {slide.video ? (
-              <>
-                <video
-                  className="hero-video"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
-                  ref={(el) => (videoRefs.current[index] = el)}
-                  onError={() => handleVideoError(index)}
-                  onLoadedData={() => {
-                    // Video is ready to play
-                    if (index === currentSlide && videoRefs.current[index]) {
-                      videoRefs.current[index].play().catch(console.error);
-                    }
-                  }}
-                >
-                  <source src={slide.video} type={slide.video.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
-                  Your browser does not support the video tag.
-                </video>
-                <img
-                  className="hero-image fallback-image"
-                  src={slide.fallbackImage}
-                  alt={slide.title}
-                  style={{ display: 'none' }}
-                  onLoad={(e) => {
-                    // Show fallback image if video doesn't load
-                    const video = videoRefs.current[index];
-                    if (video && video.error) {
-                      e.target.style.display = 'block';
-                      video.style.display = 'none';
-                    }
-                  }}
-                />
-              </>
+              <video
+                className="hero-video"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                ref={(el) => (videoRefs.current[index] = el)}
+                onError={() => handleVideoError(index)}
+                onLoadedData={() => {
+                  // Video is ready to play
+                  if (index === currentSlide && videoRefs.current[index]) {
+                    videoRefs.current[index].play().catch(console.error);
+                  }
+                }}
+              >
+                <source src={slide.video} type={slide.video.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
+                Your browser does not support the video tag.
+              </video>
             ) : (
               <img
                 className="hero-image"

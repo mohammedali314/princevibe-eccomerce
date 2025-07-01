@@ -14,27 +14,6 @@ const pad = (num) => String(num).padStart(2, '0');
 
 const CountdownTimer = ({
   duration = { days: 3, hours: 0, minutes: 0, seconds: 0 },
-  message = (
-    <>
-      <span style={{ fontWeight: 700, color: '#fff' }}>
-        <span role="img" aria-label="clock">⏰</span>
-        <span style={{ 
-          color: '#FFD700', 
-          fontWeight: 800, 
-          marginLeft: 8, 
-          fontFamily: `'Playfair Display', 'Montserrat', 'Inter', Arial, sans-serif`, 
-          fontSize: '1.18em', 
-          letterSpacing: '0.01em', 
-          display: 'inline-block', 
-          verticalAlign: 'middle',
-          textShadow: '0 1px 8px #000, 0 0px 2px #FFD700'
-        }}>
-          Don’t Miss Out!
-        </span>
-        <span style={{ color: '#fff', fontWeight: 700, marginLeft: 8 }}>- Sale Ends Soon!</span>
-      </span>
-    </>
-  )
 }) => {
   const initialSeconds = getDurationInSeconds(duration);
   const [secondsLeft, setSecondsLeft] = useState(initialSeconds);
@@ -59,12 +38,35 @@ const CountdownTimer = ({
   const seconds = secondsLeft % 60;
 
   return (
-    <div className="luxury-timer-bar">
-      <span className="timer-message">{message}</span>
-      <span className="timer-segment"><span className="timer-value">{pad(days)}</span><span className="timer-label">d</span></span>
-      <span className="timer-segment"><span className="timer-value">{pad(hours)}</span><span className="timer-label">h</span></span>
-      <span className="timer-segment"><span className="timer-value">{pad(minutes)}</span><span className="timer-label">m</span></span>
-      <span className="timer-segment"><span className="timer-value">{pad(seconds)}</span><span className="timer-label">s</span></span>
+    <div className="countdown-offer-banner">
+      <div className="offer-headline">Limited Time Offer</div>
+      <div className="offer-subheadline">
+        Order within <b>10 minutes</b> to get <span style={{color: 'yellow'}}>Free Shipping!</span>
+      </div>
+      <div className="countdown-timer-row">
+        <div className="countdown-segment">
+          <span className="countdown-value">{pad(days)}</span>
+          <span className="countdown-label">DAYS</span>
+        </div>
+        <span className="countdown-separator">:</span>
+        <div className="countdown-segment">
+          <span className="countdown-value">{pad(hours)}</span>
+          <span className="countdown-label">HOURS</span>
+        </div>
+        <span className="countdown-separator">:</span>
+        <div className="countdown-segment">
+          <span className="countdown-value">{pad(minutes)}</span>
+          <span className="countdown-label">MINUTES</span>
+        </div>
+        <span className="countdown-separator">:</span>
+        <div className="countdown-segment">
+          <span className="countdown-value">{pad(seconds)}</span>
+          <span className="countdown-label">SECONDS</span>
+        </div>
+      </div>
+      <div className="offer-badge">
+        <span role="img" aria-label="truck">🚚</span> FREE SHIPPING
+      </div>
     </div>
   );
 };

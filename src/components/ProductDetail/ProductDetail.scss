@@ -1040,8 +1040,8 @@ $font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
             // Buy Now Button - Black & White Luxury Design
             &.buy-now {
-              background: linear-gradient(135deg, $black 0%, $gray-800 50%, $gray-700 100%);
-              color: $white;
+              background: black;         
+             color: $white;
               position: relative;
               font-weight: 700;
               font-size: 1.125rem;
@@ -3356,6 +3356,37 @@ $font-mono: 'JetBrains Mono', 'Fira Code', monospace;
       .luxury-product-image {
         height: 140px;
       }
+    }
+  }
+}
+
+.features-timer-row {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+  margin-bottom: 2.5rem;
+
+  // Countdown timer should not stretch too wide
+  > .countdown-offer-banner {
+    flex: 0 0 340px;
+    max-width: 340px;
+    min-width: 260px;
+    margin-bottom: 0;
+  }
+
+  // Key features should take remaining space
+  > .luxury-features {
+    flex: 1 1 0%;
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 1.5rem;
+    > .countdown-offer-banner,
+    > .luxury-features {
+      max-width: 100%;
+      min-width: 0;
     }
   }
 }

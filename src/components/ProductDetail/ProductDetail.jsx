@@ -649,18 +649,20 @@ const ProductDetail = () => {
                 <PhotoIcon />
                 <span>{selectedImage + 1} / {product.images.length}</span>
               </div>
+
+              {/* Countdown Timer moved here */}
+              <div className="countdown-timer-desktop">
+                <CountdownTimer duration={{ minutes: 10, seconds: 0 }} />
+              </div>
             </div>
 
             {/* Product Information */}
             <div className="product-info">
               <div className="product-header">
-                <div className="luxury-category">LUXURY TIMEPIECE</div>
-                {/* <div className="product-type-badge">{getProductType(product)}</div> */}
-              <h1 className="product-title">{product.name}</h1>
-                <p className="product-subtitle">Wear The Crown </p>
-              
-                {/* Rating & Reviews */}
-              <div className="product-rating">
+                <div className="luxury-category">EXCLUSIVE EDITION</div>
+                <h1 className="product-title">{product.name}</h1>
+                <p className="product-subtitle">Elevate Your Style</p>
+                <div className="product-rating">
                   <div className="stars-container">
                   {renderStars(product.rating)}
                   </div>
@@ -671,8 +673,7 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {/* Luxury Countdown Timer Bar - moved here */}
-              <CountdownTimer duration={{ days: 3, hours: 0, minutes: 0, seconds: 0 }} />
+              
 
               {/* Price Section */}
               <div className="price-section">
@@ -680,7 +681,8 @@ const ProductDetail = () => {
                 {product.originalPrice && (
                   <div className="original-price">{formatPrice(product.originalPrice)}</div>
                 )}
-                <div className="price-note">VAT included • Free shipping in Pakistan</div>
+                <div className="price-note">Free Express Delivery Across Pakistan
+                </div>
               </div>
 
               {/* Quantity & Stock */}
@@ -726,6 +728,11 @@ const ProductDetail = () => {
                 )}
               </div>
 
+              {/* Place timer here for mobile */}
+              <div className="countdown-timer-mobile">
+                <CountdownTimer duration={{ minutes: 10, seconds: 0 }} />
+              </div>
+
               {/* Action Buttons */}
               <div className="luxury-actions">
                 <div className="primary-actions">
@@ -734,7 +741,7 @@ const ProductDetail = () => {
                     onClick={handleBuyNow}
                     disabled={!product.inStock || product.quantity <= 0}
                 >
-                    <span>{product.quantity <= 0 ? 'Out of Stock' : 'Buy Now'}</span>
+                    <span>{product.quantity <= 0 ? 'Out of Stock' : 'Buy with Cash on Delivery 🔥'}</span>
                 </button>
                   
                 <button 
@@ -783,16 +790,16 @@ const ProductDetail = () => {
                 </div> */}
               </div>
 
-                  {/* Features */}
-                  <div className="luxury-features">
+              {/* Features & Countdown Timer Row */}
+              <div className="luxury-features">
                 <h4>Key Features</h4>
                 <div className="features-grid">
-                {product.features.map((feature, index) => (
+                  {product.features.map((feature, index) => (
                     <div key={index} className="feature-item">
                       <CheckBadgeIcon />
                       <span>{feature}</span>
                     </div>
-                ))}
+                  ))}
                 </div>
               </div>
 
@@ -828,7 +835,7 @@ const ProductDetail = () => {
       {/* Move review section here, above the tabs */}
       <div className="container">
         <CompactReviewSection productId={product.id} reviewCount={product.reviews} />
-      </div>
+          </div>
 
       {/* Product Details Tabs */}
       <div className="luxury-tabs-section">

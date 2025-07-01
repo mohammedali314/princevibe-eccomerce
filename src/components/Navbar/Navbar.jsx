@@ -447,13 +447,12 @@ const Navbar = ({ onLogoClick }) => {
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
         {/* Logo */}
-        <div className="navbar-logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
+        <div className="navbar-logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }} tabIndex={0} aria-label="Go to homepage" role="button" onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleLogoClick(); }}>
           <img 
             src="/logo.png" 
-            alt="PrinceVibe" 
+            alt="PrinceVibe logo" 
             className="logo-image"
             onError={(e) => {
-              // Fallback to text logo if image fails
               e.target.style.display = 'none';
               e.target.parentElement.innerHTML += '<span style="color: white; font-weight: bold; font-size: 1.5rem;">PrinceVibe</span>';
             }}
@@ -469,23 +468,23 @@ const Navbar = ({ onLogoClick }) => {
 
         {/* Navigation Links */}
         <div className="navbar-menu">
-          <div className="nav-link" onClick={handleHomeNavigation} style={{ cursor: 'pointer' }}>
+          <div className="nav-link" onClick={handleHomeNavigation} style={{ cursor: 'pointer' }} tabIndex={0} aria-label="Home" role="button" onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleHomeNavigation(); }}>
               <span>Home</span>
             <div className="nav-indicator"></div>
           </div>
-          <div className="nav-link" onClick={handleProductsNavigation} style={{ cursor: 'pointer' }}>
+          <div className="nav-link" onClick={handleProductsNavigation} style={{ cursor: 'pointer' }} tabIndex={0} aria-label="All Products" role="button" onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleProductsNavigation(); }}>
               <span>All Products</span>
             <div className="nav-indicator"></div>
           </div>
-          <div className="nav-link" onClick={() => navigate('/about')} style={{ cursor: 'pointer' }}>
+          <div className="nav-link" onClick={() => navigate('/about')} style={{ cursor: 'pointer' }} tabIndex={0} aria-label="About Us" role="button" onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate('/about'); }}>
               <span>About Us</span>
             <div className="nav-indicator"></div>
           </div>
-          <div className="nav-link" onClick={() => navigate('/testimonials')} style={{ cursor: 'pointer' }}>
+          <div className="nav-link" onClick={() => navigate('/testimonials')} style={{ cursor: 'pointer' }} tabIndex={0} aria-label="Testimonials" role="button" onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate('/testimonials'); }}>
               <span>Testimonials</span>
             <div className="nav-indicator"></div>
           </div>
-          <div className="nav-link" onClick={() => navigate('/contact')} style={{ cursor: 'pointer' }}>
+          <div className="nav-link" onClick={() => navigate('/contact')} style={{ cursor: 'pointer' }} tabIndex={0} aria-label="Contact Us" role="button" onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate('/contact'); }}>
               <span>Contact Us</span>
             <div className="nav-indicator"></div>
           </div>
@@ -495,7 +494,7 @@ const Navbar = ({ onLogoClick }) => {
         <div className="navbar-actions">
           {/* Enhanced Search Component */}
           <div className="search-container" ref={searchContainerRef}>
-            <button className="action-btn search-btn" onClick={openSearch}>
+            <button className="action-btn search-btn" onClick={openSearch} aria-label="Open search" tabIndex={0}>
               <MagnifyingGlassIcon />
               <span className="tooltip">Search (⌘K)</span>
             </button>
@@ -729,14 +728,14 @@ const Navbar = ({ onLogoClick }) => {
             </div>
           </div>
 
-            <button className="action-btn wishlist-btn" onClick={handleWishlistClick}>
+            <button className="action-btn wishlist-btn" onClick={handleWishlistClick} aria-label="Open wishlist" tabIndex={0}>
             <HeartIcon />
               {wishlistItemsCount > 0 && (
                 <span className="badge">{wishlistItemsCount}</span>
               )}
             <span className="tooltip">Wishlist</span>
           </button>
-            <button className="action-btn cart-btn" onClick={handleCartClick}>
+            <button className="action-btn cart-btn" onClick={handleCartClick} aria-label="Open cart" tabIndex={0}>
             <ShoppingBagIcon />
               {cartItemsCount > 0 && (
                 <span className="badge">{cartItemsCount}</span>
@@ -751,6 +750,8 @@ const Navbar = ({ onLogoClick }) => {
                 ref={userButtonRef}
                 className="action-btn user-btn" 
                 onClick={handleUserIconClick}
+                aria-label="Account menu"
+                tabIndex={0}
               >
                 <UserCircleIcon />
                 <span className="tooltip">Account</span>
@@ -762,7 +763,7 @@ const Navbar = ({ onLogoClick }) => {
               />
             </div>
           ) : (
-            <button className="action-btn" onClick={handleUserIconClick}>
+            <button className="action-btn" onClick={handleUserIconClick} aria-label="Sign In" tabIndex={0}>
               <UserIcon />
               <span className="tooltip">Sign In</span>
             </button>
@@ -770,7 +771,7 @@ const Navbar = ({ onLogoClick }) => {
         </div>
 
         {/* Mobile Menu Button */}
-        <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
+        <button className="mobile-menu-btn" onClick={toggleMobileMenu} aria-label="Toggle mobile menu" tabIndex={0}>
           {isMobileMenuOpen ? <XMarkIcon /> : <Bars3Icon />}
         </button>
       </div>
