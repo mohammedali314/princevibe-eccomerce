@@ -217,16 +217,76 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+    
     setSubmitting(true);
+    setErrors({});
+    
     try {
+      // Prepare form data for submission
       const submitData = {
         ...formData,
         quantity: Number(formData.quantity) || 0,
-        // ...other fields
+        price: Number(formData.price) || 0,
+        comparePrice: Number(formData.comparePrice) || 0,
+        rating: Number(formData.rating) || 0,
+        reviews: Number(formData.reviews) || 0,
+        inStock: Boolean(formData.inStock),
+        isFeatured: Boolean(formData.isFeatured),
+        isActive: Boolean(formData.isActive),
+        features: formData.features.filter(item => item.trim() !== ''),
+        tags: formData.tags.filter(item => item.trim() !== ''),
+        specifications: JSON.stringify(formData.specifications),
+        seo: JSON.stringify(formData.seo)
       };
-      // ...submit logic...
+
+      // Create FormData for file uploads
+      const productFormData = new FormData();
+      
+      // Add all form data
+      Object.keys(submitData).forEach(key => {
+        if (key === 'features' || key === 'tags') {
+          productFormData.append(key, JSON.stringify(submitData[key]));
+        } else if (key === 'specifications' || key === 'seo') {
+          productFormData.append(key, submitData[key]);
+        } else {
+          productFormData.append(key, submitData[key]);
+        }
+      });
+
+      // Add new images
+      images.forEach((image, index) => {
+        productFormData.append('images', image);
+      });
+
+      // Add images to delete
+      if (imagesToDelete.length > 0) {
+        productFormData.append('imagesToDelete', JSON.stringify(imagesToDelete));
+      }
+
+      // Set main image index if there are new images
+      if (images.length > 0) {
+        productFormData.append('mainImageIndex', '0');
+      }
+
+      // Call the API to update the product
+      const response = await AdminApiService.updateProduct(id, productFormData);
+      
+      if (response.success) {
+        // Call the callback to update the parent component
+        if (onProductUpdated) {
+          onProductUpdated(response.data);
+        }
+        
+        // Navigate back to products list
+        navigate('/admin/products');
+      } else {
+        setErrors({ submit: response.message || 'Failed to update product' });
+      }
     } catch (error) {
-      // ...error handling...
+      console.error('Error updating product:', error);
+      setErrors({ 
+        submit: error.message || 'An error occurred while updating the product. Please try again.' 
+      });
     } finally {
       setSubmitting(false);
     }
@@ -633,6 +693,12 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
 
         {/* Form Actions */}
         <div className="form-actions">
+          {errors.submit && (
+            <div className="error-message">
+              {errors.submit}
+            </div>
+          )}
+          
           <button
             type="button"
             onClick={() => navigate('/admin/products')}

@@ -661,7 +661,7 @@ const ProductDetail = () => {
               <div className="product-header">
                 <div className="luxury-category">EXCLUSIVE EDITION</div>
                 <h1 className="product-title">{product.name}</h1>
-                <p className="product-subtitle">Elevate Your Style</p>
+                {/* <p className="product-subtitle">Elevate Your Style</p> */}
                 <div className="product-rating">
                   <div className="stars-container">
                   {renderStars(product.rating)}
