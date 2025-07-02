@@ -535,7 +535,7 @@ const ProductDetail = () => {
   };
 
   const formatPrice = (price) => {
-    return `Rs.${price.toLocaleString()}.00`;
+    return `Rs.${parseInt(price, 10)}`;
   };
 
   const renderStars = (rating) => {
@@ -659,7 +659,7 @@ const ProductDetail = () => {
             {/* Product Information */}
             <div className="product-info">
               <div className="product-header">
-                <div className="luxury-category">EXCLUSIVE EDITION</div>
+                {/* <div className="luxury-category">EXCLUSIVE EDITION</div> */}
                 <h1 className="product-title">{product.name}</h1>
                 {/* <p className="product-subtitle">Elevate Your Style</p> */}
                 <div className="product-rating">

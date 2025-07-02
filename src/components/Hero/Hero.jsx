@@ -8,7 +8,7 @@ import {
 import { HeartIcon } from '@heroicons/react/24/solid';
 import './Hero.scss';
 
-const Hero = () => {
+const Hero = ({ seoHeading, seoIntro }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const videoRefs = useRef([]);
@@ -104,6 +104,10 @@ const Hero = () => {
 
   return (
     <section id="hero" className={`hero ${isLoaded ? 'loaded' : ''}`}>
+      {/* SEO Heading: visually hidden for accessibility and SEO */}
+      {seoHeading && (
+        <h1 className="visually-hidden">{seoHeading}</h1>
+      )}
       <div className="hero-slider">
         {slides.map((slide, index) => (
           <div

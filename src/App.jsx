@@ -29,9 +29,13 @@ import './App.css';
 // Home Page Component
 const HomePage = ({ triggerLoading }) => (
   <>
-    <Hero />
-    {/* <Categories /> */}
-    <Products />
+    <Hero 
+      seoHeading="Luxury Watches & Smartwatches Store in Pakistan | PrinceVibe"
+      seoIntro="Welcome to PrinceVibe, your premier destination for luxury watches and smartwatches in Pakistan. Explore our curated collection of premium timepieces, including Swiss, smart, sport, and classic watches from top brands. Enjoy free shipping, cash on delivery, and 24/7 customer support nationwide."
+    />
+    <section id="products-section">
+      <Products />
+    </section>
     <Features />
   </>
 );

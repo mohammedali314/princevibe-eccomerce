@@ -277,8 +277,19 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
           onProductUpdated(response.data);
         }
         
-        // Navigate back to products list
-        navigate('/admin/products');
+        // Reload the product data to show updated images
+        await loadProduct();
+        
+        // Clear the form state
+        setImages([]);
+        setImagesToDelete([]);
+        setErrors({});
+        
+        // Show success message (you can add a toast notification here)
+        console.log('Product updated successfully!');
+        
+        // Optionally navigate back to products list after a delay
+        // setTimeout(() => navigate('/admin/products'), 2000);
       } else {
         setErrors({ submit: response.message || 'Failed to update product' });
       }
