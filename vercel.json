@@ -14,14 +14,6 @@
       "destination": "/index.html"
     }
   ],
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "has": [{ "host": "www.princevibe.store" }],
-      "destination": "https://princevibe.store/:1",
-      "permanent": true
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
