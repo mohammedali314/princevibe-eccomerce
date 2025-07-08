@@ -1,114 +1,42 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
     
-    <!-- Critical resource hints for mobile -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-    
-    <!-- Preload critical resources -->
-    <link rel="modulepreload" href="/src/main.jsx" />
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" as="style" />
-    
-    <!-- Critical CSS for above-the-fold content (mobile-first) -->
-    <style>
-      /* Critical CSS for mobile performance */
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      
-      body { 
-        margin: 0; 
-        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        line-height: 1.6;
-        color: #1a1a1a;
-        background-color: #ffffff;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        overflow-x: hidden;
-      }
-      
-      /* Mobile-specific optimizations */
-      .mobile-device {
-        /* Reduce motion for better mobile performance */
-        --animation-duration: 0.15s;
-      }
-      
-      .mobile-device * {
-        /* Optimize touch targets */
-        min-height: 44px;
-        min-width: 44px;
-      }
-      
-      /* Critical navbar styles */
-      .navbar {
-        position: fixed;
-        top: 0;
-        width: 100%;
-        z-index: 1000;
-        background: rgba(255,255,255,0.95);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid #e5e7eb;
-      }
-      
-      /* Critical hero section for mobile */
-      .hero-section {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      }
-      
-      /* Mobile-first responsive design */
-      @media (max-width: 768px) {
-        .hero-section {
-          min-height: 100vh;
-          padding: 1rem;
-        }
-      }
-      
-      /* Prevent layout shift */
-      img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-      }
-      
-      /* Critical button styles */
-      .btn {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.2s ease;
-      }
-      
-      .btn-primary {
-        background: #667eea;
-        color: white;
-        border: none;
-      }
-    </style>
-    
-    <!-- Load fonts with optimal loading strategy -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'; this.onload=null;" />
-    <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    </noscript>
-    
-    <title>Prince Vibe - Luxury Watches Store in Pakistan | Fast Delivery</title>
-    <meta name="description" content="Premium luxury watches and smartwatches in Pakistan. Fast delivery, cash on delivery, 24/7 support. Shop now!" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
+    // Enhanced Meta Pixel with conflict prevention
+    try {
+      // Wait for fbq to be available
+      if (typeof fbq !== 'undefined') {
+        // Initialize pixel with new ID
+        fbq('init', '1047507600841338');
+        console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ Pixel initialized successfully with ID: 1047507600841338');
+        
+        // Track PageView with logging
+        fbq('track', 'PageView');
+        console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ PageView tracked');
+        
+        // Override fbq function to add logging for all events
+        const originalFbq = window.fbq;
+        window.fbq = function() {
+          const args = Array.from(arguments);
+          const eventName = args[1];
+          const eventData = args[2];
+          
+          // Log the event being tracked
+          if (eventName && eventName !== 'init') {
+            console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', `📊 Tracking event: ${eventName}`, eventData || '');
+          }
+          
+          // Call the original function
           return originalFbq.apply(this, arguments);
         };
         

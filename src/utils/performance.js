@@ -118,7 +118,4 @@ export const initPerformanceOptimizations = () => {
     const lazyImages = document.querySelectorAll('img[data-src]');
     lazyImages.forEach(lazyLoadImage);
   });
-};
-
-// Alias for backward compatibility
-export const initializePerformanceMonitoring = initPerformanceOptimizations; 
+}; 
