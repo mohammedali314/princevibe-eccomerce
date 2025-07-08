@@ -240,7 +240,7 @@ const ProductStats = ({ stats, products, onRefresh }) => {
               {Object.entries(calculatedStats.categoryDistribution).map(([category, count]) => (
                 <div key={category} className="category-item">
                   <div className="category-info">
-                    <span className="category-name">{category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                    <span className="category-name">{category?.charAt(0).toUpperCase() + category?.slice(1) || 'Unknown'}</span>
                     <span className="category-count">{count} products</span>
                   </div>
                   <div className="category-bar">

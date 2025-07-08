@@ -4,11 +4,19 @@ import './VariantSelector.scss';
 const VariantSelector = ({ variants = [], selectedVariant, onVariantChange, productName = '' }) => {
   const [localSelectedVariant, setLocalSelectedVariant] = useState(null);
 
+  // Filter out invalid variants
+  const validVariants = variants.filter(variant => 
+    variant && 
+    variant.colorName && 
+    variant.colorName.trim() !== '' && 
+    variant.id
+  );
+
   useEffect(() => {
-    if (variants.length > 0) {
+    if (validVariants.length > 0) {
       // Only set default variant if no variant is currently selected
       if (!selectedVariant && !localSelectedVariant) {
-        const defaultVariant = variants.find(v => v.isDefault) || variants[0];
+        const defaultVariant = validVariants.find(v => v.isDefault) || validVariants[0];
         setLocalSelectedVariant(defaultVariant);
         onVariantChange(defaultVariant);
       } else if (selectedVariant && selectedVariant.id !== localSelectedVariant?.id) {
@@ -27,12 +35,12 @@ const VariantSelector = ({ variants = [], selectedVariant, onVariantChange, prod
 
   // Calculate total stock and urgency
   const getTotalStock = () => {
-    return variants.reduce((total, variant) => total + (variant.stock || 0), 0);
+    return validVariants.reduce((total, variant) => total + (variant.stock || 0), 0);
   };
 
   const getStockUrgency = () => {
     const totalStock = getTotalStock();
-    const inStockVariants = variants.filter(v => v.stock > 0).length;
+    const inStockVariants = validVariants.filter(v => v.stock > 0).length;
     
     if (totalStock === 0) {
       return { type: 'out', message: '🚨 All variants sold out!', urgent: true };
@@ -60,12 +68,13 @@ const VariantSelector = ({ variants = [], selectedVariant, onVariantChange, prod
 
   // Find most popular variant (highest stock initially, could be based on sales data)
   const getMostPopularVariant = () => {
-    return variants.reduce((prev, current) => 
+    if (validVariants.length === 0) return null;
+    return validVariants.reduce((prev, current) => 
       (current.stock > prev.stock) ? current : prev
     );
   };
 
-  if (!variants || variants.length === 0) {
+  if (!variants || variants.length === 0 || validVariants.length === 0) {
     return null;
   }
 
@@ -83,7 +92,7 @@ const VariantSelector = ({ variants = [], selectedVariant, onVariantChange, prod
       </div>
 
       <div className="variant-options-compact">
-        {variants.map((variant, index) => {
+        {validVariants.map((variant, index) => {
           const isSelected = localSelectedVariant && localSelectedVariant.id === variant.id;
           const isOutOfStock = variant.stock === 0;
           const isLowStock = variant.stock > 0 && variant.stock <= 2;
@@ -100,18 +109,18 @@ const VariantSelector = ({ variants = [], selectedVariant, onVariantChange, prod
               key={variant.id}
               className={`variant-option-compact ${isSelected ? 'selected' : ''} ${isOutOfStock ? 'out-of-stock' : ''} ${isLowStock ? 'low-stock' : ''}`}
               onClick={() => !isOutOfStock && handleVariantSelect(variant)}
-              title={`${variant.colorName} - ${getVariantStockText(variant.stock)}`}
+              title={`${variant.colorName || 'Unknown'} - ${getVariantStockText(variant.stock)}`}
             >
               <div className="variant-image-compact">
                 {imageUrl ? (
                   <img 
                     src={imageUrl} 
-                    alt={`${productName} - ${variant.colorName}`}
+                    alt={`${productName} - ${variant.colorName || 'Unknown'}`}
                     loading="lazy"
                   />
                 ) : (
                   <div className="no-image-compact">
-                    <span>{variant.colorName.charAt(0).toUpperCase()}</span>
+                    <span>{variant.colorName?.charAt(0).toUpperCase() || 'N/A'}</span>
                   </div>
                 )}
                 
@@ -135,7 +144,7 @@ const VariantSelector = ({ variants = [], selectedVariant, onVariantChange, prod
               </div>
               
               <div className="variant-name-compact">
-                <span>{variant.colorName}</span>
+                <span>{variant.colorName || 'Unknown'}</span>
               </div>
               
               <div className={`stock-indicator-mini ${getVariantStockClass(variant.stock)}`}>

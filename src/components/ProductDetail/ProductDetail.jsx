@@ -733,9 +733,10 @@ const ProductDetail = () => {
               </div>
 
               {/* Product Variants - MOVED BACK UNDER PRICE */}
-              {product.variants && product.variants.length > 0 && (
+              {product.variants && product.variants.length > 0 && 
+               product.variants.filter(variant => variant && variant.colorName && variant.colorName.trim() !== '').length > 0 && (
                 <VariantSelector
-                  variants={product.variants}
+                  variants={product.variants.filter(variant => variant && variant.colorName && variant.colorName.trim() !== '')}
                   selectedVariant={selectedVariant}
                   onVariantChange={handleVariantChange}
                   productName={product.name}

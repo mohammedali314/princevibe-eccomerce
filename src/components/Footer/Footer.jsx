@@ -205,7 +205,7 @@ const Footer = ({ onLogoClick }) => {
 
   const socialLinks = [
     { name: "Facebook", icon: FacebookIcon, href: "https://www.facebook.com/profile.php?id=61576899232165",},
-    { name: "Instagram", icon: InstagramIcon, href: "https://www.instagram.com/princevibe_official/", },
+    { name: "Instagram", icon: InstagramIcon, href: "https://www.instagram.com/princevibe.store/", },
     { name: "YouTube", icon: YouTubeIcon, href: "https://www.youtube.com/channel/UCxAd5CkpTkule-P7rgdevjQ", },
     { name: "TikTok", icon: TikTokIcon, href: "https://www.tiktok.com/@princevibe_official", }
   ];

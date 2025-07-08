@@ -258,7 +258,7 @@ const TrackOrder = () => {
                   <div className="order-card-header">
                     <div className="order-number">#{orderItem.orderNumber}</div>
                     <div className="order-status" style={{ color: getStatusColor(orderItem.status) }}>
-                      {orderItem.status.charAt(0).toUpperCase() + orderItem.status.slice(1)}
+                      {orderItem.status?.charAt(0).toUpperCase() + orderItem.status?.slice(1) || 'Unknown'}
                     </div>
                   </div>
                   
@@ -295,7 +295,7 @@ const TrackOrder = () => {
             <div className="order-status">
               <div className="status-badge" style={{ backgroundColor: getStatusColor(order.status) }}>
                 {React.createElement(getStatusIcon(order.status), { className: 'status-icon' })}
-                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                {order.status?.charAt(0).toUpperCase() + order.status?.slice(1) || 'Unknown'}
               </div>
               <div className="order-date">
                 Placed on {formatDate(order.createdAt)}
@@ -359,7 +359,7 @@ const TrackOrder = () => {
                     <div key={index} className="timeline-item">
                       <div className="timeline-marker"></div>
                       <div className="timeline-content">
-                        <h5>{event.status.charAt(0).toUpperCase() + event.status.slice(1)}</h5>
+                        <h5>{event.status?.charAt(0).toUpperCase() + event.status?.slice(1) || 'Unknown'}</h5>
                         <p>{event.note}</p>
                         <span className="timeline-date">{formatDate(event.timestamp)}</span>
                       </div>
