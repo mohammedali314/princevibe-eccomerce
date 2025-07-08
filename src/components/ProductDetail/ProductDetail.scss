@@ -808,13 +808,13 @@ $font-mono: 'JetBrains Mono', 'Fira Code', monospace;
               right: -25px;
               font-size: 1.2rem;
               animation: fire-dance 2s ease-in-out infinite;
-            }
           }
+      }
 
-          .original-price {
+      .original-price {
             font-size: 1.2rem;
             color: #718096;
-            text-decoration: line-through;
+        text-decoration: line-through;
             font-weight: 500;
           }
           
@@ -2163,8 +2163,8 @@ $font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
           .price-container {
             gap: 0.5rem;
-            
-            .current-price {
+
+          .current-price {
               font-size: 1.6rem;
               
               &::after {
