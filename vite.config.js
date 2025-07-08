@@ -1,33 +1,24 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: {
-    host: 'localhost',
-    port: 5173,
-    strictPort: true,
-    hmr: {
-      port: 5173,
-      host: 'localhost'
-    }
-  },
   build: {
-    target: 'es2015',
-    minify: 'terser',
-    sourcemap: false,
+    // Enable code splitting for better performance
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
-          icons: ['@heroicons/react', 'lucide-react'],
-          utils: ['lodash', 'date-fns']
+          icons: ['@heroicons/react']
         }
       }
     },
+    // Optimize chunk size
     chunkSizeWarningLimit: 1000,
+    // Enable minification
+    minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: true,
@@ -35,9 +26,12 @@ export default defineConfig({
       }
     }
   },
-  resolve: {
-    alias: {
-      '@': '/src'
-    }
+  // Enable compression
+  server: {
+    compress: true
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom']
   }
 })

@@ -37,7 +37,7 @@ const VariantSelector = ({ variants = [], selectedVariant, onVariantChange, prod
     if (totalStock === 0) {
       return { type: 'out', message: '🚨 All variants sold out!', urgent: true };
     } else if (totalStock <= 5) {
-      return { type: 'low', message: `🔥 Only ${totalStock} left in stock!`, urgent: true };
+      return { type: 'low', message: ` Only ${totalStock} left in stock!`, urgent: true };
     } else if (inStockVariants <= 2) {
       return { type: 'low', message: `⚡ Limited colors available!`, urgent: true };
     } else {

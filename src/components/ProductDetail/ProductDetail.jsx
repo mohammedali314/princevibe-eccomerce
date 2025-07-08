@@ -641,6 +641,12 @@ const ProductDetail = () => {
                     ref={imageRef}
                     src={getCurrentImages()[selectedImage]} 
                     alt={product.name}
+                    loading="lazy"
+                    onLoad={() => setImageLoaded(true)}
+                    onError={(e) => {
+                      console.error('Image failed to load:', e.target.src);
+                      e.target.src = '/placeholder-image.jpg';
+                    }}
                     onMouseMove={handleImageMouseMove}
                     onMouseEnter={handleImageMouseEnter}
                     onMouseLeave={handleImageMouseLeave}

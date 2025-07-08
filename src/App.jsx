@@ -1,30 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar/Navbar';
-import Hero from './components/Hero/Hero';
 import Categories from './components/Categories/Categories';
-import Products from './components/Products/Products';
 import Features from './components/Features/Features';
 import Footer from './components/Footer/Footer';
-import ProductDetail from './components/ProductDetail/ProductDetail';
-import About from './components/About/About';
-import Contact from './components/Contact/Contact';
 import Testimonials from './components/Testimonials/Testimonials';
-import Checkout from './components/Checkout/Checkout';
-import TrackOrder from './components/TrackOrder/TrackOrder';
 import Loading from './components/Loading/Loading';
-import AdminLogin from './components/Admin/AdminLogin';
-import AdminDashboard from './components/Admin/AdminDashboard';
-import UserProfile from './components/UserProfile/UserProfile';
-import UserOrders from './components/UserOrders/UserOrders';
-import UserHelp from './components/UserHelp/UserHelp';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
 import AdminApi from './services/adminApi';
 import './App.css';
+
+// Lazy load components for better performance
+const Hero = lazy(() => import('./components/Hero/Hero'));
+const About = lazy(() => import('./components/About/About'));
+const Products = lazy(() => import('./components/Products/Products'));
+const ProductDetail = lazy(() => import('./components/ProductDetail/ProductDetail'));
+const Cart = lazy(() => import('./components/Cart/Cart'));
+const Checkout = lazy(() => import('./components/Checkout/Checkout'));
+const ThankYou = lazy(() => import('./components/ThankYou'));
+const Contact = lazy(() => import('./components/Contact/Contact'));
+const TrackOrder = lazy(() => import('./components/TrackOrder/TrackOrder'));
+const UserProfile = lazy(() => import('./components/UserProfile/UserProfile'));
+const UserOrders = lazy(() => import('./components/UserOrders/UserOrders'));
+const Wishlist = lazy(() => import('./components/Wishlist/Wishlist'));
+const UserHelp = lazy(() => import('./components/UserHelp/UserHelp'));
+const AdminDashboard = lazy(() => import('./components/Admin/AdminDashboard'));
+const AdminLogin = lazy(() => import('./components/Admin/AdminLogin'));
 
 // Home Page Component
 const HomePage = ({ triggerLoading }) => (
