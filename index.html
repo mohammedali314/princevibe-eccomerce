@@ -5,35 +5,343 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="/src/main.jsx" as="script" />
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" as="style" />
-    
-    <!-- DNS prefetch for external resources -->
+    <!-- Critical resource hints for mobile -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     
-    <!-- Critical CSS inline (add your most critical styles here) -->
+    <!-- Preload critical resources -->
+    <link rel="modulepreload" href="/src/main.jsx" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" as="style" />
+    
+    <!-- Critical CSS for above-the-fold content (mobile-first) -->
     <style>
-      /* Critical CSS for above-the-fold content */
-      body { margin: 0; font-family: Inter, sans-serif; }
-      .loading-container { display: flex; justify-content: center; align-items: center; height: 100vh; }
+      /* Critical CSS for mobile performance */
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      
+      body { 
+        margin: 0; 
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        color: #1a1a1a;
+        background-color: #ffffff;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+      }
+      
+      /* Mobile-specific optimizations */
+      .mobile-device {
+        /* Reduce motion for better mobile performance */
+        --animation-duration: 0.15s;
+      }
+      
+      .mobile-device * {
+        /* Optimize touch targets */
+        min-height: 44px;
+        min-width: 44px;
+      }
+      
+      /* Critical navbar styles */
+      .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #e5e7eb;
+      }
+      
+      /* Critical hero section for mobile */
+      .hero-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      
+      /* Mobile-first responsive design */
+      @media (max-width: 768px) {
+        .hero-section {
+          min-height: 100vh;
+          padding: 1rem;
+        }
+      }
+      
+      /* Prevent layout shift */
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      
+      /* Critical button styles */
+      .btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+      
+      .btn-primary {
+        background: #667eea;
+        color: white;
+        border: none;
+      }
     </style>
     
-    <!-- Load fonts asynchronously -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <!-- Load fonts with optimal loading strategy -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'; this.onload=null;" />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    </noscript>
     
-    <title>Prince Vibe - Luxury Watches</title>
+    <title>Prince Vibe - Luxury Watches Store in Pakistan | Fast Delivery</title>
+    <meta name="description" content="Premium luxury watches and smartwatches in Pakistan. Fast delivery, cash on delivery, 24/7 support. Shop now!" />
   </head>
   <body>
-    <div id="root">
-      <!-- Loading placeholder -->
-      <div class="loading-container">
-        <div>Loading...</div>
-      </div>
-    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+          return originalFbq.apply(this, arguments);
+        };
+        
+        // Copy properties from original function
+        Object.setPrototypeOf(window.fbq, Object.getPrototypeOf(originalFbq));
+        Object.assign(window.fbq, originalFbq);
+      } else {
+        console.warn('%c[MetaPixel]', 'background: #FFA500; color: white; padding: 2px 5px; border-radius: 3px;', '⚠️ fbq not available yet, will retry...');
+        // Retry after a short delay
+        setTimeout(() => {
+          if (typeof fbq !== 'undefined') {
+            fbq('init', '1047507600841338');
+            fbq('track', 'PageView');
+            console.log('%c[MetaPixel]', 'background: #1877F2; color: white; padding: 2px 5px; border-radius: 3px;', '✅ Pixel initialized on retry');
+          }
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('%c[MetaPixel]', 'background: #FF0000; color: white; padding: 2px 5px; border-radius: 3px;', '❌ Error initializing pixel:', error);
+    }
+    </script>
+    <!-- End Meta Pixel Code -->
+    <meta charset="UTF-8" />
+    
+    <!-- Comprehensive Favicon Setup -->
+    <link rel="icon" type="image/x-icon" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/favicon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="msapplication-TileImage" content="/favicon.png" />
+    <meta name="msapplication-TileColor" content="#000000" />
+    
+    <!-- Viewport and Mobile Optimization -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>PrinceVibe | Luxury Watches & Smartwatches Store Pakistan</title>
+    <meta name="title" content="PrinceVibe | Luxury Watches & Smartwatches Store Pakistan" />
+    <meta name="description" content="Shop luxury watches and smartwatches at PrinceVibe. Premium brands, free shipping, cash on delivery, and 24/7 support in Pakistan." />
+    <meta name="keywords" content="luxury smartwatches, premium watches, smartwatch Pakistan, luxury timepieces, PrinceVibe, cash on delivery watches, luxury watch store, premium smartwatch collection, buy watches online Pakistan" />
+    <meta name="author" content="PrinceVibe" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="bingbot" content="index, follow" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://princevibe.store/" />
+    
+    <!-- Language and Region -->
+    <meta name="language" content="en-PK" />
+    <meta name="geo.region" content="PK" />
+    <meta name="geo.country" content="Pakistan" />
+    <meta name="geo.placename" content="Pakistan" />
+    
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="PrinceVibe" />
+    <meta property="og:title" content="PrinceVibe - Premium Luxury Smartwatches Store | Buy Online in Pakistan" />
+    <meta property="og:description" content="Discover premium luxury smartwatches at PrinceVibe. Shop the finest collection of luxury timepieces with Cash on Delivery across Pakistan. Free shipping, 2-year warranty, and 24/7 customer support." />
+    <meta property="og:url" content="https://princevibe.store/" />
+    <meta property="og:image" content="https://princevibe.store/logo.png" />
+    <meta property="og:image:secure_url" content="https://princevibe.store/logo.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="PrinceVibe - Premium Luxury Smartwatches Store in Pakistan" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="en_PK" />
+    
+    <!-- Business and Contact Information -->
+    <meta name="contact" content="Princevibe.store@gmail.com" />
+    <meta name="phone" content="+92 308 9747141" />
+    <meta name="address" content="Butt Palaza, Near HBL Bank, Karianwala, Gujrat, Pakistan" />
+    
+    <!-- Theme and Brand Colors -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="msapplication-navbutton-color" content="#000000" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <!-- Structured Data for Rich Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": "PrinceVibe",
+      "description": "Premium luxury smartwatches store offering the finest collection of luxury timepieces with Cash on Delivery across Pakistan.",
+      "url": "https://princevibe.store",
+      "logo": "https://princevibe.store/logo.png",
+      "image": "https://princevibe.store/logo.png",
+      "telephone": "+92 308 9747141",
+      "email": "Princevibe.store@gmail.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Butt Palaza, Near HBL Bank",
+        "addressLocality": "Karianwala",
+        "addressRegion": "Gujrat",
+        "addressCountry": "Pakistan"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "32.5734",
+        "longitude": "74.0755"
+      },
+      "openingHours": "Mo-Su 09:00-21:00",
+      "paymentAccepted": "Cash",
+      "priceRange": "$$-$$$",
+      "currenciesAccepted": "PKR",
+      "areaServed": {
+        "@type": "Country",
+        "name": "Pakistan"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Luxury Smartwatches",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Premium Luxury Smartwatches",
+              "category": "Electronics > Wearable Technology > Smartwatches"
+            }
+          }
+        ]
+      },
+      "sameAs": [
+        "https://www.facebook.com/profile.php?id=61576899232165",
+        "https://www.instagram.com/princevibe_official/",
+        "https://www.youtube.com/channel/UCxAd5CkpTkule-P7rgdevjQ",
+        "https://www.tiktok.com/@princevibe_official"
+      ]
+    }
+    </script>
+    
+    <!-- Website Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "PrinceVibe",
+      "url": "https://princevibe.store",
+      "description": "Premium luxury smartwatches store in Pakistan",
+      "publisher": {
+        "@type": "Organization",
+        "name": "PrinceVibe",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://princevibe.store/logo.png"
+        }
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://princevibe.store/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
+    <!-- Organization Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "PrinceVibe",
+      "alternateName": "Prince Vibe",
+      "url": "https://princevibe.store",
+      "logo": "https://princevibe.store/logo.png",
+      "description": "Premium luxury smartwatches store offering the finest collection of luxury timepieces with Cash on Delivery across Pakistan.",
+      "foundingDate": "2020",
+      "founder": {
+        "@type": "Person",
+        "name": "Mohammed Ali",
+        "age": "16"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+92 308 9747141",
+        "contactType": "customer service",
+        "email": "Princevibe.store@gmail.com",
+        "availableLanguage": ["English", "Urdu"],
+        "areaServed": "Pakistan"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Butt Palaza, Near HBL Bank",
+        "addressLocality": "Karianwala",
+        "addressRegion": "Gujrat",
+        "addressCountry": "Pakistan"
+      },
+      "sameAs": [
+        "https://www.facebook.com/profile.php?id=61576899232165",
+        "https://www.instagram.com/princevibe_official/",
+        "https://www.youtube.com/channel/UCxAd5CkpTkule-P7rgdevjQ",
+        "https://www.tiktok.com/@princevibe_official"
+      ]
+    }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/logo.png" as="image" type="image/png" />
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
+  </head>
+  <body>
+    <!-- Meta Pixel NoScript -->
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1047507600841338&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel NoScript -->
+    <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

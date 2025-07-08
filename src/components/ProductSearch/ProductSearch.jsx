@@ -5,7 +5,6 @@ import {
   XMarkIcon,
   AdjustmentsHorizontalIcon
 } from '@heroicons/react/24/outline';
-import './ProductSearch.scss';
 
 const ProductSearch = ({ 
   onSearch, 
