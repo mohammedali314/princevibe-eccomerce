@@ -146,7 +146,20 @@ class ApiService {
       warranty: this.getWarrantyText(product.category), // Generate warranty based on category
       discountPercentage: product.discountPercentage,
       salesCount: product.salesCount,
-      viewCount: product.viewCount
+      viewCount: product.viewCount,
+      // Include variants with properly transformed images
+      variants: product.variants?.map(variant => ({
+        ...variant,
+        images: variant.images?.map(img => {
+          // Handle different image formats
+          if (typeof img === 'string') {
+            return img;
+          } else if (img && typeof img === 'object') {
+            return img.url || img.src || img.href || img.link;
+          }
+          return img;
+        }).filter(Boolean) || []
+      })) || []
     };
   }
 

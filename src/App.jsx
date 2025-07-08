@@ -34,7 +34,7 @@ const HomePage = ({ triggerLoading }) => (
       seoIntro="Welcome to PrinceVibe, your premier destination for luxury watches and smartwatches in Pakistan. Explore our curated collection of premium timepieces, including Swiss, smart, sport, and classic watches from top brands. Enjoy free shipping, cash on delivery, and 24/7 customer support nationwide."
     />
     <section id="products-section">
-      <Products />
+    <Products />
     </section>
     <Features />
   </>

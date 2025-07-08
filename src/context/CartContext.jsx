@@ -16,19 +16,24 @@ const CART_ACTIONS = {
 const cartReducer = (state, action) => {
   switch (action.type) {
     case CART_ACTIONS.ADD_ITEM: {
-      const { product, quantity = 1 } = action.payload;
-      const existingItemIndex = state.items.findIndex(item => item.id === product.id);
+      const { product, quantity = 1, variant } = action.payload;
+      
+      // Create unique item ID that includes variant info
+      const itemId = variant ? `${product.id}-${variant.id}` : product.id;
+      const existingItemIndex = state.items.findIndex(item => item.cartItemId === itemId);
       
       if (existingItemIndex >= 0) {
         // Update existing item quantity while preserving stock info
         const updatedItems = [...state.items];
         const existingItem = updatedItems[existingItemIndex];
+        const newQuantity = existingItem.quantity + quantity;
+        
         updatedItems[existingItemIndex] = {
           ...existingItem,
-          quantity: existingItem.quantity + quantity,
+          quantity: newQuantity,
           // Update stock info if new product data has it
-          availableStock: product.quantity || existingItem.availableStock,
-          inStock: product.inStock !== undefined ? product.inStock : existingItem.inStock
+          availableStock: variant ? variant.stock : (product.quantity || existingItem.availableStock),
+          inStock: variant ? variant.stock > 0 : (product.inStock !== undefined ? product.inStock : existingItem.inStock)
         };
         return {
           ...state,
@@ -37,10 +42,19 @@ const cartReducer = (state, action) => {
       } else {
         // Add new item - preserve original stock info as availableStock
         const cartItem = { 
-          ...product, 
+          ...product,
+          cartItemId: itemId, // Unique identifier for cart item
           quantity, // This becomes the cart quantity
-          availableStock: product.quantity, // Preserve original stock
-          inStock: product.inStock // Preserve stock status
+          selectedVariant: variant || null, // Store variant info
+          availableStock: variant ? variant.stock : product.quantity, // Preserve original stock
+          inStock: variant ? variant.stock > 0 : product.inStock, // Preserve stock status
+          // If variant is selected, update display info
+          displayName: variant ? `${product.name} (${variant.colorName})` : product.name,
+          variantInfo: variant ? {
+            id: variant.id,
+            colorName: variant.colorName,
+            images: variant.images
+          } : null
         };
         return {
           ...state,
@@ -52,23 +66,23 @@ const cartReducer = (state, action) => {
     case CART_ACTIONS.REMOVE_ITEM: {
       return {
         ...state,
-        items: state.items.filter(item => item.id !== action.payload.productId)
+        items: state.items.filter(item => item.cartItemId !== action.payload.cartItemId)
       };
     }
     
     case CART_ACTIONS.UPDATE_QUANTITY: {
-      const { productId, quantity } = action.payload;
+      const { cartItemId, quantity } = action.payload;
       if (quantity <= 0) {
         return {
           ...state,
-          items: state.items.filter(item => item.id !== productId)
+          items: state.items.filter(item => item.cartItemId !== cartItemId)
         };
       }
       
       return {
         ...state,
         items: state.items.map(item =>
-          item.id === productId ? { ...item, quantity } : item
+          item.cartItemId === cartItemId ? { ...item, quantity } : item
         )
       };
     }
@@ -120,16 +134,16 @@ export const CartProvider = ({ children }) => {
   }, [state]);
 
   // Cart actions
-  const addToCart = (product, quantity = 1) => {
-    dispatch({ type: CART_ACTIONS.ADD_ITEM, payload: { product, quantity } });
+  const addToCart = (product, quantity = 1, variant) => {
+    dispatch({ type: CART_ACTIONS.ADD_ITEM, payload: { product, quantity, variant } });
   };
 
-  const removeFromCart = (productId) => {
-    dispatch({ type: CART_ACTIONS.REMOVE_ITEM, payload: { productId } });
+  const removeFromCart = (cartItemId) => {
+    dispatch({ type: CART_ACTIONS.REMOVE_ITEM, payload: { cartItemId } });
   };
 
-  const updateQuantity = (productId, quantity) => {
-    dispatch({ type: CART_ACTIONS.UPDATE_QUANTITY, payload: { productId, quantity } });
+  const updateQuantity = (cartItemId, quantity) => {
+    dispatch({ type: CART_ACTIONS.UPDATE_QUANTITY, payload: { cartItemId, quantity } });
   };
 
   const clearCart = () => {
@@ -153,10 +167,28 @@ export const CartProvider = ({ children }) => {
   // Cart calculations
   const cartTotal = state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
   const cartItemsCount = state.items.reduce((count, item) => count + item.quantity, 0);
-  const isItemInCart = (productId) => state.items.some(item => item.id === productId);
-  const getItemQuantity = (productId) => {
-    const item = state.items.find(item => item.id === productId);
+  
+  // Updated helper functions for variant support
+  const isItemInCart = (productId, variantId = null) => {
+    const cartItemId = variantId ? `${productId}-${variantId}` : productId;
+    return state.items.some(item => item.cartItemId === cartItemId);
+  };
+  
+  const getItemQuantity = (productId, variantId = null) => {
+    const cartItemId = variantId ? `${productId}-${variantId}` : productId;
+    const item = state.items.find(item => item.cartItemId === cartItemId);
     return item ? item.quantity : 0;
+  };
+
+  // Legacy helper functions for backward compatibility
+  const isProductInCart = (productId) => {
+    return state.items.some(item => item.id === productId);
+  };
+
+  const getProductQuantity = (productId) => {
+    return state.items
+      .filter(item => item.id === productId)
+      .reduce((total, item) => total + item.quantity, 0);
   };
 
   const value = {
@@ -168,7 +200,10 @@ export const CartProvider = ({ children }) => {
     cartTotal,
     cartItemsCount,
     isItemInCart,
-    getItemQuantity
+    getItemQuantity,
+    // Legacy functions for backward compatibility
+    isProductInCart,
+    getProductQuantity
   };
 
   return (

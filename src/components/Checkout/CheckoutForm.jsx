@@ -246,11 +246,18 @@ const CheckoutForm = ({ onOrderComplete }) => {
         },
         items: safeCart.map(item => ({
           id: item.id,
-          name: item.name,
+          name: item.displayName || item.name, // Use displayName if variant is selected
           price: item.price,
           quantity: item.quantity,
-          image: item.image,
-          total: item.price * item.quantity
+          image: item.variantInfo?.images?.[0]?.url || item.image, // Use variant image if available
+          total: item.price * item.quantity,
+          // Include variant information
+          variant: item.selectedVariant ? {
+            id: item.selectedVariant.id,
+            colorName: item.selectedVariant.colorName,
+            images: item.selectedVariant.images,
+            sku: item.selectedVariant.sku
+          } : null
         })),
         payment: {
           method: 'cod',

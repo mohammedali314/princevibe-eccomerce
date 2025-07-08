@@ -33,6 +33,7 @@ import './ProductDetail.scss';
 import Products from '../Products/Products';
 import CountdownTimer from './CountdownTimer';
 import CompactReviewSection from './CompactReviewSection';
+import VariantSelector from './VariantSelector';
 
 // Custom hook for throttled mouse movement
 const useThrottledMousePosition = (delay = 16) => {
@@ -69,6 +70,7 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState('description');
   const [product, setProduct] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imageZoom, setImageZoom] = useState(false);
@@ -87,7 +89,7 @@ const ProductDetail = () => {
   const [mousePosition, updateMousePosition, throttleTimer] = useThrottledMousePosition(16); // ~60fps
 
   // Get cart and wishlist context
-  const { addToCart, isItemInCart, getItemQuantity } = useCart();
+  const { addToCart, isItemInCart, getItemQuantity, isProductInCart, getProductQuantity } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   // Memoize the image style to prevent unnecessary re-renders
@@ -210,7 +212,6 @@ const ProductDetail = () => {
         // TEMP: Remove featured filter for testing
         const response = await ApiService.getProducts({ limit: 6 });
         const transformed = ApiService.transformResponse(response);
-        console.log('Fetched more products:', transformed.data); // Debug log
         // Exclude current product
         const filtered = (transformed.data || []).filter(p => p.id !== id).slice(0, 6);
         setMoreProducts(filtered);
@@ -282,15 +283,18 @@ const ProductDetail = () => {
     
     console.log('🛒 Starting add to cart process...');
     
-    if (!product.inStock || product.quantity <= 0) {
+    const currentStock = getCurrentStock();
+    if (!product.inStock || currentStock <= 0) {
       console.log('❌ Product out of stock');
       showLuxuryToast('Product is currently out of stock', 'error');
       return;
     }
 
-    if (isItemInCart(product.id)) {
-      console.log('⚠️ Product already in cart');
-      showLuxuryToast('Product is already in your cart', 'info');
+    const cartItemId = selectedVariant ? `${product.id}-${selectedVariant.id}` : product.id;
+    if (isItemInCart(product.id, selectedVariant?.id)) {
+      console.log('⚠️ Product variant already in cart');
+      const variantText = selectedVariant ? ` (${selectedVariant.colorName})` : '';
+      showLuxuryToast(`Product${variantText} is already in your cart`, 'info');
       return;
     }
 
@@ -298,15 +302,16 @@ const ProductDetail = () => {
       console.log('🔄 Setting isAddingToCart to true');
       setIsAddingToCart(true);      
       try {
-        const currentCartQuantity = getItemQuantity(product.id);
-        const maxQuantity = product?.quantity || 0;
+        const currentCartQuantity = getItemQuantity(product.id, selectedVariant?.id);
+        const maxQuantity = currentStock;
         const availableToAdd = maxQuantity - currentCartQuantity;
         
         console.log('📊 Cart quantities:', {
           currentCartQuantity,
           maxQuantity,
           availableToAdd,
-          requestedQuantity: quantity
+          requestedQuantity: quantity,
+          variant: selectedVariant?.colorName || 'No variant'
         });
         
         if (availableToAdd <= 0) {
@@ -319,10 +324,11 @@ const ProductDetail = () => {
         console.log('➕ Adding to cart:', quantityToAdd);
         
         // Add to cart first
-        addToCart(product, quantityToAdd);
+        addToCart(product, quantityToAdd, selectedVariant);
         
         // Then show success message
-        showLuxuryToast(`Added ${quantityToAdd} ${quantityToAdd === 1 ? 'piece' : 'pieces'} to cart`, 'success');
+        const variantText = selectedVariant ? ` (${selectedVariant.colorName})` : '';
+        showLuxuryToast(`Added ${quantityToAdd} ${quantityToAdd === 1 ? 'piece' : 'pieces'}${variantText} to cart`, 'success');
         setQuantity(1);
 
         trackEvent('AddToCart', {
@@ -331,7 +337,8 @@ const ProductDetail = () => {
           content_type: 'product',
           value: product.price * quantityToAdd,
           currency: 'PKR',
-          quantity: quantityToAdd
+          quantity: quantityToAdd,
+          variant: selectedVariant?.colorName || null
         });
       } catch (error) {
         console.error('❌ Error adding to cart:', error);
@@ -352,8 +359,9 @@ const ProductDetail = () => {
     }
 
     if (product && quantity > 0) {
-      addToCart(product, quantity);
-      showLuxuryToast('Redirecting to checkout...', 'success');
+      addToCart(product, quantity, selectedVariant);
+      const variantText = selectedVariant ? ` (${selectedVariant.colorName})` : '';
+      showLuxuryToast(`Redirecting to checkout${variantText}...`, 'success');
       
       // Scroll to top before navigation
       window.scrollTo({
@@ -466,6 +474,32 @@ const ProductDetail = () => {
 
   const closeShareModal = () => {
     setIsShareModalOpen(false);
+  };
+
+  const handleVariantChange = (variant) => {
+    console.log('🔄 Variant changed:', variant);
+    console.log('🖼️ Variant images:', variant?.images);
+    console.log('📦 Current product images:', product?.images);
+    setSelectedVariant(variant);
+    setSelectedImage(0); // Reset to first image of the variant
+  };
+
+  // Get current images (either from selected variant or main product)
+  const getCurrentImages = () => {
+    if (selectedVariant && selectedVariant.images && selectedVariant.images.length > 0) {
+      console.log('🎯 Using variant images:', selectedVariant.images);
+      return selectedVariant.images;
+    }
+    console.log('🎯 Using product images:', product?.images || []);
+    return product?.images || [];
+  };
+
+  // Get current stock (either from selected variant or main product)
+  const getCurrentStock = () => {
+    if (selectedVariant) {
+      return selectedVariant.stock;
+    }
+    return product?.quantity || 0;
   };
 
   // Get product type for breadcrumb navigation
@@ -605,7 +639,7 @@ const ProductDetail = () => {
                 >
                   <img 
                     ref={imageRef}
-                    src={product.images[selectedImage]} 
+                    src={getCurrentImages()[selectedImage]} 
                     alt={product.name}
                     onMouseMove={handleImageMouseMove}
                     onMouseEnter={handleImageMouseEnter}
@@ -628,7 +662,7 @@ const ProductDetail = () => {
               </div>
               
               <div className="image-thumbnails">
-                {product.images.map((image, index) => (
+                {getCurrentImages().map((image, index) => (
                   <div 
                     key={index}
                     className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
@@ -647,7 +681,7 @@ const ProductDetail = () => {
               {/* Image Counter */}
               <div className="image-counter">
                 <PhotoIcon />
-                <span>{selectedImage + 1} / {product.images.length}</span>
+                <span>{selectedImage + 1} / {getCurrentImages().length}</span>
               </div>
 
               {/* Countdown Timer moved here */}
@@ -677,23 +711,40 @@ const ProductDetail = () => {
 
               {/* Price Section */}
               <div className="price-section">
-                <div className="current-price" style={{ color: 'red' }}>{formatPrice(product.price)}</div>
-                {product.originalPrice && (
-                  <div className="original-price">{formatPrice(product.originalPrice)}</div>
-                )}
-                <div className="price-note">Free Express Delivery Across Pakistan
+                <div className="price-container">
+                  <div className="current-price" style={{ color: 'red' }}>{formatPrice(product.price)}</div>
+                  {product.originalPrice && (
+                    <div className="original-price">{formatPrice(product.originalPrice)}</div>
+                  )}
+                  {product.originalPrice && (
+                    <div className="savings-badge">
+                      <span className="save-amount">
+                        Save Rs.{parseInt(product.originalPrice) - parseInt(product.price)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
+
+              {/* Product Variants - MOVED BACK UNDER PRICE */}
+              {product.variants && product.variants.length > 0 && (
+                <VariantSelector
+                  variants={product.variants}
+                  selectedVariant={selectedVariant}
+                  onVariantChange={handleVariantChange}
+                  productName={product.name}
+                />
+              )}
 
               {/* Quantity & Stock */}
               <div className="quantity-section">
                 <div className="section-header">
                   <label>Quantity</label>
                   <div className="stock-indicator">
-                    <div className={`stock-dot ${product.inStock && product.quantity > 0 ? 'in-stock' : 'out-stock'}`}></div>
+                    <div className={`stock-dot ${product.inStock && getCurrentStock() > 0 ? 'in-stock' : 'out-stock'}`}></div>
                     <span>
-                      {product.quantity > 0 
-                        ? `${product.quantity} Pieces Left` 
+                      {getCurrentStock() > 0 
+                        ? `${getCurrentStock()} Pieces Left` 
                         : 'Out of stock'
                       }
                     </span>
@@ -714,16 +765,16 @@ const ProductDetail = () => {
                   <button 
                     className="qty-btn plus"
                     onClick={() => handleQuantityChange(1)}
-                    disabled={quantity >= product.quantity || product.quantity <= 0}
+                    disabled={quantity >= getCurrentStock() || getCurrentStock() <= 0}
                   >
                     <PlusIconSolid className="icon" />
                   </button>
                 </div>
 
-                {isItemInCart(product.id) && (
+                {isItemInCart(product.id, selectedVariant?.id) && (
                   <div className="cart-status">
                     <ShoppingBagIcon />
-                    <span>{getItemQuantity(product.id)} already in cart</span>
+                    <span>{getItemQuantity(product.id, selectedVariant?.id)} already in cart</span>
                   </div>
                 )}
               </div>
@@ -739,29 +790,29 @@ const ProductDetail = () => {
                 <button 
                     className="luxury-btn primary-gold buy-now"
                     onClick={handleBuyNow}
-                    disabled={!product.inStock || product.quantity <= 0}
+                    disabled={!product.inStock || getCurrentStock() <= 0}
                 >
-                    <span>{product.quantity <= 0 ? 'Out of Stock' : 'Buy with Cash on Delivery 🔥'}</span>
+                    <span>{getCurrentStock() <= 0 ? 'Out of Stock' : 'Buy with Cash on Delivery 🔥'}</span>
                 </button>
                   
                 <button 
                     className={`luxury-btn secondary add-to-cart ${isAddingToCart ? 'loading' : ''}`}
                     onClick={handleAddToCart}
-                    disabled={!product.inStock || product.quantity <= 0 || isItemInCart(product.id) || isAddingToCart}
+                    disabled={!product.inStock || getCurrentStock() <= 0 || isItemInCart(product.id, selectedVariant?.id) || isAddingToCart}
                   >
                     <ShoppingBagIcon />
                     <span>
-                      {product.quantity <= 0 
+                      {getCurrentStock() <= 0 
                         ? 'Out of Stock'
                         : isAddingToCart 
                           ? 'Adding...' 
-                          : isItemInCart(product.id) 
+                          : isItemInCart(product.id, selectedVariant?.id) 
                             ? 'Already in Cart' 
                             : 'Add to Cart'
                       }
                     </span>
-                    {isItemInCart(product.id) && !isAddingToCart && (
-                      <div className="cart-badge">{getItemQuantity(product.id)}</div>
+                    {isItemInCart(product.id, selectedVariant?.id) && !isAddingToCart && (
+                      <div className="cart-badge">{getItemQuantity(product.id, selectedVariant?.id)}</div>
                     )}
                 </button>
                 </div>
@@ -1029,7 +1080,7 @@ const ProductDetail = () => {
             
             <div className="share-modal-content">
               <div className="product-preview">
-                <img src={product.images[0]} alt={product.name} />
+                <img src={getCurrentImages()[0]} alt={product.name} />
                 <div className="product-info">
                   <h4>{product.name}</h4>
                   <p className="product-price">{formatPrice(product.price)}</p>

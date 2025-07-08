@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AdminApiService from '../../../services/adminApi';
+import VariantManager from './VariantManager';
 
 // SVG Icons
 const ArrowLeftIcon = () => (
@@ -80,6 +81,7 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
   const [images, setImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
   const [imagesToDelete, setImagesToDelete] = useState([]);
+  const [variants, setVariants] = useState([]);
   const [errors, setErrors] = useState({});
 
   // Load product data
@@ -124,6 +126,7 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
         });
         
         setExistingImages(product.images || []);
+        setVariants(product.variants || []);
       } else {
         navigate('/admin/products');
       }
@@ -263,21 +266,57 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
         productFormData.append('imagesToDelete', JSON.stringify(imagesToDelete));
       }
 
+      // Add variants data - FIXED VERSION
+      if (variants.length > 0) {
+        console.log('🔧 Preparing variants for submission:', variants);
+        
+        // Prepare variants data for submission
+        const variantsData = variants.map(variant => {
+          console.log('🔧 Processing variant:', variant.colorName, 'Stock:', variant.stock);
+          return {
+            id: variant.id,
+            colorName: variant.colorName,
+            stock: Number(variant.stock) || 0, // Ensure stock is a number
+            isDefault: Boolean(variant.isDefault),
+            images: variant.images || [], // Keep existing images
+            imagesToDelete: variant.imagesToDelete || []
+          };
+        });
+        
+        console.log('🔧 Final variants data:', variantsData);
+        productFormData.append('variants', JSON.stringify(variantsData));
+        
+        // Add variant images with correct field names
+        variants.forEach((variant, variantIndex) => {
+          if (variant.newImages && variant.newImages.length > 0) {
+            console.log(`🔧 Adding ${variant.newImages.length} new images for variant ${variantIndex} (${variant.colorName})`);
+            variant.newImages.forEach((image, imageIndex) => {
+              // Use the field name that the backend expects
+              productFormData.append(`variantImages_${variantIndex}`, image);
+            });
+          }
+        });
+      }
+
       // Set main image index if there are new images
       if (images.length > 0) {
         productFormData.append('mainImageIndex', '0');
       }
 
+      console.log('🔧 Submitting product update with FormData');
+      
       // Call the API to update the product
       const response = await AdminApiService.updateProduct(id, productFormData);
       
       if (response.success) {
+        console.log('✅ Product updated successfully!');
+        
         // Call the callback to update the parent component
         if (onProductUpdated) {
           onProductUpdated(response.data);
         }
         
-        // Reload the product data to show updated images
+        // Reload the product data to show updated changes
         await loadProduct();
         
         // Clear the form state
@@ -285,19 +324,16 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
         setImagesToDelete([]);
         setErrors({});
         
-        // Show success message (you can add a toast notification here)
-        console.log('Product updated successfully!');
+        // Show success message
+        alert('Product updated successfully!');
         
-        // Optionally navigate back to products list after a delay
-        // setTimeout(() => navigate('/admin/products'), 2000);
       } else {
-        setErrors({ submit: response.message || 'Failed to update product' });
+        throw new Error(response.message || 'Failed to update product');
       }
+      
     } catch (error) {
-      console.error('Error updating product:', error);
-      setErrors({ 
-        submit: error.message || 'An error occurred while updating the product. Please try again.' 
-      });
+      console.error('❌ Error updating product:', error);
+      setErrors({ submit: error.message || 'Failed to update product. Please try again.' });
     } finally {
       setSubmitting(false);
     }
@@ -576,6 +612,15 @@ const ProductEdit = ({ onProductUpdated, onCancel }) => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Product Variants */}
+        <div className="form-section">
+          <VariantManager
+            variants={variants}
+            onChange={setVariants}
+            productName={formData.name}
+          />
         </div>
 
         {/* Features */}

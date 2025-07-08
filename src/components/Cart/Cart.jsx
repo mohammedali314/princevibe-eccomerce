@@ -37,12 +37,12 @@ const Cart = ({ isOpen, onClose }) => {
     return () => clearTimeout(timer);
   }, [isOpen]);
 
-  const handleQuantityChange = (productId, newQuantity) => {
+  const handleQuantityChange = (cartItemId, newQuantity) => {
     // Find the cart item to get product stock information
-    const cartItem = safeCart.find(item => item.id === productId);
+    const cartItem = safeCart.find(item => item.cartItemId === cartItemId);
     
     if (newQuantity < 1) {
-      removeFromCart(productId);
+      removeFromCart(cartItemId);
     } else {
       // Check if new quantity exceeds available stock
       const availableStock = cartItem?.availableStock || cartItem?.quantity || 0;
@@ -51,12 +51,12 @@ const Cart = ({ isOpen, onClose }) => {
         // If we have stock information, validate against it
         if (newQuantity > availableStock) {
           // Show a user-friendly message
-          alert(`Sorry! Only ${availableStock} units available in stock for ${cartItem.name}.`);
+          alert(`Sorry! Only ${availableStock} units available in stock for ${cartItem.displayName || cartItem.name}.`);
           return;
         }
       }
       
-      updateQuantity(productId, newQuantity);
+      updateQuantity(cartItemId, newQuantity);
     }
   };
 
@@ -114,13 +114,19 @@ const Cart = ({ isOpen, onClose }) => {
               {/* Cart Items */}
               <div className="cart-items">
                 {safeCart.map((item) => (
-                  <div key={item.id} className={`cart-item ${isClearing ? 'clearing' : ''}`}>
+                  <div key={item.cartItemId} className={`cart-item ${isClearing ? 'clearing' : ''}`}>
                     <div className="item-image">
-                      <img src={item.image} alt={item.name} />
+                      <img 
+                        src={item.variantInfo?.images?.[0]?.url || item.image} 
+                        alt={item.displayName || item.name} 
+                      />
                     </div>
                     
                     <div className="item-details">
-                      <h4>{item.name}</h4>
+                      <h4>{item.displayName || item.name}</h4>
+                      {item.variantInfo && (
+                        <p className="variant-info">Color: {item.variantInfo.colorName}</p>
+                      )}
                       <p className="item-price">{formatPrice(item.price)}</p>
                       
                       {/* Stock indicator */}
@@ -138,7 +144,7 @@ const Cart = ({ isOpen, onClose }) => {
                       <div className="quantity-controls">
                         <button
                           className="qty-btn minus-btn"
-                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                          onClick={() => handleQuantityChange(item.cartItemId, item.quantity - 1)}
                           aria-label="Decrease quantity"
                           title="Decrease quantity"
                         >
@@ -148,7 +154,7 @@ const Cart = ({ isOpen, onClose }) => {
                         <span className="quantity">{item.quantity}</span>
                         <button
                           className="qty-btn plus-btn"
-                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                          onClick={() => handleQuantityChange(item.cartItemId, item.quantity + 1)}
                           disabled={item.availableStock && item.quantity >= item.availableStock}
                           aria-label="Increase quantity"
                           title={item.availableStock && item.quantity >= item.availableStock 
@@ -167,7 +173,7 @@ const Cart = ({ isOpen, onClose }) => {
                       </div>
                       <button
                         className="remove-btn"
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(item.cartItemId)}
                         title="Remove item"
                       >
                         <TrashIcon />
