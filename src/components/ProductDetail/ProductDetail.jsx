@@ -35,6 +35,7 @@ import CountdownTimer from './CountdownTimer';
 import CompactReviewSection from './CompactReviewSection';
 import VariantSelector from './VariantSelector';
 import WhatsAppButton from '../WhatsApp/WhatsAppButton';
+import SocialProofNotifications from '../SocialProof/SocialProofNotifications';
 
 // Custom hook for throttled mouse movement
 const useThrottledMousePosition = (delay = 16) => {
@@ -1192,6 +1193,9 @@ const ProductDetail = () => {
           productUrl={window.location.href}
         />
       )}
+
+      {/* Social Proof Notifications */}
+      <SocialProofNotifications />
     </div>
   );
 };
