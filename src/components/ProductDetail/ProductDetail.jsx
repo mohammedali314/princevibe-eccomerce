@@ -34,6 +34,7 @@ import Products from '../Products/Products';
 import CountdownTimer from './CountdownTimer';
 import CompactReviewSection from './CompactReviewSection';
 import VariantSelector from './VariantSelector';
+import WhatsAppButton from '../WhatsApp/WhatsAppButton';
 
 // Custom hook for throttled mouse movement
 const useThrottledMousePosition = (delay = 16) => {
@@ -1182,6 +1183,15 @@ const ProductDetail = () => {
           )}
         </div>
       </div>
+
+      {/* WhatsApp Button - Only show when product is loaded */}
+      {product && (
+        <WhatsAppButton
+          productName={product.name}
+          productPrice={formatPrice(product.price)}
+          productUrl={window.location.href}
+        />
+      )}
     </div>
   );
 };
