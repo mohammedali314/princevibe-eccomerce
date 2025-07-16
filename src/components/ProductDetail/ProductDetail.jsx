@@ -788,6 +788,26 @@ const ProductDetail = () => {
                 )}
               </div>
 
+              {/* Add this component before the Add to Cart button */}
+              {product.quantity <= 5 && (
+                <div className="exclusivity-badge">
+                  <div className="badge-content">
+                    <span className="crown-icon">👑</span>
+                    <div className="badge-text">
+                      <span className="badge-title">Exclusive Collection</span>
+                      <span className="badge-subtitle">
+                        {product.quantity === 1 ? 'Last piece available' : 
+                         product.quantity === 2 ? 'Only 2 pieces remaining' :
+                         `Limited to ${product.quantity} pieces`}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="exclusivity-bar">
+                    <div className="exclusivity-fill" style={{width: `${(product.quantity / 5) * 100}%`}}></div>
+                  </div>
+                </div>
+              )}
+
               {/* Place timer here for mobile */}
               <div className="countdown-timer-mobile">
                 <CountdownTimer duration={{ minutes: 10, seconds: 0 }} />

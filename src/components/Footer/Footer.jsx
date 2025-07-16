@@ -268,7 +268,7 @@ const Footer = ({ onLogoClick }) => {
                 </div>
                 <div className="contact-item">
                   <MapPinIcon />
-                  <span>Butt Palaza, Near HBL Bank Karianwala, Gujrat</span>
+                  <span>Butt Plaza, Near HBL Bank Karianwala, Gujrat</span>
                 </div>
               </div>
             </div>

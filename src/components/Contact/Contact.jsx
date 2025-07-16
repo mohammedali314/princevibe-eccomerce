@@ -183,7 +183,7 @@ const Contact = () => {
     {
       icon: MapPinIcon,
       title: 'Address',
-      details: ['Butt Palaza, Near HBL Bank', 'Karianwala, Gujrat'],
+      details: ['Butt Plaza, Near HBL Bank', 'Karianwala, Gujrat'],
       action: 'https://maps.google.com',
       gradient: 'black'
     },
